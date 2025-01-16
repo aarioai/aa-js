@@ -331,6 +331,10 @@ class Decimal {
         return this.value / this.units
     }
 
+    toPercent(){
+        return this.value * 100 / this.units
+    }
+
     toRound() {
         return Math.round(this.toReal())
     }

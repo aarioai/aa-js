@@ -254,7 +254,7 @@ class AaAuth {
         }
         log.debug("trigger unauthorized", msg)
         this.clear()
-        const result = this.#unauthorizedHandler()
+        const result = this.#unauthorizedHandler(msg)
         return typeof result === "boolean" ? result : true
     }
 
