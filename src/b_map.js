@@ -194,7 +194,7 @@ class map {
     /**
      * @template T
      * @param {T} target A
-     * @param {T} source B
+     * @param {{spu: *, sku: string, qty: number, data: string, mission: string, promo_id: string}} source B
      * @param {(v:any)=>any} [keynameConvertor]
      * @return {T}    A = A ∪ B
      */
@@ -596,7 +596,7 @@ class map {
             throw new TypeError('map.kv() parameters must be in pairs')
         }
         for (let i = 0; i < pairs.length; i += 2) {
-            o[pairs[i]] = pairs[i + 1]
+            o[pairs[i]] = map.clone(pairs[i + 1])
         }
         return o
     }

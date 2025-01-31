@@ -120,11 +120,11 @@ class AaRawFetch {
             if (value.length === 0) {
                 return null
             }
-            let isBitset = true
+            let isBitset = value.hasOwnProperty('jsonbitset')
             for (let i = 0; i < value.length; i++) {
                 const v = this.unpackData(value[i])
-                if (!value[i] || value[i].hasOwnProperty('jsonbitset') || (typeof v !== 'number' && !(typeof v === "string" && /^\d+$/.test(v)))) {
-                    isBitset = false
+                if (v.hasOwnProperty('jsonbitset')){
+                    isBitset = true
                 }
                 value[i] = v
             }
@@ -144,7 +144,6 @@ class AaRawFetch {
         if (typeof value.toJSON === "function") {
             return value.toJSON()
         }
-
         /**
          * `jsonkey` is a reserved json field to indicate the value of the key name of this struct.
          *  1. `jsonkey` field must be a string. It can be an empty string.
@@ -162,16 +161,15 @@ class AaRawFetch {
 
     // @TODO support other content-types
     serializeData(data, contentType = 'application/json') {
+        let newData = {}  // avoid change outer data
         for (const [key, value] of Object.entries(data)) {
-            if (value !== null && typeof value === "object") {
-                data[key] = this.unpackData(value)
-            }
+            newData[key] = typeof value === "object" ? this.unpackData(value) :value
         }
         try {
             //  这里会识别对象的 .toJSON() 方法
-            return strings.json(data)
+            return strings.json(newData)
         } catch (e) {
-            log.error(e.toString(), data)
+            log.error(e.toString(), newData)
         }
         return ''
     }
@@ -224,7 +222,6 @@ class AaRawFetch {
         settings.method = string(settings, 'method', 'GET').toUpperCase()
         settings.headers = headers  // 先不要使用 new Headers()， 容易出现莫名其妙的问题。直接让fetch自己去转换
 
-
         const data = settings.data
         if (len(data) === 0) {
             return [url, settings]
@@ -234,6 +231,7 @@ class AaRawFetch {
         if (len(queries) > 0 && !settings.body) {
             settings.body = this.serializeData(data, contentType)
         }
+
         return [url, settings]
     }
 
@@ -299,8 +297,15 @@ class AaRawFetch {
                 })
             }
         }
-
-        const uri = new AaURI(url, {"_stringify": booln(true)})
+        let params = {"_stringify": booln(true)}
+        const query = new URLSearchParams(location.search)
+        if (query.has(aparam.Debug)){
+            params[aparam.Debug] = query.get(aparam.Debug)
+        }
+        if (query.has(aparam.Mock)) {
+            params[aparam.Mock] = query.get(aparam.Mock)
+        }
+        const uri = new AaURI(url,params)
         return [uri.toString(), settings]
     }
 
@@ -358,8 +363,6 @@ class AaRawFetch {
             return mw
         }
         [url, settings] = mw
-
-
         if (hook) {
             return hook(settings).then(() => {
                 return this.rawFetch(url, settings)

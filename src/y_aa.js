@@ -123,6 +123,12 @@ class Aa {
 
 
     mselects(opts, cast, inherit = false) {
+        if (opts instanceof AaMultiLevelSelects){
+            if (typeof cast === 'function'){
+                opts.cast(cast)
+            }
+            return opts
+        }
         return new AaMultiLevelSelects(...arguments)
     }
 

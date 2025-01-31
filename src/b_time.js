@@ -617,6 +617,7 @@ class time {
         }
 
         if (value instanceof Date) {
+
             this.#date = value
             this.validator.init(value)
             if (this.validator.isValid(true)) {
@@ -964,7 +965,13 @@ class time {
         }
         return AaDateString.minDatetime
     }
-
+    static yearAdd(n){
+        const d = new Date()
+        return new time(new Date(d.getFullYear() + n, d.getMonth()))
+    }
+    static lastYear(){
+        return time.yearAdd(-1)
+    }
     static minDatetime() {
         return AaDateString.minDatetime
     }

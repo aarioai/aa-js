@@ -55,6 +55,7 @@ const ZeroValues = [null, '', 0, 0n, '0', "0.0", "0.00"]  // 0 === 0.00 ==> true
 const aparam = {
     Debug   : "_debug", // 0 o debug; 1/true debug via console; 2/alert debug via alert
     DebugUrl: "_debug_url",
+    Mock :"_mock",
     Apollo  : "apollo",
 
 
@@ -68,10 +69,12 @@ const aparam = {
     Scope               : "scope",
     ScopeAdmin          : "admin",
 
+
+
     Redirect       : 'redirect',
     LocalAuthAt    : "_localAuthAt",
     Logout         : "logout",
-    PersistentNames: ["_debug", "apollo", "logout"],
+    PersistentNames: ["_debug", "_mock", "apollo", "logout"],
 }
 
 

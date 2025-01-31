@@ -159,6 +159,16 @@ class AaMultiLevelSelects {
         this.#data = opts
     }
 
+    cast(cast){
+        if(len(this.#data) === 0){
+            return
+        }
+        for (let i = 0; i < this.#data.length; i++) {
+            for (let j = 0; j < this.#data[i].length; j++) {
+                this.#data[i][j].value = cast(this.#data[i][j].value)
+            }
+        }
+    }
     /**
      * @return {IterableIterator<MselectOption[]>}
      */

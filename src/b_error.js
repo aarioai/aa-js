@@ -82,6 +82,7 @@ const AErrorEnum = {
     // code:200/204, data:[]  空数组，表示查询到了数据，但是数据过滤完了，可以尝试下一页查询
     NoRowsAvailable          : 490,
     RetryWith       : 491,  // 特殊错误码，msg 用于跳转
+    ConflictWith    : 492, // 【自定义错误码】数据冲突，msg 是冲突的有效信息
 
     InternalServerError   : 500,
     NotImplemented        : 501, // 服务器不支持当前请求所需要的某个功能。当服务器无法识别请求的方法，
@@ -346,6 +347,9 @@ class AError extends Error {
 
     isRetryWith() {
         return this.is(AErrorEnum.RetryWith)
+    }
+    isConflictWith() {
+        return this.is(AErrorEnum.ConflictWith)
     }
 
     isIllegal() {
