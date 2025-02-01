@@ -931,40 +931,6 @@ class time {
         return string(this.valueOf())
     }
 
-    /**
-     * @param {vv_vk_defaultV} [args]
-     * @return {string|string}
-     */
-    static dateString(...args) {
-        const v = defval(...args)
-        if (v) {
-            try {
-                let d = new time(v)
-                return d.toDateString()
-            } catch (err) {
-                console.error(err)
-            }
-        }
-
-        return AaDateString.minDate
-    }
-
-    /**
-     * @param {vv_vk_defaultV} [args]
-     * @return {string|string}
-     */
-    static datetimeString(...args) {
-        const v = defval(...args)
-        if (v) {
-            try {
-                let d = new time(v)
-                return d.toDatetimeString()
-            } catch (err) {
-                console.error(err)
-            }
-        }
-        return AaDateString.minDatetime
-    }
     static yearAdd(n){
         const d = new Date()
         return new time(new Date(d.getFullYear() + n, d.getMonth()))
@@ -1276,7 +1242,7 @@ class TimeDiff {
                         '%sy ago' : '%s年前',  // 最多1年前
                     }
                 };
-                const p = atype.isStruct(dict) ? dict : pkg[dict] ? pkg[dict] : null;
+                const p = types.isStruct(dict) ? dict : pkg[dict] ? pkg[dict] : null;
                 return fmt.translate(p, ...args)
             }
         };

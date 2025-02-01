@@ -37,7 +37,6 @@ function setNx(obj, key, value, excludes) {
 function setNz(obj, key, value) {
     return setNx(obj, key, value, ZeroValues)
 }
-
 /**
  * Equal or is empty
  *  eq(a, b)  ===> is a equals to b
@@ -51,7 +50,7 @@ function setNz(obj, key, value) {
 function eq(a, b) {
     a = string(a)  // @warn String(undefined) === "undefined";  string(undefined) === ""
     b = string(b)
-    return a === b || (!a && b === "0") || (!b && a === "0")
+    return a === b || (!a && ZeroValues.includes(b)) || (!b && ZeroValues.includes(a))
 }
 
 /**

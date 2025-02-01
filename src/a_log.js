@@ -121,7 +121,7 @@ class log {
             let v = args[i]
             if (typeof v.valueOf === 'function') {
                 v = v.valueOf()
-            } else if (atype.toStringCallable(args[i])) {
+            } else if (types.toStringCallable(args[i])) {
                 v = v.toString()
             } else if (typeof v === "object") {
                 if (s) {

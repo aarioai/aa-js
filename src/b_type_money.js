@@ -78,7 +78,7 @@ class Money extends Decimal {
 
 
         // @warn  rates 的百分比，必须是 * Percent.Percent 后的
-        if (!atype.isStruct(rates)) {
+        if (!types.isStruct(rates)) {
             rates = decimal(rates)
             return newMoney.multiply(rates)
         }

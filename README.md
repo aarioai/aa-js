@@ -26,8 +26,8 @@ A Javascript SDK of AaGo
 | array()    | array            |            |                                                                      |
 | bool()     | boolean          |            |                                                                      |
 | booln()    | number           |            | 0 on false; 1 on true                                                |
-| date()     | time             |            | <YY-MM-DD> compare with time.dateString()                            |
-| datetime() | time             |            | <YYY-MM-DD HH:II:SS> compare with time.datetimeString()              |
+| date()     | time             |            | <YY-MM-DD> compare with types.date()                                 |
+| datetime() | time             |            | <YYY-MM-DD HH:II:SS> compare with types.datetime()                   |
 | decimal()  | Decimal          |            | alias to new Decimal()                                               |
 | float32()  | number           |            |                                                                      |
 | float64()  | number           |            |                                                                      |

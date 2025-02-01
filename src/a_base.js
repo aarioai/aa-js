@@ -45,7 +45,7 @@ const INCR = 'INCR'
 /** @typedef {"DECR"} DECR */
 const DECR = 'DECR'
 
-const ZeroValues = [null, '', 0, 0n, '0', "0.0", "0.00"]  // 0 === 0.00 ==> true
+const ZeroValues = [null, '', 0, 0n, 0.0, '0', "0.0", "0.00", "0000-00-00", "00:00:00", "0000-00-00 00:00:00"]  // 0 === 0.00 ==> true
 
 
 

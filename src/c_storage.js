@@ -350,7 +350,7 @@ class AaStorageEngine {
 
         ttl = this.#ttl(number(match[3]), ttlUnit)
         switch (type.toLowerCase()) {
-            case atype.alias._serializable:
+            case types.alias._serializable:
                 let arr = value.split('::')
                 let className = arr[0]
                 value = arr.slice(1).join('::')
@@ -361,33 +361,33 @@ class AaStorageEngine {
                     return {value: null, persistent, ttl}
                 }
                 break
-            case atype.alias.array:
-            case atype.alias.struct:
+            case types.alias.array:
+            case types.alias.struct:
                 try {
                     value = JSON.parse(value)
                 } catch (error) {
                     log.error(`storage parse ${value} failed: ${error}`)
                 }
                 break
-            case atype.alias.bigint:
+            case types.alias.bigint:
                 value = BigInt(value)
                 break
-            case atype.alias.boolean:
+            case types.alias.boolean:
                 value = bool(value)
                 break
-            case atype.alias.null:
+            case types.alias.null:
                 value = (value === "null") ? null : undefined
                 break
-            case atype.alias.number:
+            case types.alias.number:
                 value = int54(value)
                 break
-            case atype.alias.date:
+            case types.alias.date:
                 value = new Date(value)
                 break
-            case atype.alias.regexp:
+            case types.alias.regexp:
                 value = new RegExp(value)
                 break
-            case atype.alias.string:
+            case types.alias.string:
                 break
         }
         if (typeof value === 'undefined' || (ttl !== null && ttl < 0)) {
@@ -407,30 +407,30 @@ class AaStorageEngine {
         let ok = true;
         let typeAlias
 
-        if (atype.isSerializable(value)) {
-            typeAlias = atype.alias._serializable
+        if (types.isSerializable(value)) {
+            typeAlias = types.alias._serializable
             const className = value.constructor.name
             value = value.serialize()
             value = className + '::' + value
         } else {
-            const type = atype.of(value)
-            typeAlias = atype.aliasOf(type)
+            const type = types.of(value)
+            typeAlias = types.aliasOf(type)
             switch (type) {
-                case atype.number:
+                case types.number:
                     break
-                case atype.boolean:
+                case types.boolean:
                     value = booln(value)
                     break;
-                case atype.array:
-                case atype.class:
-                case atype.struct:
+                case types.array:
+                case types.class:
+                case types.struct:
                     value = strings.json(value)
                     break;
-                case atype.date:
+                case types.date:
                     value = value.valueOf()
                     break;
-                case atype.function:
-                case atype.undefined:
+                case types.function:
+                case types.undefined:
                     ok = false
                     break;
             }

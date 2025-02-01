@@ -2,7 +2,7 @@
 
 //  react state  数字 001231 === 1231 == 001231.000  这些数值都没有变化，state就不会触发
 
-class atype {
+class types {
     static array = "array"
     static bigint = 'bigint'
     static boolean = "boolean"
@@ -40,15 +40,15 @@ class atype {
     // 缩短类型为1个字符
     static aliasOf(t) {
         if (typeof t === "undefined") {
-            return atype.alias.undefined
+            return types.alias.undefined
         }
         if (t === null) {
-            return atype.alias.null
+            return types.alias.null
         }
         if (typeof t !== "string") {
-            t = atype.of(t)
+            t = types.of(t)
         }
-        return atype.alias[t] ? atype.alias[t] : atype.alias.undefined
+        return types.alias[t] ? types.alias[t] : types.alias.undefined
     }
 
 
@@ -60,7 +60,7 @@ class atype {
      */
     static anyNot(type, ...args) {
         for (let i = 0; i < args.length; i++) {
-            if (typeof args[i] !== type && atype.of(args[i]) !== type) {
+            if (typeof args[i] !== type && types.of(args[i]) !== type) {
                 return true
             }
         }
@@ -103,34 +103,34 @@ class atype {
             return true
         }
 
-        switch (atype.of(v)) {
-            case atype.array:
+        switch (types.of(v)) {
+            case types.array:
                 return v.length === 0
-            case atype.bigint:
+            case types.bigint:
                 return v <= 0
-            case atype.boolean:
+            case types.boolean:
                 return !v
-            case atype.class:
+            case types.class:
                 return false
-            case atype.date:
-            case atype.dom:
-            case atype.function:
+            case types.date:
+            case types.dom:
+            case types.function:
                 return false
-            case atype.null:
+            case types.null:
                 return true
-            case atype.number:
+            case types.number:
                 return v <= 0
-            case atype.struct:
+            case types.struct:
                 v = Object.keys(v)
                 return v.length === 0
-            case atype.string:
+            case types.string:
                 return v === ""
         }
         return !v
     }
 
     static notEmpty(...args) {
-        return !atype.isEmpty(...args)
+        return !types.isEmpty(...args)
     }
 
     /**
@@ -138,7 +138,7 @@ class atype {
      * @return {boolean}
      */
     static isDom(...args) {
-        return atype.of(...args) === "dom"
+        return types.of(...args) === "dom"
     }
 
     /**
@@ -162,7 +162,7 @@ class atype {
      * @note 仅为 {} 结构体；不要用 typeof arr === "object" 判定是否是结构体，因为 typeof [] 也是 object。而 AaType.Of([]) 为array, AaType.Of({}) 为 object
      */
     static isStruct(...args) {
-        return atype.of(...args) === "struct"
+        return types.of(...args) === "struct"
     }
 
 
@@ -187,22 +187,22 @@ class   // Returns function XXX()
     static of(v, ...args) {
         if (args.length > 0) {
             if (typeof v !== "object" || v === null) {  // typeof null is object
-                return atype.null
+                return types.null
             }
             let k = args[0]
             if (!v.hasOwnProperty(k)) {
-                return atype.undefined
+                return types.undefined
             }
             v = v[k]
         }
         if (v === null) {
-            return atype.null
+            return types.null
         }
         if (Array.isArray(v)) {
-            return atype.array
+            return types.array
         }
         let t = typeof v
-        if ([atype.boolean, atype.function, atype.number, atype.string, atype.undefined].includes(t)) {
+        if ([types.boolean, types.function, types.number, types.string, types.undefined].includes(t)) {
             return t
         }
 
@@ -213,13 +213,13 @@ class   // Returns function XXX()
         if (typ.length > 9) {
             // 使用 new Cls()
             if (typ.indexOf("_classcallcheck") > 0) {
-                return atype.class
+                return types.class
             }
             if (typ.substring(0, 4) === "html" || $(v).length > 0) {
-                typ = atype.dom
+                typ = types.dom
             }
         }
-        return typ === "object" ? atype.struct : typ
+        return typ === "object" ? types.struct : typ
     }
 
     static toStringCallable(v) {
@@ -244,29 +244,29 @@ class   // Returns function XXX()
             }
             return /^\d{4}-[01]\d-[03]\d$/.test(v) ? '0000-00-00' : ''
         }
-        switch (atype.of(v)) {
-            case atype.array:
+        switch (types.of(v)) {
+            case types.array:
                 return nullable ? null : []
-            case atype.bigint:
+            case types.bigint:
                 return 0n
-            case atype.boolean:
+            case types.boolean:
                 return false
-            case atype.class:
+            case types.class:
                 return null
-            case atype.date:
+            case types.date:
                 return null
-            case atype.dom:
+            case types.dom:
                 return null
-            case atype.function:
+            case types.function:
                 return nullable ? null : nif
-            case atype.null:
+            case types.null:
                 return null
-            case atype.number:
+            case types.number:
                 return 0
-            case atype.struct:
+            case types.struct:
                 v = nullable ? null : {}
                 return v.length === 0
-            case atype.string:
+            case types.string:
                 return ""
         }
         return typeof v === "object" ? null : undefined

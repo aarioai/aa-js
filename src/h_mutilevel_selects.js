@@ -69,7 +69,7 @@ class AaMultiLevelSelects {
                 //  [{$value:$text},{$value:$text}] 或 [text, text]
                 if (Array.isArray(opts)) {
                     for (let i = 0; i < opts.length; i++) {
-                        if (atype.isStruct(opts[i])) {
+                        if (types.isStruct(opts[i])) {
                             let v = Object.keys(opts[i])[0]
                             options[0].push({
                                 value: v,
@@ -397,7 +397,7 @@ class AaMultiLevelSelects {
     static extractChainValues(option) {
         let a = []
         let w = undefined
-        if (atype.isStruct(option)) {
+        if (types.isStruct(option)) {
             for (let b in option) {
                 if (option.hasOwnProperty(b)) {
                     a.push(b)
@@ -406,7 +406,7 @@ class AaMultiLevelSelects {
         } else {
             for (let i = 0; i < option.length; i++) {
                 w = option[i]
-                if (atype.isStruct(w)) {
+                if (types.isStruct(w)) {
                     if (w.hasOwnProperty('value')) {
                         w = w.value
                     } else {

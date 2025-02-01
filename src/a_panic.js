@@ -15,7 +15,7 @@ class panic {
         if (required === OPTIONAL && (typeof arr === 'undefined' || arr === null)) {
             return
         }
-        const ty = atype.of(arr)
+        const ty = types.of(arr)
         if (ty !== 'array') {
             const t = Array.isArray(type) ? `(${type.join('|')})` : type
             throw new TypeError(`${ty}:${arr} is not a ${t} array`)
@@ -98,7 +98,7 @@ class panic {
         if (!allowEmpty && !value) {
             throw new TypeError('empty value')
         }
-        const ty = atype.of(value)
+        const ty = types.of(value)
         if (typeof type === 'string') {
             if (ty !== type && typeof value !== type) {
                 throw new TypeError(`${ty}:${value} is not a ${type}`)

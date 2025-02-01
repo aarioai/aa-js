@@ -270,7 +270,7 @@ class map {
             return typeof src.toJSON === "function" ? target.toJSON() === src.toJSON() : false
         }
 
-        const t = atype.of(target)
+        const t = types.of(target)
         // "array", "boolean", "date", "dom", "function", null, "number", "object", "string", "undefined"
 
         if (t === "dom" || t === "function") {
@@ -545,7 +545,7 @@ class map {
         // 为保证 react state 更新正常，这里 item 最好指向新的内存空间
         let newItem = {}
         map.forEach(objects[0], (key, value) => {
-            newItem[key] = typeof item[key] === 'undefined' ? atype.zeroize(value) : item[key]
+            newItem[key] = typeof item[key] === 'undefined' ? types.zeroize(value) : item[key]
         })
         const [_, i] = map.find(objects, condition)
         if (i > 0) {
@@ -647,7 +647,7 @@ class map {
             }
 
             if (typeof v === "undefined") {
-                target[k] = atype.zeroize(target[k])
+                target[k] = types.zeroize(target[k])
             } else {
                 target[k] = typeof target[k] === "number" ? number(v) : v
             }
