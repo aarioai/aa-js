@@ -283,7 +283,7 @@ class AaImgSrc extends AaSrc {
      * @return {*}
      */
     static isDataValid(data) {
-        return data && data['path'] && data['crop_pattern'] && data['resize_pattern']
+        return data && data['path'] && (data['cropPattern']||data['crop_pattern']) && (data['resizePattern']||data['resize_pattern'])
     }
 
     /**

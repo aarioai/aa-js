@@ -220,7 +220,9 @@ class AaStorageEngine {
         }
         return s.name
     }
-
+    get persistentName() {
+        return this.#persistentNames
+    }
     // cookie 不能使用 : 等分隔符作为key，因此不同Engine里面自己指定分隔符
     // 冒号 : 是特殊分隔符，默认都是 : 隔开
     get separator() {
@@ -600,6 +602,39 @@ class AaStorageEngine {
      */
     setPersistentNames(persistentNames) {
         this.#persistentNames = persistentNames ? persistentNames : []
+        return this
+    }
+
+    saveFromSearch(names, search=location.search){
+        const query = new URLSearchParams(search)
+        let items = {}
+        for (const name of names){
+            if (query.has(name)) {
+                items[name] = query.get(name)
+            }
+        }
+        if (len(items)>0) {
+            this.setItems(items)
+        }
+        return this
+    }
+    /**
+     * save parameters from url search params
+     * @param search
+     * @param ignores
+     */
+    savePersistentFromSearch(search = location.search, ignores=[]) {
+        const names = this.#persistentNames
+        if(len(names)===0 || len(ignores)===0) {
+            return this.saveFromSearch(array(names))
+        }
+        let newNames = []
+        for (const name of names){
+            if (!ignores.includes(name)) {
+                newNames.push(name)
+            }
+        }
+        return this.saveFromSearch(newNames)
     }
 
     /**
@@ -695,15 +730,17 @@ class AaStorageFactor {
 
     /**
      *
-     * @param {Storage} [cookieStorage]
-     * @param {Storage} [localStorage]
-     * @param {Storage} [sessionStorage]
+     * @param {Storage|AaStorageEngine} [cookieStorage]
+     * @param {Storage|AaStorageEngine} [localStorage]
+     * @param {Storage|AaStorageEngine} [sessionStorage]
      */
     constructor(cookieStorage, localStorage, sessionStorage) {
-        this.local = new AaStorageEngine(localStorage ? localStorage : window.localStorage, [], false, true, 7 * time.Day)
-        this.session = new AaStorageEngine(sessionStorage ? sessionStorage : window.sessionStorage, [], false, true)
-        this.cookie = new AaStorageEngine(cookieStorage ? cookieStorage : new AaCookieStorage(), [], true, false)
-
+        localStorage = localStorage ? localStorage : window.localStorage
+        sessionStorage= sessionStorage ? sessionStorage : window.sessionStorage
+        cookieStorage=cookieStorage ? cookieStorage : new AaCookieStorage()
+        this.local = localStorage instanceof AaStorageEngine ? localStorage : new AaStorageEngine(localStorage, [], false, true, 7 * time.Day)
+        this.session = sessionStorage instanceof AaStorageEngine ? sessionStorage : new AaStorageEngine(sessionStorage, [], false, true)
+        this.cookie = cookieStorage instanceof AaStorageEngine ? cookieStorage : new AaStorageEngine(cookieStorage, [], true, false)
         this.cleanExpired()
     }
 
@@ -735,6 +772,8 @@ class AaStorageFactor {
 
         return this.local.getItem(key)
     }
+
+
 
     /**
      * Remove items from all storages

@@ -293,7 +293,7 @@ class AaFetch {
      * @param {number} [size]
      * @param {number} [retryInterval]
      */
-    detect(url, onReady, size, retry, retryInterval) {
+    detect(url, onReady, size, retry= 5, retryInterval=0) {
         if (!retryInterval) {
             if (size > 10 * math.MB) {
                 retryInterval = 8 * time.Second
@@ -319,7 +319,9 @@ class AaFetch {
                 }
             }
         }
-
+        if (retry>10){
+            console.warn(`retry ${retry} is too much`)
+        }
 
         fetch(url, {method: "HEAD"}).then(res => {
             if (!res.ok) {
@@ -327,12 +329,12 @@ class AaFetch {
             }
             onReady(url)
         }).catch(err => {
-            log.error(`detect ${url}`, err)
+            log.error(`detect: ${url} retried: ${retry} error: ${err}`)
             if (!retry) {
                 return
             }
             setTimeout(() => {
-                this.detect(url, onReady, retry - 1, retryInterval * 2)
+                this.detect(url, onReady, size, retry - 1, retryInterval * 2)
             }, retryInterval)
         })
     }

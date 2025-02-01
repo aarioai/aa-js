@@ -26,7 +26,9 @@ class AaEnv {
     }
 
     static isAppleTouch() {
-        return AaEnv.isIphone() || AaEnv.isIpad()
+        const ua = window.navigator.userAgent.toLowerCase()
+        // EdgiOS/  is iPhone/iPad Edge
+        return ua.includes(" edgios/") ||AaEnv.isIphone() || AaEnv.isIpad()
     }
 
     static isDebug() {
@@ -34,9 +36,14 @@ class AaEnv {
     }
 
     static isEdge() {
-        return /Edge/i.test(window.navigator.userAgent) && (!!navigator.msSaveOrOpenBlob || !!navigator.msSaveBlob)
+        // is Edg/ or EdgA/, not Edge
+        return /\sEdg(A|iOS)?\//i.test(window.navigator.userAgent)
     }
-
+    static isAndroid() {
+        const ua = window.navigator.userAgent.toLowerCase()
+        // EdgA is Android (Mobile/tablet) Edge
+        return ua.includes(" edga/")
+    }
     static isIE() {
         return !!window.ActiveXObject
     }

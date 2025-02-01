@@ -219,6 +219,10 @@ class AaRawFetch {
         settings = map.fillUp(settings, this.#defaultSettings)   // 要允许外面扩展配置
         headers = this.#fillUpHeaders(headers, !!settings.body)
         let contentType = string(headers, 'Content-Type') // maybe not exists
+        // 'multipart/form-data' 需要增加 boundary
+        if (contentType === '' || contentType==='multipart/form-data') {
+            delete headers['Content-Type']
+        }
         settings.method = string(settings, 'method', 'GET').toUpperCase()
         settings.headers = headers  // 先不要使用 new Headers()， 容易出现莫名其妙的问题。直接让fetch自己去转换
 
@@ -299,11 +303,13 @@ class AaRawFetch {
         }
         let params = {"_stringify": booln(true)}
         const query = new URLSearchParams(location.search)
-        if (query.has(aparam.Debug)){
-            params[aparam.Debug] = query.get(aparam.Debug)
+        let debug = query.has(aparam.Debug) ? query.get(aparam.Debug) : this.#storage.getEntire(aparam.Debug)
+        if (debug){
+            params[aparam.Debug] = debug
         }
-        if (query.has(aparam.Mock)) {
-            params[aparam.Mock] = query.get(aparam.Mock)
+        let mock = query.has(aparam.Mock) ? query.get(aparam.Mock) : this.#storage.getEntire(aparam.Mock)
+        if (mock) {
+            params[aparam.Mock] = mock
         }
         const uri = new AaURI(url,params)
         return [uri.toString(), settings]
