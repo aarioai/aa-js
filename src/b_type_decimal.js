@@ -307,6 +307,16 @@ class Decimal {
         return this.formatWhole(settings.segmentSize, settings.separator) + this.formatMantissa(settings.scale, settings.trimScale, settings.scaleRound)
     }
 
+    /**
+     * 缩写的近似中文表达的数字，如 1.8万、2.44亿
+     * @param {(number)=>number} round
+     * @param {number} decimalPlaces
+     * @return {{appr: string, unit: string, text: string}}
+     */
+    formatAbbrInChinese(round=Math.round, decimalPlaces = 1){
+        return maths.toAbbrNumberInChinese(this.toReal(), round, decimalPlaces)
+    }
+
     fmt(scale = 2, trimScale = true) {
         return this.format({
             trimScale: trimScale,

@@ -465,7 +465,7 @@ class AaURI {
             let k = m.replace(/^{([\w-]+)[:}].*$/ig, '$1')
             let v = newQueries.get(k, string)  // 支持array, AaImgSrc, Decimal, time 等所有格式数据
             if (typeof v === 'undefined' || v === '' || v === null) {
-                throw new TypeError(`url path param ${m} is not defined`)
+                throw new TypeError(`url ${s} path param ${m} is not defined. ` + newQueries.toString())
             }
             s = s.replaceAll(m, v)
             newQueries.delete(k)

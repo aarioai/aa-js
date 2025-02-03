@@ -294,7 +294,7 @@ class AaFetch {
      * @param {number} [retryInterval]
      */
     detect(url, onReady, size, retry= 5, retryInterval=0) {
-        if (!retryInterval) {
+        if (retryInterval < 400*time.Millisecond) {
             if (size > 10 * math.MB) {
                 retryInterval = 8 * time.Second
             } else if (size > math.MB) {
@@ -320,7 +320,7 @@ class AaFetch {
             }
         }
         if (retry>10){
-            console.warn(`retry ${retry} is too much`)
+            log.warn(`retry ${retry} is too much`)
         }
 
         fetch(url, {method: "HEAD"}).then(res => {

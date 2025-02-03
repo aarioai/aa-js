@@ -110,7 +110,7 @@ class Money extends Decimal {
      */
     toFinancialString(financial) {
         // 阿拉伯数字转中文，
-        let c = fmt.toChineseNumber(this.toReal(), financial)
+        let c = maths.toChineseNumber(this.toReal(), financial)
         if (c.indexOf("点") < 0) {
             return c + "元"
         }
