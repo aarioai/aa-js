@@ -81,7 +81,7 @@ class AaFetch {
         const response = this.#rawFetch.fetch(url, settings, this.fetchHook.bind(this))
         return response.then(data => data).catch(err => {
             err = aerror(err)
-            if (this.enableRedirect && err.isRetryWith()) {
+            if (this.enableRedirect && err.isFailedAndSeeOther()) {
                 location.href = err.message // 特殊跳转
                 return
             }

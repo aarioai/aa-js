@@ -9,89 +9,158 @@ let _aerrorCode2MsgMap_ = null
 let _aerrorDict_ = {
     'en'   : null,  // will init later   必须要增加一个en模式的，这样直接匹配到可以直接输出
     'zh-CN': {
-        "please input: %s"     : "请输入：%s",
-        "bad param: %s"    : "%s 输入错误",
-        "invalid param: %s": "%s 输入不符合规则",
+        "Bad Parameter: %s"    : "%s 输入错误",
+
+        "Continue": "",
+        "Switching Protocols":"",
+        "Processing":"",
+        "EarlyHints":"",
+
+        "OK"        : "成功",  // 200
+        "Created" :"创建成功",
+        "Accepted":"已接受",
+        "Non-Authoritative Information":"创建成功",
+        "No Content": "操作成功", //204
+        "Reset Content":"已重置，请刷新页面",
+        "Partial Content":"断点数据成功",
+        "Multi-Status":"",
+        "Already Reported":"",
+        "IM Used":"",
+
+        "Multiple Choices":"",   // 300
+        "Moved Permanently":"资源被重置到新位置",
+        "Found":"临时重定向",
+        "See Other":"操作成功后重定向",
+        "Not Modified": "数据未变化", //304
+        "Use Proxy":"需要代理才可访问",
+        "Temporary Redirect":"临时重定向",
+        "Permanent Redirect":"资源被重置到新位置",
+        "Failed And See Other":"操作失败", // 391
 
 
-        "Ok"        : "成功",  // 200
-        "No content": "成功", //204
-        "Not modified": "数据未变化", //304
-
-        "Bad request"     : "请求参数或其他错误", // 400
-        "Unauthorized"    : "请登录授权后使用", // 401
-        "Payment required": "请付费后使用", // 402
+        "Bad Request"     : "请求参数或其他错误", // 400
+        "Unauthorized"    : "请登录或授权后使用", // 401
+        "Payment Required": "请付费后使用", // 402
         "Forbidden"       : "您没有权限使用", // 403
         "Not found"       : "糟糕，数据找不到啦~", // 404
         "Not acceptable":"", // 406
         "Proxy Authentication Required":"需要代理认证", // 407
-        "Timeout"           : "请求超时，请稍后再试", // 408
+        "Request Timeout"           : "请求超时，请稍后再试", // 408
         "Conflict"          : "异常冲突", // 409
         "Gone"              : "数据已被删除", // 410
-        "PreconditionFailed": "前置条件未满足", // 412
-        "RequestEntityTooLarge":"上传数据过大", // 413
-        "Unsupported media type": "文件格式不正确", // 415
-
-
+        "Length Required":"缺少长度数据",
+        "Precondition Failed": "前置条件未满足", // 412
+        "Request Entity Too Large":"上传数据过大", // 413
+        "Request URI Too Long":"请求地址错误",//414
+        "Request Target Invalid":"请求目标错误", // 414
+        "Unsupported Media Type": "文件格式不正确", // 415
+        "Requested Range Not Satisfiable":"",
+        "Expectation Failed":"",
+        "Page Expired":"临时token已过期，请刷新页面",
+        "Enhance Your Calm":"服务器繁忙，请稍后再试",
         "Locked"           : "资源已被锁定", // 423
         "Failed dependency": "之前发生错误", // 424
+        "Too Early":"拒绝重放",
+        "Upgrade Required":"客户端版本过低，强制升级",
+        "Precondition Required":"缺少前置",
+        "Too Many Requests":"请求过于频繁",
 
-        "Illegal"          : "因法律原因不可用", // 425
+        "Request Header Fields Too Large":"",
+        "Login Time-out":"登录状态已过期",
+        "No Response":"拒绝响应",
+        "Unavailable For Legal Reasons"          : "内容违反规定", // 451
 
-        "No rows available"          : "没有找到符合的数据", // 490
-        "Retry with"       : "尝试重试",  // 491
 
-        "Internal server error"   : "服务端错误", // 500
+        "No Rows Available"          : "没有找到符合的数据", // 494
+        "Conflict With"       : "数据异常冲突",  // 499
+
+        "Internal server error"   : "服务层错误", // 500
         "Not implemented"         : "服务未开放", // 501
-        "Bad gateway"             : "上游服务异常", // 502
+        "Bad gateway"             : "网关错误", // 502
         "Service unavailable"        : "服务不可用", // 503
-        "Gateway timeout"         : "上游服务器超时", // 504
-        "Variant also negotiates"         : "服务端配置错误", // 506
-        "Status exception" : "服务器状态异常", // 590
-        "Client throw"            : "客户端抛出异常", // 1000
+        "Gateway timeout"         : "网关超时", // 504
+        "Variant Also Negotiates"         : "服务端配置错误", // 506
+        "Insufficient Storage":"存储空间不足", // 507
+        "Loop Detected":"检测到死循环", // 508
+        "Not Extended":"", //510
+        "Network Authentication Required":"服务间认证失败", // 511
+        "Exception" : "服务器异常", // 590
+        "Client Throw"            : "客户端抛出异常", // 1000
     }
 };
 const AErrorEnum = {
-    OK       : 200,
-    NoContent: 204,
 
+    Continue:100,
+    SwitchingProtocols:101,
+    Processing:102,
+    EarlyHints:103,
+
+    OK       : 200,
+    Created:201,
+    Accepted:202,
+    NonAuthoritativeInformation:203,
+    NoContent: 204,
+    ResetContent:205,
+    PartialContent:206,
+    MultiStatus:207,
+    AlreadyReported:208,
+    IMUsed:209,
+
+    MultipleChoices:300,
+    MovedPermanently:301,
+    Found:302,
+    SeeOther:303,
     NotModified :304,
+    UseProxy:305,
+    TemporaryRedirect:307,
+    PermanentRedirect:308,
+    FailedAndSeeOther:391,
 
     BadRequest     : 400,
     Unauthorized   : 401,
     PaymentRequired: 402,
     Forbidden      : 403,
-    NotFound       : 404,// refer to redis.Nil, sql.ErrNoRows
+    NotFound       : 404,
+    MethodNotAllowed:405,
     NotAcceptable:406,
     ProxyAuthRequired:407,
-    Timeout             : 408, // 被限流也是返回这个
+    Timeout             : 408,
     Conflict            : 409,
-    Gone                : 410,              // 以前存在过，以后都不会再存在了，表示数据已经删除、过期、失效
+    Gone                : 410,
+    LengthRequired:411,
     PreconditionFailed  : 412,
     RequestEntityTooLarge:413,
-    UnsupportedMediaType: 415, // 上传的数据格式非法
-
+    RequestURIInvalid:414,
+    UnsupportedMediaType: 415,
+    RequestedRangeNotSatisfiable:416,
+    ExpectationFailed:417,
+    PageExpired:419,
+    EnhanceYourCalm:420,
     Locked          : 423,
-    FailedDependency: 424,// 之前发生错误
-    TooEarly        : 425, // 表示服务器不愿意冒险处理可能被重播的请求。
-    TooManyRequests : 429, // 用户在给定的时间内发送了太多请求（"限制请求速率"）
-
-    Illegal         : 451,// 该请求因政策法律原因不可用。
-
-    // code:490, data:null   表示空数组返回这个错误，表示不可以再进行下一页查询了
-    // code:200/204, data:[]  空数组，表示查询到了数据，但是数据过滤完了，可以尝试下一页查询
-    NoRowsAvailable          : 490,
-    RetryWith       : 491,  // 特殊错误码，msg 用于跳转
-    ConflictWith    : 492, // 【自定义错误码】数据冲突，msg 是冲突的有效信息
+    FailedDependency: 424,
+    TooEarly        : 425,
+    UpgradeRequired:426,
+    PreconditionRequired:428,
+    TooManyRequests : 429,
+    RequestHeaderFieldsTooLarge:431,
+    LoginTimeOut:440,
+    NoResponse:444,
+    UnavailableForLegalReasons         : 451,
+    RetryWith       : 492,  // 特殊错误码，msg 用于跳转
+    NoRowsAvailable          : 494,
+    ConflictWith    : 499, // 【自定义错误码】数据冲突，msg 是冲突的有效信息
 
     InternalServerError   : 500,
     NotImplemented        : 501, // 服务器不支持当前请求所需要的某个功能。当服务器无法识别请求的方法，
     BadGateway            : 502,  //
-    ServerException       : 503,  // 客户端自定义，表示未知服务端错误；最常见的就是，没有正确返回数据，或者返回 {code:0,msg:""} 等未协商的数据，导致客户端无法正常处理
+    ServerUnavailable       : 503,  // 客户端自定义，表示未知服务端错误；最常见的就是，没有正确返回数据，或者返回 {code:0,msg:""} 等未协商的数据，导致客户端无法正常处理
     GatewayTimeout        : 504,
     VariantAlsoNegotiates: 506, // 内部配置错误
-
-    StatusException : 590,  // http 状态码出错，未达到程序阶段
+    InsufficientStorage:507,
+    LoopDetected:508,
+    NotExtended:510,
+    NetworkAuthenticationRequired:511,
+    Exception : 590,  // http 状态码出错，未达到程序阶段
     ClientThrow           : 1000, // 客户端错误；捕获js catch的报错
 
 
@@ -122,7 +191,7 @@ const AErrorEnum = {
     code2Msg: function (code, dict = 'zh-CN') {
         code = number(code)
         let m = AErrorEnum.getCode2MsgMap()
-        let s = m[code] ? m[code] : "Status exception"
+        let s = m[code] ? m[code] : "Client Throw"
         dict = AErrorEnum.getDict(dict)
         return dict[s] ? dict[s] : s
     },
@@ -169,25 +238,14 @@ const AErrorEnum = {
         if (dict[msg]) {
             return dict[msg]
         }
-        let arr = msg.matchAll(/param[^`]*`([^`]+)`.*is\s+required/ig)
+        let arr = msg.matchAll(/Bad\s+Parameter:\s*(\w+)/ig)
         for (const a of arr) {
             let p = dict[a[1]] ? dict[a[1]] : a[1]
-            return fmt.translate(dict, "please input: %s", p)
-        }
-        arr = msg.matchAll(/bad\s+param[^`]*`([^`]+)`/ig)
-        for (const a of arr) {
-            let p = dict[a[1]] ? dict[a[1]] : a[1]
-            return fmt.translate(dict, "bad param: %s", p)
-        }
-        arr = msg.matchAll(/param[^`]*`([^`]+)`.*not\s+match/ig)
-        for (const a of arr) {
-            let p = dict[a[1]] ? dict[a[1]] : a[1]
-            return fmt.translate(dict, "invalid param: %s", p)
+            return fmt.translate(dict, "Bad Parameter: %s", p)
         }
 
         return msg
     }
-
 }
 
 
@@ -345,15 +403,15 @@ class AError extends Error {
         return this.is(AErrorEnum.TooManyRequests)
     }
 
-    isRetryWith() {
-        return this.is(AErrorEnum.RetryWith)
+    isFailedAndSeeOther() {
+        return this.is(AErrorEnum.FailedAndSeeOther)
     }
     isConflictWith() {
         return this.is(AErrorEnum.ConflictWith)
     }
 
     isIllegal() {
-        return this.is(AErrorEnum.Illegal)
+        return this.is(AErrorEnum.UnavailableForLegalReasons)
     }
 
     isInternalServerError() {
@@ -368,8 +426,8 @@ class AError extends Error {
         return this.is(AErrorEnum.BadGateway)
     }
 
-    isServerException() {
-        return this.is(AErrorEnum.ServerException)
+    isServerUnavailable() {
+        return this.is(AErrorEnum.ServerUnavailable)
     }
 
     isGatewayTimeout() {
@@ -377,8 +435,8 @@ class AError extends Error {
     }
 
 
-    isServerStatusException() {
-        return this.is(AErrorEnum.StatusException)
+    isException() {
+        return this.is(AErrorEnum.Exception)
     }
 
     isClientThrow() {
@@ -425,20 +483,20 @@ class AError extends Error {
 
     static parseResp(resp, dict) {
         if (!resp) {
-            return new AError(AErrorEnum.ServerException, "", dict)
+            return new AError(AErrorEnum.ClientThrow, "", dict)
         }
         if (typeof resp === "string") {
             try {
                 resp = JSON.parse(resp.trim())
             } catch (e) {
-                return new AError(AErrorEnum.ServerException, "", dict)
+                return new AError(AErrorEnum.ClientThrow, "", dict)
             }
         }
         if (resp && typeof resp === "object" && resp.hasOwnProperty("code") && resp.hasOwnProperty("msg")) {
             return new AError(resp['code'], resp['msg'], dict)
         }
 
-        return new AError(AErrorEnum.ServerException, "", dict)
+        return new AError(AErrorEnum.ClientThrow, "", dict)
     }
 }
 
