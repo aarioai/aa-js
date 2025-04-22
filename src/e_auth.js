@@ -4,7 +4,7 @@
 class AaAuth {
     name = 'aa-auth'
 
-    static NoTokenError = new AError(AErrorEnum.Unauthorized, 'no token')
+    static NoTokenError = new AError(ae.Unauthorized, 'no token')
 
     /** @type ()=>string */
     cookieDomainHandler
@@ -178,7 +178,7 @@ class AaAuth {
             return this.#token
         }).catch(err => {
             err = aerror(err)
-            if (!err.isServerErrors()) {
+            if (!err.isServerError()) {
                 this.clear()
             }
             err.log()
@@ -286,7 +286,7 @@ class AaAuth {
             }).then(_ => {
                 this.#sessionSetItem('checked', true)
             }).catch(err => {
-                if (err instanceof AError && !err.isServerErrors()) {
+                if (err instanceof AError && !err.isServerError()) {
                     this.clear()
                 }
                 log.warn(err.toString())

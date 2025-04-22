@@ -33,7 +33,7 @@ function APromiseResolve(data) {
  */
 function APromiseReject(err) {
     const error = !err || typeof err === "string" 
-        ? aerror(AErrorEnum.ClientThrow, err) 
+        ? aerror(ae.ClientThrow, err)
         : aerror(err);
     return Promise.reject(error);
 }

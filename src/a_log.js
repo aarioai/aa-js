@@ -174,7 +174,7 @@ function loge(...args) {
 
         // AError extends Error
         if (err instanceof AError) {
-            return err.noMatched() ?  log.debug(err.toString()) : log.error(err.toString())
+            return err.isNotFound() ?  log.debug(err.toString()) : log.error(err.toString())
         }
 
         if (err instanceof Error) {

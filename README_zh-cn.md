@@ -57,7 +57,7 @@ A Javascript SDK of AaGo
 | name           | type       | description                                                               |
 |----------------|------------|---------------------------------------------------------------------------|
 | aparam         | struct     | Keep-names of URL parameters                                              |
-| AErrorEnum     |            |                                                                           |
+| ae             |            |                                                                           |
 | BREAK          | string     | a signal from callback function to break forEach((value,key)) iterator    |
 | CONTINUE       | void       | return CONTINUE in a loop is not important, but better for people to read |
 | nif            | function   | nil function, a function does nothing                                     |

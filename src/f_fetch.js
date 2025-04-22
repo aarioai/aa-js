@@ -47,12 +47,12 @@ class AaFetch {
         // API不判断cookie，就不用考虑CSRF攻击
         return this.#auth.getAuthorization().then(authorization => {
             if (!authorization) {
-                throw new AError(AErrorEnum.Unauthorized, '', settings.dict)
+                throw new AError(ae.Unauthorized, '', settings.dict)
             }
             settings.headers[aparam.Authorization] = authorization
         }).catch(err => {
             if (settings.mustAuth) {
-                throw err instanceof AError ? err : new AError(AErrorEnum.Unauthorized, err.toString(), settings.dict)
+                throw err instanceof AError ? err : new AError(ae.Unauthorized, err.toString(), settings.dict)
             }
         })
     }
@@ -85,7 +85,7 @@ class AaFetch {
                 location.href = err.message // 特殊跳转
                 return
             }
-            if (err.isUnauthorized()) {
+            if (err.is(ae.Unauthorized)) {
                 if (typeof settings.onAuthError === "function" && settings.onAuthError(err)) {
                     return
                 }

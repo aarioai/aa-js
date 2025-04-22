@@ -1,5 +1,5 @@
 # https://github.com/aarioai/rules/blob/main/config/.gitignore
-# 2025-04-18
+# 2025-04-22
 
 # .aa-env, .aa-update
 .aa-*
@@ -8,7 +8,8 @@
 .DS_Store
 
 # jetbrain IDE config directory
-.idea
+# keep it
+#.idea
 
 # python venv
 .venv

@@ -88,7 +88,7 @@ let _aerrorDict_ = {
         "Client Throw"            : "客户端抛出异常", // 1000
     }
 };
-const AErrorEnum = {
+const ae = {
 
     Continue:100,
     SwitchingProtocols:101,
@@ -173,7 +173,7 @@ const AErrorEnum = {
             return _aerrorCode2MsgMap_
         }
         _aerrorCode2MsgMap_ = {}
-        for (const [key, value] of Object.entries(AErrorEnum)) {
+        for (const [key, value] of Object.entries(ae)) {
             // starts with BigCase
             if (typeof key !== "string" || !/^[A-Z][a-zA-Z]*$/.test(key)) {
                 continue
@@ -190,9 +190,9 @@ const AErrorEnum = {
      */
     code2Msg: function (code, dict = 'zh-CN') {
         code = number(code)
-        let m = AErrorEnum.getCode2MsgMap()
+        let m = ae.getCode2MsgMap()
         let s = m[code] ? m[code] : "Client Throw"
-        dict = AErrorEnum.getDict(dict)
+        dict = ae.getDict(dict)
         return dict[s] ? dict[s] : s
     },
 
@@ -204,7 +204,7 @@ const AErrorEnum = {
     getDict: function (dict = 'zh-CN') {
         if (!_aerrorDict_['en']) {
             _aerrorDict_['en'] = {}
-            for (const [key, value] of Object.entries(AErrorEnum)) {
+            for (const [key, value] of Object.entries(ae)) {
                 // starts with BigCase
                 if (typeof key !== "string" || !/^[A-Z][a-zA-Z]*$/.test(key)) {
                     continue
@@ -231,14 +231,14 @@ const AErrorEnum = {
      */
     translate: function (code, msg, dict = 'zh-CN') {
         if (!msg) {
-            return AErrorEnum.code2Msg(code, dict)
+            return ae.code2Msg(code, dict)
         }
         msg = string(msg)
-        dict = AErrorEnum.getDict(dict)
+        dict = ae.getDict(dict)
         if (dict[msg]) {
             return dict[msg]
         }
-        let arr = msg.matchAll(/Bad\s+Parameter:\s*(\w+)/ig)
+        let arr = msg.matchAll(/Bad\s+Param\w*\s*:\s*(\w+)/ig)
         for (const a of arr) {
             let p = dict[a[1]] ? dict[a[1]] : a[1]
             return fmt.translate(dict, "Bad Parameter: %s", p)
@@ -289,7 +289,7 @@ class AError extends Error {
     constructor(code, msg, dict) {
         if (code instanceof Error) {
             msg = code.toString()
-            code = AErrorEnum.ClientThrow
+            code = ae.ClientThrow
         } else if (!dict && typeof msg === "object") {
             dict = msg
             msg = ''
@@ -301,16 +301,16 @@ class AError extends Error {
     }
 
     isRawMessage(){
-        const rawMsg = AErrorEnum.code2Msg(this.code, 'en')
+        const rawMsg = ae.code2Msg(this.code, 'en')
         return !this.message || this.message === rawMsg
     }
     getMsg(lang = 'zh-CN') {
-        let dict = AErrorEnum.getDict(lang)
+        let dict = ae.getDict(lang)
         if (this.#dict) {
             dict = Object.assign(dict, this.#dict)
         }
         let heading = fmt.translate(dict, this.#heading)
-        let msg = AErrorEnum.translate(this.#code, this.message)
+        let msg = ae.translate(this.#code, this.message)
         let ending = fmt.translate(dict, this.#ending)
         if (heading) {
             heading += ' '
@@ -332,120 +332,27 @@ class AError extends Error {
     }
 
     is(code) {
-        return code === this.#code
+        return int32(code) === this.#code
     }
 
     isOK() {
         return this.#code >= 200 && this.#code < 300
     }
 
-    isServerErrors() {
+    isServerError() {
         return this.#code >= 500
     }
 
-    isNoContent() {
-        return this.is(AErrorEnum.NoContent)
-    }
-
-    isBadRequest() {
-        return this.is(AErrorEnum.BadRequest)
-    }
-
-    isUnauthorized() {
-        return this.is(AErrorEnum.Unauthorized)
-    }
-
-    isPaymentRequired() {
-        return this.is(AErrorEnum.PaymentRequired)
-    }
-
-    isForbidden() {
-        return this.is(AErrorEnum.Forbidden)
-    }
-
-    noMatched() {
-        return [AErrorEnum.NoRowsAvailable, AErrorEnum.NotFound, AErrorEnum.Gone].includes(this.#code)
-    }
-
-    isTimeout() {
-        return this.is(AErrorEnum.Timeout)
-    }
-
-    isConflict() {
-        return this.is(AErrorEnum.Conflict)
-    }
-
-    isGone() {
-        return this.is(AErrorEnum.Gone)
-    }
-
-    isPreconditionFailed() {
-        return this.is(AErrorEnum.PreconditionFailed)
-    }
-
-    isUnsupportedMediaType() {
-        return this.is(AErrorEnum.UnsupportedMediaType)
-    }
-
-    isLocked() {
-        return this.is(AErrorEnum.Locked)
-    }
-
-    isFailedDependency() {
-        return this.is(AErrorEnum.FailedDependency)
-    }
-
-    isTooEarly() {
-        return this.is(AErrorEnum.TooEarly)
-    }
-
-    isTooManyRequests() {
-        return this.is(AErrorEnum.TooManyRequests)
+    isNotFound() {
+        return [ae.NotFound, ae.Gone, ae.NoRowsAvailable].includes(this.#code)
     }
 
     isFailedAndSeeOther() {
-        return this.is(AErrorEnum.FailedAndSeeOther)
+        return this.is(ae.FailedAndSeeOther)
     }
-    isConflictWith() {
-        return this.is(AErrorEnum.ConflictWith)
-    }
-
-    isIllegal() {
-        return this.is(AErrorEnum.UnavailableForLegalReasons)
-    }
-
-    isInternalServerError() {
-        return this.is(AErrorEnum.InternalServerError)
-    }
-
-    isNotImplemented() {
-        return this.is(AErrorEnum.NotImplemented)
-    }
-
-    isBadGateway() {
-        return this.is(AErrorEnum.BadGateway)
-    }
-
-    isServerUnavailable() {
-        return this.is(AErrorEnum.ServerUnavailable)
-    }
-
-    isGatewayTimeout() {
-        return this.is(AErrorEnum.GatewayTimeout)
-    }
-
-
-    isException() {
-        return this.is(AErrorEnum.Exception)
-    }
-
-    isClientThrow() {
-        return this.is(AErrorEnum.ClientThrow)
-    }
-
 
     toString() {
-        if (this.code === AErrorEnum.BadRequest) {
+        if (this.code === ae.BadRequest) {
             return this.getMsg()
         }
         return this.getMsg() + ` (${this.code})`
@@ -467,7 +374,7 @@ class AError extends Error {
      */
     static alert(err) {
         if (err instanceof Error) {
-            err = new AError(AErrorEnum.ClientThrow, err.toString())
+            err = new AError(ae.ClientThrow, err.toString())
         }
         if (!(err instanceof AError)) {
             console.error(`AError.alert() invalid err `, err)
@@ -476,27 +383,27 @@ class AError extends Error {
     }
 
 
-    static newBadRequest(param, dict) {
-        return new AError(AErrorEnum.BadRequest, "Bad request `" + param + "`", dict)
+    static newBadParam(param, dict) {
+        return new AError(ae.BadRequest, "Bad Parameter: " + param, dict)
 
     }
 
     static parseResp(resp, dict) {
         if (!resp) {
-            return new AError(AErrorEnum.ClientThrow, "", dict)
+            return new AError(ae.ClientThrow, "", dict)
         }
         if (typeof resp === "string") {
             try {
                 resp = JSON.parse(resp.trim())
             } catch (e) {
-                return new AError(AErrorEnum.ClientThrow, "", dict)
+                return new AError(ae.ClientThrow, "", dict)
             }
         }
         if (resp && typeof resp === "object" && resp.hasOwnProperty("code") && resp.hasOwnProperty("msg")) {
             return new AError(resp['code'], resp['msg'], dict)
         }
 
-        return new AError(AErrorEnum.ClientThrow, "", dict)
+        return new AError(ae.ClientThrow, "", dict)
     }
 }
 

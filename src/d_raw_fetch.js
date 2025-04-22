@@ -297,7 +297,7 @@ class AaRawFetch {
                 return new Promise((resolve, reject) => {
                     log.warn(`${settings.method} ${url} is blocked by debounce`)
                     // 这种维持空 Promise 最好，避免业务端处理，比如清空缓存等
-                    //reject(new AError(AErrorEnum.TooManyRequests, settings.dict))
+                    //reject(new AError(ae.TooManyRequests, settings.dict))
                 })
             }
         }
@@ -332,14 +332,14 @@ class AaRawFetch {
             const method = string(settings, 'method', 'GET')
             if (method === 'HEAD') {
                 return {
-                    code: AErrorEnum.OK,
-                    msg : AErrorEnum.code2Msg(AErrorEnum.OK, settings.dict),
+                    code: ae.OK,
+                    msg : ae.code2Msg(ae.OK, settings.dict),
                 }
             }
             try {
                 return resp.json()
             } catch (error) {
-                throw new AError(AErrorEnum.ClientThrow, `response '${resp.text()}' is not valid JSON`, settings.dict)
+                throw new AError(ae.ClientThrow, `response '${resp.text()}' is not valid JSON`, settings.dict)
             }
         }).then(resp => {
             // 捕获返回数据，修改为 resp.data
@@ -349,7 +349,7 @@ class AaRawFetch {
             }
             return resp['data']
         }).catch(err => {
-            throw err instanceof AError ? err : new AError(AErrorEnum.ClientThrow, err.toString(), settings.dict)
+            throw err instanceof AError ? err : new AError(ae.ClientThrow, err.toString(), settings.dict)
         })
     }
 
