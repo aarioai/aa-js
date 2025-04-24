@@ -5,11 +5,18 @@
 /** @type {(null|struct)} */
 let _aerrorCode2MsgMap_ = null
 
+// @TODO 根据客户端不同，将分隔符替换为 \n 或 <br>
+const _ae_separator = " - "
+
 /** @type {{[key:string]:?struct}} */
 let _aerrorDict_ = {
     'en'   : null,  // will init later   必须要增加一个en模式的，这样直接匹配到可以直接输出
     'zh-CN': {
         "Bad Parameter: %s"    : "%s 输入错误",
+        "Too Short Parameter: %s":"%s 输入过短",
+        "Too Long Parameter: %s":"%s 输入过长",
+        "Wrong Password":"密码错误",
+        "Wrong Token":"Token 错误",
 
         "Continue": "",
         "Switching Protocols":"",
@@ -49,7 +56,7 @@ let _aerrorDict_ = {
         "Conflict"          : "异常冲突", // 409
         "Gone"              : "数据已被删除", // 410
         "Length Required":"缺少长度数据",
-        "Precondition Failed": "前置条件未满足", // 412
+        "Precondition Failed": "先决条件失败", // 412
         "Request Entity Too Large":"上传数据过大", // 413
         "Request URI Too Long":"请求地址错误",//414
         "Request Target Invalid":"请求目标错误", // 414
@@ -59,10 +66,10 @@ let _aerrorDict_ = {
         "Page Expired":"临时token已过期，请刷新页面",
         "Enhance Your Calm":"服务器繁忙，请稍后再试",
         "Locked"           : "资源已被锁定", // 423
-        "Failed dependency": "之前发生错误", // 424
+        "Failed dependency": "依赖失败", // 424
         "Too Early":"拒绝重放",
         "Upgrade Required":"客户端版本过低，强制升级",
-        "Precondition Required":"缺少前置",
+        "Precondition Required":"缺少先决条件",
         "Too Many Requests":"请求过于频繁",
 
         "Request Header Fields Too Large":"",
@@ -238,10 +245,22 @@ const ae = {
         if (dict[msg]) {
             return dict[msg]
         }
-        let arr = msg.matchAll(/Bad\s+Param\w*\s*:\s*(\w+)/ig)
+        let arr = msg.matchAll(/Bad\sParameter:\s*(\w+)/ig)
         for (const a of arr) {
             let p = dict[a[1]] ? dict[a[1]] : a[1]
             return fmt.translate(dict, "Bad Parameter: %s", p)
+        }
+
+        arr = msg.matchAll(/Too\sShort\sParameter:\s*(\w+)/ig)
+        for (const a of arr) {
+            let p = dict[a[1]] ? dict[a[1]] : a[1]
+            return fmt.translate(dict, "Too Short Parameter: %s", p)
+        }
+
+        arr = msg.matchAll(/Too\sLong\sParameter:\s*(\w+)/ig)
+        for (const a of arr) {
+            let p = dict[a[1]] ? dict[a[1]] : a[1]
+            return fmt.translate(dict, "Too Long Parameter: %s", p)
         }
 
         return msg
