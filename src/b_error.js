@@ -17,6 +17,10 @@ let _aerrorDict_ = {
         "Too Long Parameter: %s":"%s 输入过长",
         "Wrong Password":"密码错误",
         "Wrong Token":"Token 错误",
+        "Wrong Vericode":"验证码错误",
+        "Wrong Code":"校验码错误",
+        "Wrong Openid":"Openid 错误",
+        "Token Expired":"Token 已过期",
 
         "Continue": "",
         "Switching Protocols":"",
