@@ -1,5 +1,5 @@
 import {describe, expect, test} from "@jest/globals";
-import {joinWith, joinWithBlank, replaceAll, splitFirst} from "./strings";
+import {joinWith, joinWithBlank, replaceAll, splitFirst, tidySplit, trim, trimLeft, trimRight} from "./strings";
 
 describe('splitFirst', ()=> {
     test("splitFirst('hello-world-!', '-')", () => {
@@ -47,5 +47,35 @@ describe('replaceAll', ()=> {
             ["Aario","Tom"],
             ["Hi","Hello"],
     ])).toBe('I\'m Tom. Hello, Tom!')
+    })
+})
+
+describe('tidySplit', ()=> {
+    test("tidySplit('a, b , , c')", () => {
+        expect(tidySplit('a, b , , c')).toEqual(['a', 'b', 'c'])
+    })
+    test("tidySplit('  one  two  three  ', /\s+/)", () => {
+        expect(tidySplit('  one  two  three  ', /\s+/)).toEqual(['one', 'two', 'three'])
+    })
+})
+
+describe('trim', ()=> {
+    test("trimLeft('   Aario   ')", () => {
+        expect(trimLeft('   Aario   ')).toBe('Aario   ')
+    })
+    test("trimLeft('000  Aario   ', '0')", () => {
+        expect(trimLeft('000  Aario   ', '0')).toBe('  Aario   ')
+    })
+    test("trimLeft('010101  Aario   ', '01')", () => {
+        expect(trimLeft('010101  Aario   ', '01')).toBe('  Aario   ')
+    })
+    test("trimRight('   Aario   ')", () => {
+        expect(trimRight('   Aario   ')).toBe('   Aario')
+    })
+    test("trimRight('   Aario  1010')", () => {
+        expect(trimRight('   Aario   1010', '10')).toBe('   Aario   ')
+    })
+    test("trim('  Aario   ')", () => {
+        expect(trim('  Aario   ')).toBe('Aario')
     })
 })

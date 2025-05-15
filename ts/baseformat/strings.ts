@@ -149,3 +149,63 @@ export function replaceAll(s:string, searchValue:searchType, replaceValue?:strin
     }
     return s;
 }
+
+
+/**
+ * Splits a string by separator, trims each part, and removes empty strings
+ *
+ *
+ * @example
+ * tidySplit('a, b , , c', ',')       // ['a', 'b', 'c']
+ * tidySplit('  one  two  three  ', /\s+/) // ['one', 'two', 'three']
+ * tidySplit('a|b|c|d', '|', 2)      // ['a', 'b']
+ */
+export function tidySplit(s :string, separator:string|RegExp=',', limit?:number){
+    return s ? s.split(separator, limit).map(part=>part.trim()).filter(part => part.length>0):[]
+}
+
+
+export function trimRight(s:string, cut:string|number = ' ', cutLen?:number) {
+    const cutstr=String(cut)
+    const cutLength = cutstr.length;
+
+    if (!s || s.length < cutLength) {
+        return s;
+    }
+
+    cutLen = cutLen || s.length;
+    let endIndex = s.length;
+
+    while (cutLen > 0 && endIndex >= cutLength &&
+    s.substring(endIndex - cutLength, endIndex) === cutstr) {
+        cutLen--;
+        endIndex -= cutLength;
+    }
+
+    return endIndex < 1 ? '' : s.substring(0, endIndex);
+}
+
+
+export function trimLeft(s:string, cut:string|number = ' ', cutLen?:number) {
+    const cutstr = String(cut)
+    const cutLength = cutstr.length;
+
+    if (!s || s.length < cutLength) {
+        return s;
+    }
+
+    cutLen = cutLen>0 ? cutLen : s.length;
+    let startIndex = 0;
+
+    while (cutLen > 0 && startIndex <= s.length - cutLength &&
+    s.substring(startIndex, startIndex + cutLength) === cut) {
+        cutLen--;
+        startIndex += cutLength;
+    }
+
+    return startIndex > s.length - 1 ? '' : s.substring(startIndex);
+}
+
+export function trim(s:string, cut:string|number = ' ', cutLen?:number) {
+    return trimRight(trimLeft(s,cut,cutLen), cutLen)
+}
