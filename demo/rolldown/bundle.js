@@ -1,0 +1,1 @@
+var e=(e,t)=>()=>(e&&(t=e(e=0)),t),t=(e,t)=>()=>(t||e((t={exports:{}}).exports,t),t.exports),n,r,i,a=e(()=>{n=`-.../.-././.-/-.-`,r=()=>void 0,i=new Promise(r)});function o(){console.log(n)}var s=e(()=>{a()}),c=t(()=>{s(),o()});export default c();
