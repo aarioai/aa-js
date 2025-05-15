@@ -1,11 +1,12 @@
 import {defineConfig} from 'tsdown'
 
 export default defineConfig({
-    entry: ['./src'],
+    entry: ['./ts'],
     minify: false,
     silent:true,
     platform:'browser',
-    exclude: [
-        '**/*.test.{js,ts,tsx}'
-    ],
+    // exclude: [
+    //     '**/*.test.{js,ts,tsx}'
+    // ],
+    outDir: 'js',
 })

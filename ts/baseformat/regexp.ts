@@ -6,13 +6,12 @@
  * @returns {string} A regex-safe string with all special characters properly escaped
  *
  * @example
- * escapeRegexChars('file.txt')       // Returns 'file\\.txt'
- * escapeRegexChars('price: $100.00') // Returns 'price\\: \\$100\\.00'
+ * escapeRegexChars(/\d+/.source)       // Returns '\\\\d\\+'
+ * escapeRegexChars(/^\w+/ig.source) // Returns '\\^\\\\w\\+'
  */
 export function escapeRegExpChars(s:string) :string{
-    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    return s.replace(/[.*+?^${}()|\[\]\\]/g, '\\$&')
 }
-
 
 export function escapeRegExp(s:string, flags?:string) :RegExp{
     return new RegExp(escapeRegExpChars(s), flags)

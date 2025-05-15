@@ -1,5 +1,5 @@
 import {describe, expect, test} from '@jest/globals';
-import {a_array, a_bool, a_dict, a_func, a_string} from "./types_extend";
+import {a_array, a_bool, a_dict, a_func, a_number, a_string, uint16, uint8} from "./atype_extend";
 
 describe('a_array', ()=>{
     test('a_array null', ()=>{
@@ -131,31 +131,40 @@ describe('a_string', ()=>{
     test('a_string {"a":100,"b":200}', ()=>{
         expect( a_string({"a":100,"b":200})).toBe('{"a":100,"b":200}')
     })
+
+
+    class StringTester {
+        toString(){
+            return "toString()"
+        }
+        toJSON(){
+            return "toJSON()"
+        }
+    }
+
+    test('a_string class', ()=>{
+        expect( a_string(new StringTester())).toBe('toJSON()')
+    })
 })
 
 describe('a_number', ()=>{
-    test('a_string null', ()=>{
-        expect(a_string(null)).toBe('')
+    test('a_number null', ()=>{
+        expect(a_number(null)).toBe(0)
     })
-    test('a_string undefined', ()=>{
-        expect(a_string(undefined)).toBe('')
+    test('a_number undefined', ()=>{
+        expect(a_number(undefined)).toBe(0)
     })
-    test('a_string false', ()=>{
-        expect( a_string(false)).toBe('false')
+    test('a_number .300', ()=>{
+        expect( a_number(".300")).toBe(0.3)
     })
-    test('a_string 1', ()=>{
-        expect( a_string(1)).toBe('1')
+    test('a_number .25', ()=>{
+        expect( a_number(.25)).toBe(0.25)
     })
-    test('a_string []', ()=>{
-        expect(a_string([])).toBe('[]')
+    test('uint8 -1', ()=>{
+        expect(()=>uint8(-1)).toThrow(RangeError)
     })
-    test('a_string [a,b,c]', ()=>{
-        expect(a_string(["a","b","c"])).toBe('["a","b","c"]')
+    test('uint16 "-1"', ()=>{
+        expect(()=>uint16("-1")).toThrow(RangeError)
     })
-    test('a_string {}', ()=>{
-        expect( a_string({})).toBe('{}')
-    })
-    test('a_string {"a":100,"b":200}', ()=>{
-        expect( a_string({"a":100,"b":200})).toBe('{"a":100,"b":200}')
-    })
+
 })

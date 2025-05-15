@@ -19,7 +19,7 @@ import {
     t_string,
     t_undefined,
     TypeAlias
-} from "./types";
+} from "./atype";
 
 describe('objectAtype', ()=>{
     test('objectAtype null', ()=>{

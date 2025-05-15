@@ -12,7 +12,7 @@ import {
     MinInt32,
     MinInt8,
     Nif
-} from "./types";
+} from "./atype";
 import {jsonify} from "./base";
 
 function inRange(value:number, min:number,max:number, name:string):number {
@@ -137,50 +137,50 @@ export function a_string(value:unknown):string{
     return String(value)
 }
 
-export function a_number(v?:[number|string]):number {
+export function a_number(v?:number|string):number {
     return Number(v ? v : 0)
 }
 
-export function float64(v?:[number|string]):number {
+export function float64(v?:number|string):number {
     return Number(v)
 }
-export function float32(v?:[number|string]):number {
+export function float32(v?:number|string):number {
     return float64(v)
 }
 
-export function int54(v?:[number|string]):number {
+export function int54(v?:number|string):number {
     return Math.floor(a_number(v))
 }
 
-export function int32(v?:[number|string]):number {
+export function int32(v?:number|string):number {
     return inRange(a_number(v), MinInt32, MaxInt32, 'int32')
 }
 
-export function int24(v?:[number|string]):number {
+export function int24(v?:number|string):number {
     return inRange(a_number(v), MinInt24, MaxInt24, 'int24')
 }
 
-export function int16(v?:[number|string]):number {
+export function int16(v?:number|string):number {
     return inRange(a_number(v), MinInt16, MaxInt16, 'int16')
 }
 
-export function int8(v?:[number|string]):number {
+export function int8(v?:number|string):number {
     return inRange(a_number(v), MinInt8, MaxInt8, 'int8')
 }
 
-export function uint32(v?:[number|string]):number {
+export function uint32(v?:number|string):number {
     return inRange(a_number(v), 0, MaxUint32, 'uint32')
 }
 
-export function uint24(v?:[number|string]):number {
+export function uint24(v?:number|string):number {
     return inRange(a_number(v), 0, MaxUint24, 'uint24')
 }
 
-export function uint16(v?:[number|string]):number {
+export function uint16(v?:number|string):number {
     return inRange(a_number(v), 0, MaxUint16, 'uint16')
 }
 
-export function uint8(v?:[number|string]):number {
+export function uint8(v?:number|string):number {
     return inRange(a_number(v), 0, MaxUint8, 'uint8')
 }
 

@@ -1,16 +1,6 @@
 {
   "name": "aa-js",
   "version": "0.0.1",
-  "description": "compact to airis go server code",
-  "homepage": "https://github.com/aarioai/aa-js#readme",
-  "bugs": {
-    "url": "https://github.com/aarioai/aa-js/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/aarioai/aa-js.git"
-  },
-  "license": "ISC",
   "author": "Aario",
   "type": "module",
   "scripts": {

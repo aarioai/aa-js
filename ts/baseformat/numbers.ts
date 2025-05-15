@@ -10,7 +10,7 @@
  * trimFloat(1.2000, 4)  -->  '1.2'
  * trimFloat(1.2340, 4) --> '1.234'
  */
-export function trimFloat(value :[number|string], digits ?:number):string{
+export function trimFloat(value :number|string, digits ?:number):string{
     const v =digits !== undefined ?  Number(value).toFixed(digits): String(value)
     return v.replace(/\.?0*$/, '')
 }
@@ -19,16 +19,16 @@ export function trimFloat(value :[number|string], digits ?:number):string{
  * Formats a number with specified precision and a thousand separators
  *
  * @example
- * formatNumber(1234567.89, 2);    // Returns "1,234,567.89"
- * formatNumber('1234567', 0, ' '); // Returns "1 234 567"
- * formatNumber('NaN');             // Returns "NaN" (for non-finite numbers)
+ * formatNumber(1234567.89, 2)      // Returns "1,234,567.89"
+ * formatNumber('1234567', 0, ' ')  // Returns "1 234 567"
  */
-export function formatNumber(value:[number|string], precision=0, separator =','):string{
-    if (!Number.isFinite(value)) {
-        return String(value);
+export function formatNumber(value:number|string, precision=0, separator =','):string{
+    const v =Number(value)
+    if (!Number.isFinite(v)) {
+        return '0'
     }
 
-    const [int, dec] = this.toFixed(precision).split('.');
+    const [int, dec] = v.toFixed(precision).split('.');
     const formattedInt = int.replace(/\B(?=(\d{3})+(?!\d))/g, separator);
     return dec ? `${formattedInt}.${dec}` : formattedInt;
 }

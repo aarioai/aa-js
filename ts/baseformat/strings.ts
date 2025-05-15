@@ -14,11 +14,11 @@
  *            [2] Boolean indicating if split occurred
  *
  * @example
- * splitFirst('hello-world', '-')  // Returns ['hello', 'world', true]
+ * splitFirst('hello-world-!', '-')  // Returns ['hello', 'world-!', true]
  * splitFirst('no_split', 'x')    // Returns ['no_split', '', false]
  * splitFirst('a:b:c', ':')       // Returns ['a', 'b:c', true]
  */
-export function splitFirst(s:string, separator:[string|number]):[string, string, boolean] {
+export function splitFirst(s:string, separator:string|number = ','):[string, string, boolean] {
     const sep = String(separator)
     const index = s.indexOf(sep);
     return index >= 0
@@ -66,6 +66,13 @@ export function joinWithBlank(...args:string[]):string{
     return joinWith(' ', ...args);
 }
 
+type searchType =
+    |string
+    |RegExp
+    |Array<[string|RegExp, string|number]>
+    |Array<[string|RegExp, string|number]>[]
+    |{[key:string]:string|number}
+
 /**
  * Normalizes different replacement value formats into a consistent array of [search, replace] tuples.
  * Handles multiple input formats:
@@ -73,10 +80,6 @@ export function joinWithBlank(...args:string[]):string{
  * - Array of search values (converted to search/replace pairs)
  * - Object of key/value replacements
  * - Array of [search, replace] tuples (passed through)
- *
- * @param {any} searchValue - The search value(s) to normalize
- * @param {any} replaceValue - The replacement value (used when searchValue isn't a collection)
- * @returns {[string, string][]} Array of [search, replace] string tuples
  *
  * @example
  * // Single replacement
@@ -91,31 +94,57 @@ export function joinWithBlank(...args:string[]):string{
  * // Already normalized array
  * normalizeReplacements([['a', '1'], ['b', '2']]) // => [['a', '1'], ['b', '2']]
  */
-function normalizeReplacements(searchValue:any, replaceValue:any):[string, string][] {
+function normalizeReplacements(searchValue:searchType, replaceValue?:string|number):[string|RegExp, string][] {
     if (Array.isArray(searchValue)) {
-        return searchValue.length > 0 && Array.isArray(searchValue[0])
-            ? searchValue
-            : [searchValue];
-    }
+        // Array<[string|RegExp, string|number]>
+        if(!Array.isArray(searchValue[0])) {
+            return [[searchValue[0], String(searchValue[1])]];
+        }
 
+        // Array<[string|RegExp, string|number]>[]
+        let result :[string|RegExp, string][] = new Array(searchValue.length);
+        for (let i=0;i< searchValue.length;i++){
+            const v = searchValue[i] as [string|RegExp, string|number]
+            result[i]=[v[0], String(v[1])]
+        }
+        return result
+    }
+        // {k:string|RegExp; v:string|number}
     if (typeof searchValue === 'object' && !(searchValue instanceof RegExp)) {
-        return Object.entries(searchValue);
+        const arr = Object.entries(searchValue)
+        let result :[string|RegExp, string][] = new Array(arr.length);
+        for (let i=0;i< arr.length;i++){
+            const v = arr[i]
+            result[i]=[v[0], String(v[1])]
+        }
+        return result;
     }
 
-    return [[searchValue, replaceValue]];
+    return [[searchValue, String(replaceValue)]];
 }
 
-export function replaceAll(s:string, searchValue:any, replaceValue:any) {
-     const replacements =  normalizeReplacements( searchValue, replaceValue);
+/**
+ * Replaces all matched values
+ *
+ * @example
+ *  replaceAll("I'm Aario. Hi, Aario!", "Aario", "Tom")  ==> I'm Tom. Hi, Tom!
+ *  replaceAll("I'm Aario. Hi, Aario!", {
+ *      "Aario": "Tom",
+ *      "Hi": "Hello",
+ *  })  ====>  I'm Tom. Hello, Tom!
+ *  replaceAll("I'm Aario. Hi, Aario!", [["Aario", "Tom"],["Hi","Hello"]])  ====>  I'm Tom. Hello, Tom!
+ */
+export function replaceAll(s:string, searchValue:searchType, replaceValue?:string|number) {
+     const replacements =  normalizeReplacements(searchValue, replaceValue);
 
     for (const [search, replace] of replacements) {
         if (search instanceof RegExp) {
             if (!search.flags.includes('g')) {
                 throw new TypeError('replaceAll must be called with a global RegExp');
             }
-            s = s.replace(search, replace);
+            s = s.replace(search, replace)
         } else {
-            s = s.split(search).join(replace);
+            s = s.split(search).join(replace)
         }
     }
     return s;
