@@ -18,3 +18,24 @@ tsdown --minify # 压缩
 
 tsdown --silent # 屏蔽非错误日志
 ```
+
+
+## jest
+
+```
+expect(a).toMatch(b:RegExp)  // b.test(a)
+expect(a:Set).toContain(b)  // a.contains(b)   a = new Set([])
+expect(()=>a()).toThrow(t?:[string|Error|TypeError|RegExp])
+
+expect(a).toEqual(b)  // 深度比较 a == b，一般适用对象、数组
+expect(a).toBe(b)   // a === b
+expect(a).toBeGreaterThan(b)  // a>b
+expect(a).toBeGreaterThanOrEqual(b)  // a>=b
+expect(a).toBeLessThan(b)  // a<b
+expect(a).toBeLessThanOrEqual(b)  // a<=b
+expect(a).toBeNull()
+expect(a).toBeDefined()
+expect(a).toBeUndefined()
+expect(a).toBeTruthy()
+expect(a).toBeFalsy()
+```
