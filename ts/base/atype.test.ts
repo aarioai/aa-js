@@ -21,175 +21,183 @@ import {
     TypeAlias
 } from "./atype";
 
-describe('objectAtype', ()=>{
-    test('objectAtype null', ()=>{
+describe('objectAtype', () => {
+    test('objectAtype null', () => {
         expect(objectAtype(null)).toBe(t_null)
     })
 
-    test('objectAtype new Date()', ()=>{
+    test('objectAtype new Date()', () => {
         expect(objectAtype(new Date())).toBe(t_date)
     })
 
-    test('objectAtype new Map()', ()=>{
+    test('objectAtype new Map()', () => {
         expect(objectAtype(new Map())).toBe(t_map)
     })
 
-    test('objectAtype new Set()', ()=>{
+    test('objectAtype new Set()', () => {
         expect(objectAtype(new Set())).toBe(t_set)
     })
 
-    test('objectAtype {a: 1, b: 2n}', ()=>{
+    test('objectAtype {a: 1, b: 2n}', () => {
         expect(objectAtype({a: 1, b: 2n})).toBe(t_dict)
     })
 })
 
-describe('atype', ()=>{
-    test('atype [1, "2", 3]', ()=>{
+describe('atype', () => {
+    test('atype [1, "2", 3]', () => {
         expect(atype([1, "2", 3])).toBe(t_array)
     })
 
-    test('atype 1n', ()=>{
+    test('atype 1n', () => {
         expect(atype(1n)).toBe(t_bigint)
     })
 
-    test('atype true', ()=>{
+    test('atype true', () => {
         expect(atype(true)).toBe(t_boolean)
     })
 
-    test('atype A{}', ()=>{
-        class A{}
+    test('atype A{}', () => {
+        class A {
+        }
+
         expect(atype(new A())).toBe(t_class)
     })
 
-    test('atype f()', ()=>{
-        function f(){}
+    test('atype f()', () => {
+        function f() {
+        }
+
         expect(atype(f)).toBe(t_function)
     })
 
-    test('atype str', ()=>{
+    test('atype str', () => {
         expect(atype("str")).toBe(t_string)
     })
 
-    test('atype regexp', ()=>{
+    test('atype regexp', () => {
         expect(atype(new RegExp(/^\d+$/))).toBe(t_regexp)
     })
 
-    test('atype undefined', ()=>{
+    test('atype undefined', () => {
         expect(atype(undefined)).toBe(t_undefined)
     })
 
-    test('atype null', ()=>{
+    test('atype null', () => {
         expect(atype(null)).toBe(t_null)
     })
 
-    test('atype new Date()', ()=>{
+    test('atype new Date()', () => {
         expect(atype(new Date())).toBe(t_date)
     })
 
-    test('atype new Map()', ()=>{
+    test('atype new Map()', () => {
         expect(atype(new Map())).toBe(t_map)
     })
 
-    test('atype new Set()', ()=>{
+    test('atype new Set()', () => {
         expect(atype(new Set())).toBe(t_set)
     })
 
-    test('atype {a: 1, b: 2n}', ()=>{
+    test('atype {a: 1, b: 2n}', () => {
         expect(atype({a: 1, b: 2n})).toBe(t_dict)
     })
 })
 
-describe('isZil', ()=>{
-    test('isZil 0', ()=>{
+describe('isZil', () => {
+    test('isZil 0', () => {
         expect(isZil(0)).toBe(true)
     })
-    test('isZil 0.0', ()=>{
+    test('isZil 0.0', () => {
         expect(isZil(0.0)).toBe(true)
     })
-    test('isZil null', ()=>{
+    test('isZil null', () => {
         expect(isZil(null)).toBe(true)
     })
-    test('isZil undefined', ()=>{
+    test('isZil undefined', () => {
         expect(isZil(undefined)).toBe(true)
     })
-    test('isZil ""', ()=>{
+    test('isZil ""', () => {
         expect(isZil('')).toBe(true)
     })
-    test('isZil []', ()=>{
+    test('isZil []', () => {
         expect(isZil([])).toBe(true)
     })
-    test('isZil {}', ()=>{
+    test('isZil {}', () => {
         expect(isZil({})).toBe(true)
     })
-    test('isZil [0]', ()=>{
-        expect(isZil( [0])).toBe(false)
+    test('isZil [0]', () => {
+        expect(isZil([0])).toBe(false)
     })
-    test('isZil {"A":false}', ()=>{
-        expect(isZil({"A":false})).toBe(false)
+    test('isZil {"A":false}', () => {
+        expect(isZil({"A": false})).toBe(false)
     })
-    test('isZil false', ()=>{
+    test('isZil false', () => {
         expect(isZil(false)).toBe(true)
     })
-    test('isZil true', ()=>{
+    test('isZil true', () => {
         expect(isZil(true)).toBe(false)
     })
-    test('isZil 1', ()=>{
+    test('isZil 1', () => {
         expect(isZil(1)).toBe(false)
     })
 })
 
 
-describe('atypeAlias', ()=>{
-    test('atypeAlias []', ()=>{
+describe('atypeAlias', () => {
+    test('atypeAlias []', () => {
         expect(atypeAlias([])).toBe(TypeAlias[t_array])
     })
-    test('atypeAlias true', ()=>{
+    test('atypeAlias true', () => {
         expect(atypeAlias(true)).toBe(TypeAlias[t_boolean])
     })
-    test('atypeAlias false', ()=>{
+    test('atypeAlias false', () => {
         expect(atypeAlias(false)).toBe(TypeAlias[t_boolean])
     })
-    test('atypeAlias A{}', ()=>{
-        class A{}
+    test('atypeAlias A{}', () => {
+        class A {
+        }
+
         expect(atypeAlias(new A())).toBe(TypeAlias[t_class])
     })
-    test('atypeAlias new Date()', ()=>{
+    test('atypeAlias new Date()', () => {
         expect(atypeAlias(new Date())).toBe(TypeAlias[t_date])
     })
-    test('atypeAlias {}', ()=>{
+    test('atypeAlias {}', () => {
         expect(atypeAlias({})).toBe(TypeAlias[t_dict])
     })
 
-    test('atypeAlias 0', ()=>{
+    test('atypeAlias 0', () => {
         expect(atypeAlias(0)).toBe(TypeAlias[t_number])
     })
-    test('atypeAlias fn()', ()=>{
-        function f(){}
+    test('atypeAlias fn()', () => {
+        function f() {
+        }
+
         expect(atypeAlias(f)).toBe(TypeAlias[t_function])
     })
-    test('atypeAlias null', ()=>{
+    test('atypeAlias null', () => {
         expect(atypeAlias(null)).toBe(TypeAlias[t_null])
     })
 
-    test('atypeAlias new Map()', ()=>{
+    test('atypeAlias new Map()', () => {
         expect(atypeAlias(new Map())).toBe(TypeAlias[t_map])
     })
-    test('atypeAlias 1n', ()=>{
+    test('atypeAlias 1n', () => {
         expect(atypeAlias(1n)).toBe(TypeAlias[t_bigint])
     })
-    test('atypeAlias new RegExp', ()=>{
+    test('atypeAlias new RegExp', () => {
         expect(atypeAlias(new RegExp(/^\d+$/ig))).toBe(TypeAlias[t_regexp])
     })
-    test('atypeAlias ""', ()=>{
+    test('atypeAlias ""', () => {
         expect(atypeAlias('')).toBe(TypeAlias[t_string])
     })
-    test('atypeAlias string', ()=>{
+    test('atypeAlias string', () => {
         expect(atypeAlias('string')).toBe(TypeAlias[t_string])
     })
-    test('atypeAlias new Set()', ()=>{
+    test('atypeAlias new Set()', () => {
         expect(atypeAlias(new Set())).toBe(TypeAlias[t_set])
     })
-    test('atypeAlias undefined', ()=>{
+    test('atypeAlias undefined', () => {
         expect(atypeAlias(undefined)).toBe(TypeAlias[t_undefined])
     })
 })

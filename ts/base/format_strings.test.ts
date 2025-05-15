@@ -1,18 +1,18 @@
 import {describe, expect, test} from "@jest/globals";
-import {joinWith, joinWithBlank, replaceAll, splitFirst, tidySplit, trim, trimLeft, trimRight} from "./strings";
+import {joinWith, joinWithBlank, replaceAll, splitFirst, tidySplit, trim, trimLeft, trimRight} from "./format_strings";
 
-describe('splitFirst', ()=> {
+describe('splitFirst', () => {
     test("splitFirst('hello-world-!', '-')", () => {
         expect(splitFirst('hello-world-!', '-')).toEqual(['hello', 'world-!', true])
     })
 
     test("splitFirst('hello-world', '_')", () => {
-        expect(splitFirst('hello-world', '_')).toEqual(['hello-world', '',false])
+        expect(splitFirst('hello-world', '_')).toEqual(['hello-world', '', false])
     })
 })
 
 
-describe('joinWith', ()=> {
+describe('joinWith', () => {
     test("joinWith(', ', ' apple', null, 'banana ', 100, '', undefined)", () => {
         expect(joinWith(', ', ' apple', null, 'banana ', 100, '', undefined)).toBe('apple, banana, 100')
     })
@@ -31,26 +31,26 @@ describe('joinWith', ()=> {
 })
 
 
-describe('replaceAll', ()=> {
+describe('replaceAll', () => {
     test("replaceAll('I\'m Aario. Hi, Aario!', 'Aario', 'Tom')", () => {
         expect(replaceAll('I\'m Aario. Hi, Aario!', 'Aario', 'Tom')).toBe('I\'m Tom. Hi, Tom!')
     })
     test("replaceAll('I\'m Aario. Hi, Aario!', {\"Aario\":\"Tom\", \"Hi\":\"Hello\"})", () => {
         expect(replaceAll('I\'m Aario. Hi, Aario!', {
-            "Aario":"Tom",
-            "Hi":"Hello",
+            "Aario": "Tom",
+            "Hi": "Hello",
         })).toBe('I\'m Tom. Hello, Tom!')
     })
 
     test("replaceAll('I\'m Aario. Hi, Aario!', [[\"Aario\",\"Tom\"], [\"Hi\",\"Hello\"]])", () => {
         expect(replaceAll('I\'m Aario. Hi, Aario!', [
-            ["Aario","Tom"],
-            ["Hi","Hello"],
-    ])).toBe('I\'m Tom. Hello, Tom!')
+            ["Aario", "Tom"],
+            ["Hi", "Hello"],
+        ])).toBe('I\'m Tom. Hello, Tom!')
     })
 })
 
-describe('tidySplit', ()=> {
+describe('tidySplit', () => {
     test("tidySplit('a, b , , c')", () => {
         expect(tidySplit('a, b , , c')).toEqual(['a', 'b', 'c'])
     })
@@ -59,7 +59,7 @@ describe('tidySplit', ()=> {
     })
 })
 
-describe('trim', ()=> {
+describe('trim', () => {
     test("trimLeft('   Aario   ')", () => {
         expect(trimLeft('   Aario   ')).toBe('Aario   ')
     })

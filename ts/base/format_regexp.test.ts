@@ -1,12 +1,12 @@
 import {describe, expect, test} from "@jest/globals";
-import {escapeRegExp, escapeRegExpChars} from "./regexp";
+import {escapeRegExp, escapeRegExpChars} from "./format_regexp";
 
-describe('escapeRegExp', ()=>{
-    test('escapeRegExpChars \\d+', ()=>{
+describe('escapeRegExp', () => {
+    test('escapeRegExpChars \\d+', () => {
         expect(escapeRegExpChars(/\d+/.source)).toBe('\\\\d\\+')
     })
 
-    test('escapeRegExpChars /^\\w+/ig', ()=>{
+    test('escapeRegExpChars /^\\w+/ig', () => {
         expect(escapeRegExpChars(/^\w+/ig.source)).toBe('\\^\\\\w\\+')
     })
 
