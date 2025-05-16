@@ -1,5 +1,5 @@
 import {describe, expect, test} from "@jest/globals";
-import {joinWith, joinWithBlank, replace, splitFirst, tidySplit, trim, trimLeft, trimRight} from "./format_strings";
+import {joinWith, joinWithSpace, replace, splitFirst, tidySplit, trim, trimLeft, trimRight} from "./format_strings";
 
 describe('splitFirst', () => {
     test("splitFirst('hello-world-!', '-')", () => {
@@ -25,7 +25,7 @@ describe('joinWith', () => {
     })
 
     test("joinWithBlank('/', '2025', '05', '15')", () => {
-        expect(joinWithBlank('2025', '05', '15')).toBe('2025 05 15')
+        expect(joinWithSpace('2025', '05', '15')).toBe('2025 05 15')
     })
 
 })

@@ -59,10 +59,10 @@ export function joinWith(separator: string, ...args: any[]): string {
 }
 
 /**
- * Joins non-empty values with a blank
+ * Joins non-empty values with a whitespace
  * @param args
  */
-export function joinWithBlank(...args: string[]): string {
+export function joinWithSpace(...args: string[]): string {
     return joinWith(' ', ...args);
 }
 
@@ -130,7 +130,6 @@ function normalizeReplacements(reps: replacements): [string | RegExp, string][] 
  */
 export function replace(s: string, reps: replacements, all: boolean = true): string {
     const replacements = normalizeReplacements(reps);
-
     for (let [search, replace] of replacements) {
         if (all && typeof search === 'string') {
             s = s.replaceAll(search, replace);
