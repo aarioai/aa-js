@@ -1,5 +1,5 @@
 import {describe, expect, test} from "@jest/globals";
-import {joinWith, joinWithBlank, replaceAll, splitFirst, tidySplit, trim, trimLeft, trimRight} from "./format_strings";
+import {joinWith, joinWithBlank, replace, splitFirst, tidySplit, trim, trimLeft, trimRight} from "./format_strings";
 
 describe('splitFirst', () => {
     test("splitFirst('hello-world-!', '-')", () => {
@@ -31,19 +31,16 @@ describe('joinWith', () => {
 })
 
 
-describe('replaceAll', () => {
-    test("replaceAll('I\'m Aario. Hi, Aario!', 'Aario', 'Tom')", () => {
-        expect(replaceAll('I\'m Aario. Hi, Aario!', 'Aario', 'Tom')).toBe('I\'m Tom. Hi, Tom!')
-    })
-    test("replaceAll('I\'m Aario. Hi, Aario!', {\"Aario\":\"Tom\", \"Hi\":\"Hello\"})", () => {
-        expect(replaceAll('I\'m Aario. Hi, Aario!', {
+describe('replace', () => {
+    test("replace('I\'m Aario. Hi, Aario!', {\"Aario\":\"Tom\", \"Hi\":\"Hello\"})", () => {
+        expect(replace('I\'m Aario. Hi, Aario!', {
             "Aario": "Tom",
             "Hi": "Hello",
         })).toBe('I\'m Tom. Hello, Tom!')
     })
 
-    test("replaceAll('I\'m Aario. Hi, Aario!', [[\"Aario\",\"Tom\"], [\"Hi\",\"Hello\"]])", () => {
-        expect(replaceAll('I\'m Aario. Hi, Aario!', [
+    test("replace('I\'m Aario. Hi, Aario!', [[\"Aario\",\"Tom\"], [\"Hi\",\"Hello\"]])", () => {
+        expect(replace('I\'m Aario. Hi, Aario!', [
             ["Aario", "Tom"],
             ["Hi", "Hello"],
         ])).toBe('I\'m Tom. Hello, Tom!')

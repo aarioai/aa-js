@@ -1,9 +1,9 @@
 import {defineConfig} from 'tsdown'
 
 export default defineConfig({
-    entry: ['./ts', '!**/*.test.{js,ts,tsx}'],
+    entry: ['./src', '!**/*.test.{js,ts,tsx}'],
     minify: false,
-    silent:true,
-    platform:'browser',
-    outDir: 'js',
+    silent: true,
+    platform: 'browser',
+    outDir: 'dist/js',
 })

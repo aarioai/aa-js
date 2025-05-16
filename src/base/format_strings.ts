@@ -18,7 +18,7 @@
  * splitFirst('no_split', 'x')    // Returns ['no_split', '', false]
  * splitFirst('a:b:c', ':')       // Returns ['a', 'b:c', true]
  */
-export function splitFirst(s:string, separator:string|number = ','):[string, string, boolean] {
+export function splitFirst(s: string, separator: string | number = ','): [string, string, boolean] {
     const sep = String(separator)
     const index = s.indexOf(sep);
     return index >= 0
@@ -43,7 +43,7 @@ export function splitFirst(s:string, separator:string|number = ','):[string, str
  * joinWith(' - ', 'Hello', 'World')                          // Returns "Hello - World"
  * joinWith('/', '2023', '05', '15')                         // Returns "2023/05/15"
  */
-export function joinWith(separator:string, ...args: any[]  ):string{
+export function joinWith(separator: string, ...args: any[]): string {
     const validValues: string[] = [];
 
     for (const arg of args) {
@@ -62,16 +62,14 @@ export function joinWith(separator:string, ...args: any[]  ):string{
  * Joins non-empty values with a blank
  * @param args
  */
-export function joinWithBlank(...args:string[]):string{
+export function joinWithBlank(...args: string[]): string {
     return joinWith(' ', ...args);
 }
 
-type searchType =
-    |string
-    |RegExp
-    |Array<[string|RegExp, string|number]>
-    |Array<[string|RegExp, string|number]>[]
-    |{[key:string]:string|number}
+type replacements =
+    | Array<[string | RegExp, string | number]>
+    | Array<[string | RegExp, string | number]>[]
+    | { [key: string]: string | number }
 
 /**
  * Normalizes different replacement value formats into a consistent array of [search, replace] tuples.
@@ -94,62 +92,54 @@ type searchType =
  * // Already normalized array
  * normalizeReplacements([['a', '1'], ['b', '2']]) // => [['a', '1'], ['b', '2']]
  */
-function normalizeReplacements(searchValue:searchType, replaceValue?:string|number):[string|RegExp, string][] {
-    if (Array.isArray(searchValue)) {
+function normalizeReplacements(reps: replacements): [string | RegExp, string][] {
+    if (Array.isArray(reps)) {
         // Array<[string|RegExp, string|number]>
-        if(!Array.isArray(searchValue[0])) {
-            return [[searchValue[0], String(searchValue[1])]];
+        if (!Array.isArray(reps[0])) {
+            return [[reps[0], String(reps[1])]]
         }
 
         // Array<[string|RegExp, string|number]>[]
-        let result :[string|RegExp, string][] = new Array(searchValue.length);
-        for (let i=0;i< searchValue.length;i++){
-            const v = searchValue[i] as [string|RegExp, string|number]
-            result[i]=[v[0], String(v[1])]
+        let result: [string | RegExp, string][] = new Array(reps.length);
+        for (let i = 0; i < reps.length; i++) {
+            const v = reps[i] as [string | RegExp, string | number]
+            result[i] = [v[0], String(v[1])]
         }
         return result
     }
-        // {k:string|RegExp; v:string|number}
-    if (typeof searchValue === 'object' && !(searchValue instanceof RegExp)) {
-        const arr = Object.entries(searchValue)
-        let result :[string|RegExp, string][] = new Array(arr.length);
-        for (let i=0;i< arr.length;i++){
-            const v = arr[i]
-            result[i]=[v[0], String(v[1])]
-        }
-        return result;
+    // {k:string|RegExp; v:string|number}
+    const arr = Object.entries(reps)
+    let result: [string | RegExp, string][] = new Array(arr.length);
+    for (let i = 0; i < arr.length; i++) {
+        const v = arr[i]
+        result[i] = [v[0], String(v[1])]
     }
-
-    return [[searchValue, String(replaceValue)]];
+    return result
 }
 
 /**
  * Replaces all matched values
  *
  * @example
- *  replaceAll("I'm Aario. Hi, Aario!", "Aario", "Tom")  ==> I'm Tom. Hi, Tom!
  *  replaceAll("I'm Aario. Hi, Aario!", {
  *      "Aario": "Tom",
  *      "Hi": "Hello",
  *  })  ====>  I'm Tom. Hello, Tom!
  *  replaceAll("I'm Aario. Hi, Aario!", [["Aario", "Tom"],["Hi","Hello"]])  ====>  I'm Tom. Hello, Tom!
+ *  replaceAll("I'm Aario. Hi, Aario!", [["Aario", "Tom"],["Hi","Hello"]])  ====>  I'm Tom. Hello, Tom!
  */
-export function replaceAll(s:string, searchValue:searchType, replaceValue?:string|number) {
-     const replacements =  normalizeReplacements(searchValue, replaceValue);
+export function replace(s: string, reps: replacements, all: boolean = true): string {
+    const replacements = normalizeReplacements(reps);
 
-    for (const [search, replace] of replacements) {
-        if (search instanceof RegExp) {
-            if (!search.flags.includes('g')) {
-                throw new TypeError('replaceAll must be called with a global RegExp');
-            }
-            s = s.replace(search, replace)
+    for (let [search, replace] of replacements) {
+        if (all && typeof search === 'string') {
+            s = s.replaceAll(search, replace);
         } else {
-            s = s.split(search).join(replace)
+            s = s.replace(search, replace)
         }
     }
     return s;
 }
-
 
 /**
  * Splits a string by separator, trims each part, and removes empty strings
@@ -160,13 +150,13 @@ export function replaceAll(s:string, searchValue:searchType, replaceValue?:strin
  * tidySplit('  one  two  three  ', /\s+/) // ['one', 'two', 'three']
  * tidySplit('a|b|c|d', '|', 2)      // ['a', 'b']
  */
-export function tidySplit(s :string, separator:string|RegExp=',', limit?:number){
-    return s ? s.split(separator, limit).map(part=>part.trim()).filter(part => part.length>0):[]
+export function tidySplit(s: string, separator: string | RegExp = ',', limit?: number) {
+    return s ? s.split(separator, limit).map(part => part.trim()).filter(part => part.length > 0) : []
 }
 
 
-export function trimRight(s:string, cut:string|number = ' ', cutLen?:number) {
-    const cutstr=String(cut)
+export function trimRight(s: string, cut: string | number = ' ', cutLen?: number) {
+    const cutstr = String(cut)
     const cutLength = cutstr.length;
 
     if (!s || s.length < cutLength) {
@@ -186,7 +176,7 @@ export function trimRight(s:string, cut:string|number = ' ', cutLen?:number) {
 }
 
 
-export function trimLeft(s:string, cut:string|number = ' ', cutLen?:number) {
+export function trimLeft(s: string, cut: string | number = ' ', cutLen?: number) {
     const cutstr = String(cut)
     const cutLength = cutstr.length;
 
@@ -194,7 +184,7 @@ export function trimLeft(s:string, cut:string|number = ' ', cutLen?:number) {
         return s;
     }
 
-    cutLen = cutLen>0 ? cutLen : s.length;
+    cutLen = cutLen > 0 ? cutLen : s.length;
     let startIndex = 0;
 
     while (cutLen > 0 && startIndex <= s.length - cutLength &&
@@ -206,6 +196,6 @@ export function trimLeft(s:string, cut:string|number = ' ', cutLen?:number) {
     return startIndex > s.length - 1 ? '' : s.substring(startIndex);
 }
 
-export function trim(s:string, cut:string|number = ' ', cutLen?:number) {
-    return trimRight(trimLeft(s,cut,cutLen), cutLen)
+export function trim(s: string, cut: string | number = ' ', cutLen?: number) {
+    return trimRight(trimLeft(s, cut, cutLen), cutLen)
 }
