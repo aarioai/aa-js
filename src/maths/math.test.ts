@@ -1,97 +1,65 @@
-import {describe, expect, test} from "@jest/globals";
-import {ComparisonOperator, findClosestValue} from "./math";
+import {describe, expect, test} from "@jest/globals"
+import {formatBytes} from "./math"
 
-describe('findClosestValue', () => {
-    const testValues = [10, 20, 30, 40, 50];
-    const stringValues = ['10', '20', '30', '40', '50'];
+describe('formatBytes', () => {
+    test('handles 0 bytes', () => {
+        expect(formatBytes(0)).toEqual([0, 'B'])
+        expect(formatBytes(0, 2)).toEqual([0, 'B'])
+    })
 
-    describe('Equals operator (= or ==)', () => {
-        test('returns exact match when available', () => {
-            expect(findClosestValue(testValues, '=', 30)).toBe(30);
-            expect(findClosestValue(stringValues, '==', '30')).toBe(30);
-        });
+    test('handles negative bytes', () => {
+        expect(formatBytes(-100)).toEqual([0, 'B'])
+        expect(formatBytes(-1024, 2)).toEqual([0, 'B'])
+    })
 
-        test('returns closest value when no exact match', () => {
-            expect(findClosestValue(testValues, '=', 27)).toBe(30); // Closer to 30 than 20
-            expect(findClosestValue(testValues, '=', 23)).toBe(20); // Closer to 20 than 30
-        });
+    test('formats bytes without decimal places', () => {
+        expect(formatBytes(500)).toEqual([500, 'B'])
+        expect(formatBytes(1023)).toEqual([1023, 'B'])
+    })
 
-        test('handles edge values', () => {
-            expect(findClosestValue(testValues, '=', 5)).toBe(10);  // Below range
-            expect(findClosestValue(testValues, '=', 55)).toBe(50); // Above range
-        });
-    });
+    test('formats kilobytes', () => {
+        expect(formatBytes(1024)).toEqual([1, 'KB'])
+        expect(formatBytes(1536)).toEqual([2, 'KB'])
+        expect(formatBytes(1536, 1)).toEqual([1.5, 'KB'])
+        expect(formatBytes(2048)).toEqual([2, 'KB'])
+    })
 
-    describe('Less than operator (<)', () => {
-        test('returns largest value less than target', () => {
-            expect(findClosestValue(testValues, '<', 30)).toBe(20);
-            expect(findClosestValue(stringValues, '<', '35')).toBe(30);
-        });
+    test('formats megabytes', () => {
+        expect(formatBytes(1024 * 1024)).toEqual([1, 'MB'])
+        expect(formatBytes(1.5 * 1024 * 1024, 1)).toEqual([1.5, 'MB'])
+    })
 
-        test('throws error when no value is less than target', () => {
-            expect(() => findClosestValue(testValues, '<', 5)).toThrow('No value less than target');
-        });
-    });
+    test('formats gigabytes', () => {
+        expect(formatBytes(1024 * 1024 * 1024)).toEqual([1, 'GB'])
+        expect(formatBytes(2.5 * 1024 * 1024 * 1024, 1)).toEqual([2.5, 'GB'])
+    })
 
-    describe('Less than or equal operator (<=)', () => {
-        test('returns largest value <= target', () => {
-            expect(findClosestValue(testValues, '<=', 30)).toBe(30);
-            expect(findClosestValue(testValues, '<=', 25)).toBe(20);
-        });
+    test('respects decimal precision', () => {
+        expect(formatBytes(1536, 0)).toEqual([2, 'KB'])
+        expect(formatBytes(1536, 1)).toEqual([1.5, 'KB'])
+        expect(formatBytes(1536, 2)).toEqual([1.5, 'KB'])
+        expect(formatBytes(1536, 3)).toEqual([1.5, 'KB'])
+        expect(formatBytes(1550, 2)).toEqual([1.51, 'KB'])
+    })
 
-        test('throws error when no value <= target', () => {
-            expect(() => findClosestValue(testValues, '<=', 5)).toThrow('No value less than or equal to target');
-        });
-    });
+    test('handles negative decimals', () => {
+        expect(formatBytes(1536, -1)).toEqual([2, 'KB'])
+        expect(formatBytes(1550, -2)).toEqual([2, 'KB'])
+    })
 
-    describe('Greater than operator (>)', () => {
-        test('returns smallest value > target', () => {
-            expect(findClosestValue(testValues, '>', 30)).toBe(40);
-            expect(findClosestValue(stringValues, '>', '25')).toBe(30);
-        });
+    test('handles very large numbers', () => {
+        expect(formatBytes(1024 ** 4)).toEqual([1, 'TB'])
+        expect(formatBytes(1024 ** 5)).toEqual([1, 'PB'])
+        expect(formatBytes(1024 ** 8)).toEqual([1, 'YB']) // Largest supported unit
+    })
 
-        test('throws error when no value > target', () => {
-            expect(() => findClosestValue(testValues, '>', 55)).toThrow('No value greater than target');
-        });
-    });
+    test('handles decimal input', () => {
+        expect(formatBytes(1024.5)).toEqual([1, 'KB'])
+        expect(formatBytes(1024.5, 1)).toEqual([1, 'KB'])
+    })
 
-    describe('Greater than or equal operator (>=)', () => {
-        test('returns smallest value >= target', () => {
-            expect(findClosestValue(testValues, '>=', 30)).toBe(30);
-            expect(findClosestValue(testValues, '>=', 35)).toBe(40);
-        });
-
-        test('throws error when no value >= target', () => {
-            expect(() => findClosestValue(testValues, '>=', 55)).toThrow('No value greater than or equal to target');
-        });
-    });
-
-    describe('Edge cases', () => {
-        test('handles single value array', () => {
-            expect(findClosestValue([10], '=', 15)).toBe(10);
-            expect(findClosestValue(['10'], '>=', 5)).toBe(10);
-        });
-
-        test('throws error for empty array', () => {
-            expect(() => findClosestValue([], '=', 10)).toThrow('No valid numeric candidates provided');
-        });
-
-        test('handles non-numeric strings by ignoring them', () => {
-            const mixedValues = [10, 'twenty', 30, '40px', 50];
-            expect(findClosestValue(mixedValues, '=', 35)).toBe(30);
-        });
-
-        test('handles negative numbers', () => {
-            const negativeValues = [-50, -20, 0, 10];
-            expect(findClosestValue(negativeValues, '>', -30)).toBe(-20);
-            expect(findClosestValue(negativeValues, '=', -15)).toBe(-20);
-        });
-    });
-
-    describe('Invalid operators', () => {
-        test('throws error for invalid operator', () => {
-            expect(() => findClosestValue(testValues, '!=' as ComparisonOperator, 30))
-                .toThrow('Invalid operator: !=');
-        });
-    });
-});
+    test('handles edge cases', () => {
+        expect(formatBytes(1023)).toEqual([1023, 'B'])
+        expect(formatBytes(1025)).toEqual([1, 'KB'])
+    })
+})

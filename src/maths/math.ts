@@ -1,69 +1,23 @@
-import {numberArray} from "../aa/atype_func";
-
-export type ComparisonOperator = '<' | '=' | '>' | '>=' | '<=' | '=='
+import {KB} from "../aa/env/const_units";
 
 /**
- * Finds the closets numeric value in an array based on the specified comparison operator
+ * Format bytes to B/KB/MB/GB/TB/PB/EB/ZB/YB
  *
  * @example
- * findClosestValue([1, 3, 5], '>', 2); // 3
- * findClosestValue(['10', '20', '30'], '<=', 25); // 20
- * findClosestValue([5, 10, 15], '==', 12); // 10 (closest)
+ * formatBytes(1024);       // [1, 'KB']
+ * formatBytes(1500000, 2); // [1.43, 'MB']
  */
-export function findClosestValue(candidates: Array<number | string>, operator: ComparisonOperator, target: number | string): number {
-    const num = Number(target)
-    let cands = numberArray(candidates)
-    cands.sort((a, b) => a - b)
-    if (cands.length === 0) {
-        throw new Error(`No valid numeric candidates provided`)
+export function formatBytes(bytes: number, decimals: number = 0): [number, string] {
+    bytes = !bytes || bytes < 0 ? 0 : bytes
+    if (bytes < KB) {
+        return [bytes, 'B']
     }
-    switch (operator) {
-        case '=':
-        case '==':
-            return findClosestMatch(cands, num);
-        case '<':
-            return findLargestLesser(cands, num);
-        case '<=':
-            return findLargestLesserOrEqual(cands, num);
-        case '>':
-            return findSmallestGreater(cands, num);
-        case '>=':
-            return findSmallestGreaterOrEqual(cands, num);
-        default:
-            throw new Error(`Invalid operator: ${operator}`);
-    }
-}
-
-function findClosestMatch(values: number[], target: number): number {
-    return values.reduce((prev, curr) =>
-        Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev
-    );
-}
-
-function findLargestLesser(values: number[], target: number): number {
-    for (let i = values.length - 1; i >= 0; i--) {
-        if (values[i] < target) return values[i];
-    }
-    throw new Error('No value less than target');
-}
-
-function findSmallestGreater(values: number[], target: number): number {
-    for (let i = 0; i < values.length; i++) {
-        if (values[i] > target) return values[i];
-    }
-    throw new Error('No value greater than target');
-}
-
-function findLargestLesserOrEqual(values: number[], target: number): number {
-    for (let i = values.length - 1; i >= 0; i--) {
-        if (values[i] <= target) return values[i];
-    }
-    throw new Error('No value less than or equal to target');
-}
-
-function findSmallestGreaterOrEqual(values: number[], target: number): number {
-    for (let i = 0; i < values.length; i++) {
-        if (values[i] >= target) return values[i];
-    }
-    throw new Error('No value greater than or equal to target');
+    const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+    const dec = Math.max(0, decimals)
+    const exponent = Math.min(
+        Math.floor(Math.log(bytes) / Math.log(KB)),
+        units.length - 1
+    )
+    const value = bytes / Math.pow(KB, exponent)
+    return [parseFloat(value.toFixed(dec)), units[exponent]]
 }
