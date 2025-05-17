@@ -29,3 +29,27 @@ export function jsonify(o: any): string {
     return null
 }
 
+/**
+ * Safely parses a JSON string or returns the input if already an object
+ *
+ * @example
+ * parseJSON('{"a":1}') // {a: 1}
+ * parseJSON({"a":1}) // {a: 1}
+ * parseJSON(null)      // null
+ * parseJSON('invalid') // null
+ */
+export function parseJSON(input: string | undefined | null | Map<any, any> | Array<any>): object {
+    if (!input || (typeof input === "string" && input.trim().toLowerCase() === "null")) {
+        return null
+    }
+    if (typeof input === 'object') {
+        return input
+    }
+
+    try {
+        return JSON.parse(input.trim())
+    } catch (error) {
+
+    }
+    return null
+}

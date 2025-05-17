@@ -38,7 +38,7 @@ export function vhToPx(vh: number): number {
 }
 
 /**
- * Converts various CSS size units to pixels. Handles numbers, pixel values, and rem units.
+ * Converts various CSS size units to pixels.
  *
  * @example
  * px(100) // Returns 100
@@ -48,7 +48,6 @@ export function vhToPx(vh: number): number {
  * px('100vw') // convert 100vw to pixel
  * px('100vh') // convert 100vh to pixel
  */
-
 export function px(size: number | string): number {
     if (!size) {
         return 0
@@ -76,5 +75,5 @@ export function px(size: number | string): number {
     if (/^\d+$/.test(size)) {
         return parseFloat(size)
     }
-    throw new Error(`Unsupported size unit: "${size}". Supported units: px, rem, or unit-less numbers.`)
+    throw new Error(`Unsupported size unit: "${size}". Supported units: px, rem, vw, vh, or unit-less numbers.`)
 }
