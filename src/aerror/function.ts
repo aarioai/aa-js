@@ -1,6 +1,6 @@
 import {AError} from "./error";
 import {E_ClientThrow} from "./code";
-import {ResponseBody} from "../aa/a_const";
+import {ResponseBody} from "../aa/env/const";
 import {MissingResponseBody, ParseResponseBodyFailed} from "./error_standard";
 
 export function aerror(e: number | string | Error | AError, msg?: string): AError {

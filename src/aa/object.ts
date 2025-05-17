@@ -1,5 +1,6 @@
-import {Break, ZeroValues} from "./a_const";
+import {Break, ZeroValues} from "./env/const";
 import {formatArguments} from "./format";
+import {Second} from "./env/const_units";
 
 /**
  * Sets a property on an object if the property doesn't exist or matches an excluded value.
@@ -62,7 +63,7 @@ export function once(ready: () => boolean, run: () => void, interval: number, re
         return
     }
     if (typeof retry !== 'number') {
-        retry = Math.ceil(5000 / interval)
+        retry = Math.ceil(5 * Second / interval)
     }
     if (retry <= 0) {
         return

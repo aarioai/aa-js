@@ -1,5 +1,7 @@
+import {Second} from "./env/const_units";
+
 let _aaLockIncr_ = 0
-const defaultAaLockTimeout = 5000 // 5 seconds
+const defaultAaLockTimeout = 5 * Second
 
 export class AaLock {
     static debug = false
@@ -61,7 +63,7 @@ export class AaLock {
         };
     }
 
-    async waitForUnlock(maxWaitTime = 5000) {
+    async waitForUnlock(maxWaitTime = 5 * Second) {
         const startTime = Date.now();
 
         while (this.isLocked()) {

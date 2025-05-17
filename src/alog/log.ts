@@ -1,6 +1,6 @@
-import {Aconfig} from "../aa/aconfig";
 import {ALogStyle} from "./style";
 import {joinComplex} from "../aa/format_strings";
+import {AConfig} from "../aa/env/aconfig";
 
 /**
  * Escape string formatting placeholders (%s, %d, etc.)
@@ -18,7 +18,7 @@ export function joinArguments(...messages: any[]): string {
 }
 
 export function printRaw(msg: string) {
-    if (Aconfig.debugger.isAlert()) {
+    if (AConfig.debugger.isAlert()) {
         return
     }
 
@@ -42,11 +42,11 @@ export function log(...messages: any[]) {
 }
 
 export function prints(style: ALogStyle, ...messages: any[]) {
-    if (Aconfig.debugger.disabled()) {
+    if (AConfig.debugger.disabled()) {
         return
     }
     const msg = joinArguments(...messages)
-    if (Aconfig.debugger.isAlert()) {
+    if (AConfig.debugger.isAlert()) {
         printRaw(msg)
         return
     }
@@ -64,7 +64,7 @@ export function printColor(color: string, ...messages: any[]) {
 }
 
 export function println(first: any, ...others: any[]) {
-    if (Aconfig.debugger.disabled()) {
+    if (AConfig.debugger.disabled()) {
         return
     }
     if (others.length === 0) {

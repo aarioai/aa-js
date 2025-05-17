@@ -2,6 +2,18 @@
 
 AaJS 是基于 airis Go 框架后端代码的前端调用SDK，主要服务于调用 airis Go Restful API接口。
 
+## 调用结构
+
+```
+aa (include aa/env)
+
+arrays <-- aa
+
+aerror <-- aa
+
+alog <-- aerror <-- aa
+```
+
 ## tsdown 说明
 
 tsdown 是基于 rolldown 专门为简化 typescript 而开发的开箱即用工具

@@ -1,5 +1,5 @@
 import {typeArray} from "../aa/atype_func";
-import {Break} from "../aa/a_const";
+import {Break} from "../aa/env/const";
 
 /**
  * Concatenates multiple arrays into a single array, skipping empty/null inputs
@@ -24,7 +24,7 @@ export function concatInType<T>(cast: (v: any) => T, ...args: (any[] | null | un
     if (!arr.length) {
         return []
     }
-    return typeArray(arr, cast)
+    return typeArray(cast, arr)
 }
 
 /**

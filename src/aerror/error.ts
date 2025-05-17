@@ -3,7 +3,7 @@ import {code2msg} from "./code2msg";
 import {language, matchLanguage} from "../aa/language";
 import {AErrorDictionaries} from "./dictionaries";
 import {translate} from "../aa/dictionary";
-import {LF} from "../aa/a_const";
+import {LF} from "../aa/env/const";
 
 export class AError extends Error {
     readonly code: number

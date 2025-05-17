@@ -1,5 +1,5 @@
-import {P_ClientDebug} from "./a_const";
-import {isLocalhost} from "./base";
+import {P_ClientDebug} from "./const";
+import {isLocalhost} from "./detect";
 
 export const DebuggerStorageKeyName = "aa_" + P_ClientDebug
 export type DebuggerMethod = 'log' | 'alert'

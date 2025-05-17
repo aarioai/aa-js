@@ -1,5 +1,5 @@
 import {Debugger} from "./debugger";
 
-export const Aconfig = {
+export const AConfig = {
     debugger: new Debugger(),
 }
