@@ -18,7 +18,7 @@ export const PB = 1024 * TB
 export const EB = 1024 * PB
 export const ZB = 1024 * EB
 export const YB = 1024 * ZB
- 
+
 
 export const Cent = 100
 export const Dime = 10 * Cent
@@ -32,5 +32,7 @@ export const WanYuan = 10000 * Yuan
 export const MYuan = MDollar
 export const YiiYuan = 10000 * WanYuan
 
+export type percent = number
+export const PercentMultiplicand = 10000
 export const Percent = 100.0  // %
 export const Thousandth = 10.0 // ‰

@@ -1,22 +1,20 @@
+import {Percent, percent, PercentMultiplicand} from "./const_units";
+
 export const MaxTabletWidth = 768
 
 
 /**
- * Gets the main width of portable devices, e.g. phones, pads
- *     核心区宽度
- *     // window.innerWidth /  window.innerHeight 去掉状态栏的高度、宽度
- *     // window.outerWidth / window.outerHeight 带状态栏高度
- *     // screen.width / screen.height  分辨率尺寸
- * @note
- *  12.1'       1280*800
- *  13.3'       1024*600 / 1280*800
- *  14.1'       1366*768
- *  iPad        768*1024
- *  iPad Pro    1024 * 1366
+ * Gets the main width of tablet devices, e.g. phones, pads
  */
-export function tabletMainWidth(): number {
-    const bodyWidth = document.querySelector('body')?.offsetWidth || 0
-    return Number(bodyWidth.toFixed(2))
+export function tabletMainWidth(proportion: percent = 100 * Percent): number {
+    if (!proportion || proportion < 0) {
+        throw new RangeError(`proportion must be greater than 0`)
+    }
+    let bodyWidth = document.querySelector('body')?.offsetWidth || MaxTabletWidth
+    if (proportion === 100 * Percent) {
+        return bodyWidth
+    }
+    return proportion * bodyWidth / PercentMultiplicand
 }
 
 // Device Pixel Ratio

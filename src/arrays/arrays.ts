@@ -39,10 +39,10 @@ export function contains<T>(arr: Array<T | RegExp>, item: T): boolean {
     if (!arr?.length) {
         return false
     }
-    let itemStr: string
+    let itemStr: string = ''
     return arr.some(element => {
         if (element instanceof RegExp) {
-            if (itemStr === '') {
+            if (!itemStr) {
                 itemStr = String(item)
             }
             return element.test(itemStr)

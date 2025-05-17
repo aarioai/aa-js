@@ -1,6 +1,6 @@
 import {describe, expect, test} from "@jest/globals"
 import {concat, concatInType, contains, generateArray} from "./arrays"
-import {uint8} from "../aa/atype_extend"
+import {a_string, uint8} from "../aa/atype_extend"
 
 describe('concat', () => {
     test('concat([1, 2], [3, 4])', () => {
@@ -59,7 +59,7 @@ describe('concatInType', () => {
         expect(concatInType(uint8, [1, '2'], ['3', 4])).toEqual([1, 2, 3, 4])
     })
     test('concatInType(a_string, [1, "2"], ["3", 4])', () => {
-        expect(concatInType(uint8, [1, '2'], ['3', 4])).toEqual(['1', '2', '3', '4'])
+        expect(concatInType(a_string, [1, '2'], ['3', 4])).toEqual(['1', '2', '3', '4'])
     })
 })
 
