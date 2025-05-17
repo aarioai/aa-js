@@ -1,4 +1,5 @@
 import {typeArray} from "../aa/atype_func";
+import {Break} from "../aa/a_const";
 
 /**
  * Concatenates multiple arrays into a single array, skipping empty/null inputs
@@ -76,4 +77,44 @@ export function generateArray<T>(count: number, initialValue: T, generator?: (cu
     }
 
     return result
+}
+
+/**
+ * Range from start to end
+ */
+export function range(start: number, end: number, step: number, callback: (i: number) => any) {
+    step = Math.abs(step)
+    if (start < end) {
+        for (let i = start; i < end; i += step) {
+            const r = callback(i)
+            if (r === Break) {
+                return Break
+            }
+        }
+    }
+    for (let i = start; i > end; i -= step) {
+        const r = callback(i)
+        if (r === Break) {
+            return Break
+        }
+    }
+}
+
+/**
+ * Shuffle an array using the Fisher-Yates algorithm
+ */
+export function shuffle<T>(origin: readonly T[]): T[] {
+    const shuffled = origin.slice()
+    let i = shuffled.length
+
+
+    // While there remain elements to shuffle.
+    while (i > 0) {
+        const randomIndex = Math.random() * i | 0   // faster than Math.floor()
+        i--
+
+        [shuffled[i], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[i]]
+    }
+
+    return shuffled;
 }
