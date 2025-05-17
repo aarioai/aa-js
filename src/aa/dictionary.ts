@@ -1,7 +1,7 @@
 import {escapeRegExp} from "./format_regexp";
 
 export type Dictionary = Record<string, string>
-export type Dictionaries = Record<string, string | Dictionary>
+export type Dictionaries = Record<string, Dictionary>
 
 export const NumberPattern = /(\d+(?:\.\d+)?)/.source
 export const WordPattern = /([^\s　'"`“”‘’]+)/.source

@@ -11,8 +11,6 @@ import {a_bool, a_number, a_string} from "./atype_extend";
  * - Objects → key count
  * - Other types → 0
  *
- * @param {unknown} value - The value to measure
- * @returns {number} The length/size (always non-negative integer)
  *
  * @example
  * len(null)            // 0
@@ -25,22 +23,22 @@ import {a_bool, a_number, a_string} from "./atype_extend";
  * len({len: 5})        // 5 (custom length property)
  * len(class A{get len(){return 5}})        // 5 (custom length property)
  */
-export function len(value:unknown) :number {
-    if(typeof value ==='undefined' || value ===null){
+export function len(value: unknown): number {
+    if (typeof value === 'undefined' || value === null) {
         return 0
     }
 
     // self-defined property or getter (get len(){ return 10 })
-    if(typeof (value as any).len==="number"){
+    if (typeof (value as any).len === "number") {
         return (value as any).len
     }
 
     // string, array or others
-    if(typeof (value as any).length==="number"){
+    if (typeof (value as any).length === "number") {
         return (value as any).length
     }
 
-    switch(typeof value){
+    switch (typeof value) {
         case 'number':
             return String(value).length
         case 'object':
@@ -56,25 +54,25 @@ export function len(value:unknown) :number {
  * @example
  * typeArray([1,"3","5"], a_number)
  */
-export function typeArray<T>(arr:any[], cast:(value:any)=>T):T[]{
-    if( arr.length === 0){
+export function typeArray<T>(arr: any[], cast: (value: any) => T): T[] {
+    if (arr.length === 0) {
         return []
     }
-    let result:T[] = new Array(arr.length)
+    let result: T[] = new Array(arr.length)
     for (let i = 0; i < arr.length; i++) {
-        result[i]=cast(arr[i])
+        result[i] = cast(arr[i])
     }
     return result
 }
 
-export function stringArray(arr:any[]):string[]{
+export function stringArray(arr: any[]): string[] {
     return typeArray(arr, a_string)
 }
 
-export function numberArray(arr:any[]):number[]{
+export function numberArray(arr: any[]): number[] {
     return typeArray(arr, a_number)
 }
 
-export function booleanArray(arr:any[]):boolean[]{
+export function booleanArray(arr: any[]): boolean[] {
     return typeArray(arr, a_bool)
 }

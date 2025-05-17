@@ -1,3 +1,10 @@
+export type ResponseBody = {
+    code: number,
+    msg: string,
+    data: any,
+}
+
+export const LF = '\n'
 // a signal from callback function to break forEach((value,key)) iterator
 export const Break = '-.../.-././.-/-.-'
 

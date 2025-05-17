@@ -1,4 +1,4 @@
-import {P_ClientDebug} from "./const";
+import {P_ClientDebug} from "./a_const";
 import {isLocalhost} from "./base";
 
 export const DebuggerStorageKeyName = "aa_" + P_ClientDebug

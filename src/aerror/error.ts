@@ -1,12 +1,16 @@
 import {E_ClientThrow, E_FailedAndSeeOther, E_Gone, E_NoRowsAvailable, E_NotFound} from "./code";
-import {Dictionary} from "../aa/dictionary";
 import {code2msg} from "./code2msg";
+import {language, matchLanguage} from "../aa/language";
+import {AErrorDictionaries} from "./dictionaries";
+import {translate} from "../aa/dictionary";
+import {LF} from "../aa/a_const";
 
 export class AError extends Error {
     readonly code: number
     readonly message = ''
-    readonly dictionaries: Dictionary = {}
-    #heading = ''
+    #headings: string[] = []
+    #details: string[] = []
+    #locked: boolean = false
 
     /**
      * @example
@@ -14,7 +18,7 @@ export class AError extends Error {
      * new AError(E_Unauthorized, "need login")
      * new AError("something wrong happened")
      */
-    constructor(code: number | string, msg?: string, dicts?: Dictionary) {
+    constructor(code: number | string, msg?: string) {
         let c: number = E_ClientThrow
         if (typeof code === "number") {
             c = code
@@ -28,14 +32,65 @@ export class AError extends Error {
         }
         super(msg)
         this.code = c
-        if (dicts) {
-            this.dictionaries = dicts
-        }
     }
 
-    withHeading(heading: string): AError {
-        this.#heading = '#[' + heading + ']#'
-        return this
+    static decorateStrings(arr?: string[], translate?: (text: string) => string): string {
+        if (!arr?.length) {
+            return ''
+        }
+        if (translate) {
+            let newHeadings: string[] = new Array(arr.length)
+            for (let i = arr.length - 1; i >= 0; i--) {
+                newHeadings[i] = translate(arr[i])
+            }
+            arr = newHeadings
+        }
+
+        return arr.join(' / ')
+    }
+
+    static decorateHeadings(headings?: string[], translate?: (text: string) => string): string {
+        const s = AError.decorateStrings(headings, translate)
+        if (!s) {
+            return ''
+        }
+        return s + LF
+    }
+
+    static decorateDetails(details?: string[], translate?: (text: string) => string): string {
+        const s = AError.decorateStrings(details, translate)
+        if (!s) {
+            return ''
+        }
+        return LF + s
+    }
+
+    addHeading(heading: string): AError {
+        let e = this.#locked ? this.clone() : this
+        e.#headings.push(heading)
+        return e
+    }
+
+    addDetail(detail: string): AError {
+        let e = this.#locked ? this.clone() : this
+        e.#details.push(detail)
+        return e
+    }
+
+    clone(): AError {
+        let e = new AError(this.code, this.message)
+        if (this.#headings.length) {
+            for (const heading of this.#headings) {
+                e.addHeading(heading)
+            }
+        }
+        if (this.#details.length) {
+            for (const detail of this.#details) {
+                e.addDetail(detail)
+            }
+        }
+
+        return e
     }
 
     is(code: string | number): boolean {
@@ -58,7 +113,36 @@ export class AError extends Error {
         return this.code > 500
     }
 
-    text(lang: string): string {
-        return this.message
+    handleLock(): AError {
+        if (this.#locked) {
+            return this.clone()
+        }
+        return this
+    }
+
+    lock(): AError {
+        this.#locked = true
+        return this
+    }
+
+
+    text(lang?: string): string {
+        const availableLangs = Object.keys(AErrorDictionaries)
+        lang = lang ? matchLanguage(lang, availableLangs) : language(availableLangs)
+        if (lang === '') {
+            return AError.decorateHeadings(this.#headings) + this.message + AError.decorateDetails(this.#details)
+        }
+        const dict = AErrorDictionaries[lang]
+        const msg = translate(this.message, dict)
+
+        let heading = ''
+        let detail = ''
+        if (this.#headings.length) {
+            heading = AError.decorateHeadings(this.#headings, (text: string) => translate(text, dict))
+        }
+        if (this.#details.length) {
+            detail = AError.decorateHeadings(this.#details, (text: string) => translate(text, dict))
+        }
+        return heading + msg + detail
     }
 }

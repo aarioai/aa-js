@@ -1,4 +1,5 @@
 import {AError} from "../aerror/error";
+import {aerror} from "../aerror/function";
 
 export function asleep(delay: number, ...args: any[]) {
     return new Promise(resolve => setTimeout(resolve, delay, ...args))
@@ -18,7 +19,7 @@ export function reject(err: string | Error | AError) {
     if (err instanceof AError) {
         reason = err
     } else if (err instanceof Error) {
-        reason = new AError(err)
+        reason = aerror(err)
     } else {
         reason = new AError(err)
     }

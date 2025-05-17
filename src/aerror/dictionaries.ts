@@ -2,6 +2,9 @@ import {Dictionaries} from "../aa/dictionary";
 
 export const AErrorDictionaries: Dictionaries = {
     'zh-CN': {
+        "missing response body": "缺少响应体",
+        "parse response body failed": "解析响应体失败",
+
         "Bad Parameter: %s": "%s 输入错误",
         "Too Short Parameter: %s": "%s 输入过短",
         "Too Long Parameter: %s": "%s 输入过长",

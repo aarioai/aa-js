@@ -79,6 +79,7 @@ describe('translate function', () => {
     test('empty string', () => {
         expect(translate('', dictionary)).toBe('')
     })
+
     test('exact match', () => {
         expect(translate('I love Mary', dictionary)).toBe('我爱玛丽')
     })
@@ -99,7 +100,7 @@ describe('translate function', () => {
     test('pattern contains %s, case different', () => {
         expect(translate('does Lucy love me? i want to know', dictionary)).toBe('Lucy爱我吗？ i want to know')
     })
-    
+
     test('float placeholder (%d)', () => {
         expect(translate('Price: 12.99', dictionary)).toBe('价格：12.99')
     })
