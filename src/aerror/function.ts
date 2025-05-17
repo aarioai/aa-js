@@ -1,8 +1,12 @@
 import {AError} from "./error";
+import {E_ClientThrow} from "./code";
 
-export function aerror(code: number | string | Error | AError, msg?: string): AError {
-    if (code instanceof AError) {
-        return code
+export function aerror(e: number | string | Error | AError, msg?: string): AError {
+    if (e instanceof AError) {
+        return e
     }
-    return new AError(code, msg)
+    if (e instanceof Error) {
+        return new AError(E_ClientThrow, e.toString())
+    }
+    return new AError(e, msg)
 }

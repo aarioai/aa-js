@@ -1,36 +1,36 @@
-import {E_ClientThrow} from "./code";
-import {Dictionaries} from "../base/dictionaries";
+import {E_ClientThrow, E_FailedAndSeeOther, E_Gone, E_NoRowsAvailable, E_NotFound} from "./code";
+import {Dictionary} from "../aa/dictionary";
+import {code2msg} from "./code2msg";
 
 export class AError extends Error {
+    readonly code: number
+    readonly message = ''
+    readonly dictionaries: Dictionary = {}
     #heading = ''
-    #code: number
-    #message = ''
-    #dictionaries: Dictionaries = {}
 
-    constructor(code: number | string | Error, msg?: string) {
+    /**
+     * @example
+     * new AError(E_Unauthorized)
+     * new AError(E_Unauthorized, "need login")
+     * new AError("something wrong happened")
+     */
+    constructor(code: number | string, msg?: string, dicts?: Dictionary) {
         let c: number = E_ClientThrow
-        if (code instanceof Error) {
-            msg = code.toString()
-        } else if (typeof code === "string") {
-            msg = msg ? code + " " + msg : code
-        } else {
+        if (typeof code === "number") {
             c = code
+        } else if (/^\d+$/.test(code)) {
+            c = Number(code)
+        } else {
+            msg = code
+        }
+        if (!msg) {
+            msg = code2msg(c)
         }
         super(msg)
-        this.#code = c
-        this.#message = msg
-    }
-
-    get code() {
-        return this.#code
-    }
-
-    get msg(): string {
-        return this.#message
-    }
-
-    get message(): string {
-        return this.msg
+        this.code = c
+        if (dicts) {
+            this.dictionaries = dicts
+        }
     }
 
     withHeading(heading: string): AError {
@@ -38,8 +38,27 @@ export class AError extends Error {
         return this
     }
 
-    withTranslation(dicts: Dictionaries): AError {
-        this.#dictionaries = dicts
-        return this
+    is(code: string | number): boolean {
+        return Number(code) === this.code
+    }
+
+    isNotFound(): boolean {
+        return [E_NotFound, E_Gone, E_NoRowsAvailable].includes(this.code)
+    }
+
+    isOK(): boolean {
+        return this.code >= 200 && this.code < 300
+    }
+
+    isFailedAndSeeOther(): boolean {
+        return this.code === E_FailedAndSeeOther && this.message !== ''
+    }
+
+    isServerError(): boolean {
+        return this.code > 500
+    }
+
+    text(lang: string): string {
+        return this.message
     }
 }

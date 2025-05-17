@@ -1,3 +1,6 @@
+import {atype} from "./atype";
+import {a_string} from "./atype_extend";
+
 /**
  * Splits a string at the first occurrence of a separator, returning the parts and a success flag.
  *
@@ -64,6 +67,19 @@ export function joinWith(separator: string, ...args: any[]): string {
  */
 export function joinWithSpace(...args: string[]): string {
     return joinWith(' ', ...args);
+}
+
+export function joinComplexWith(separator: string, ...args: any[]): string {
+    let arr: string[] = new Array(args.length)
+    for (let i = 0; i < args.length; i++) {
+        let v = a_string(args[i])
+        arr[i] = v ? v : atype(args[i])
+    }
+    return arr.join(separator)
+}
+
+export function joinComplex(...args: any[]): string {
+    return joinComplexWith(' ', ...args)
 }
 
 type replacements =

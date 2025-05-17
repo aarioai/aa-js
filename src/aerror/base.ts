@@ -1,2 +1,2 @@
-const ServerErrorSeparator = ' - '
+const Separator = ' - '  // server error message separator
 

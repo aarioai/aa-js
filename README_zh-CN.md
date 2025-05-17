@@ -1,5 +1,6 @@
 # aa-js 说明
 
+AaJS 是基于 airis Go 框架后端代码的前端调用SDK，主要服务于调用 airis Go Restful API接口。
 
 ## tsdown 说明
 
@@ -18,7 +19,6 @@ tsdown --minify # 压缩
 
 tsdown --silent # 屏蔽非错误日志
 ```
-
 
 ## jest
 
