@@ -44,3 +44,13 @@ export const MinDatetime: t_datetime = "0000-00-00 00.00.00"
 export const MaxDatetime: t_datetime = "9999-12-31 23:59:59"
 
 export const ZeroValues = [null, '', undefined, false, 0, 0n, 0.0, '0', "0.0", "0.00", MinDate, MinDatetime]
+
+
+export const DecimalScale = 4
+export const DecimalMultiplicand = Math.pow(10, DecimalScale) // 10000 = 10^4
+export const PercentScale = 2
+export const PercentMultiplicand = Math.pow(10, PercentScale) // 100 = 10^2
+export const MoneyScale = 4
+export const MoneyMultiplicand = Math.pow(10, MoneyScale) // 10000 = 10^4
+export const VMoneyScale = 4
+export const VMoneyMultiplicand = Math.pow(10, VMoneyScale) // 10000 = 10^4

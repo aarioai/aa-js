@@ -14,7 +14,6 @@ import {
     Nif
 } from "./const";
 import {jsonify} from "../base/base";
-import {t_numeric} from "./basic_types";
 import {Panic} from "./panic";
 
 function inRange(value: number, min: number, max: number, name: string): number {
@@ -136,15 +135,15 @@ export function a_string(value: unknown): string {
     return String(value)
 }
 
-export function a_number(v?: t_numeric): number {
+export function a_number(v?: number): number {
     return Number(v ? v : 0)
 }
 
-export function float64(v?: t_numeric): number {
+export function float64(v?: number): number {
     return Number(v)
 }
 
-export function float32(v?: t_numeric): number {
+export function float32(v?: number): number {
     return float64(v)
 }
 
@@ -152,39 +151,39 @@ export function floatToInt(v: number): number {
     return v ? v | 0 : 0  // faster than Math.floor()
 }
 
-export function int54(v?: t_numeric): number {
+export function int54(v?: number): number {
     return floatToInt(a_number(v))
 }
 
-export function int32(v?: t_numeric): number {
+export function int32(v?: number): number {
     return inRange(int54(v), MinInt32, MaxInt32, 'int32')
 }
 
-export function int24(v?: t_numeric): number {
+export function int24(v?: number): number {
     return inRange(int54(v), MinInt24, MaxInt24, 'int24')
 }
 
-export function int16(v?: t_numeric): number {
+export function int16(v?: number): number {
     return inRange(int54(v), MinInt16, MaxInt16, 'int16')
 }
 
-export function int8(v?: t_numeric): number {
+export function int8(v?: number): number {
     return inRange(int54(v), MinInt8, MaxInt8, 'int8')
 }
 
-export function uint32(v?: t_numeric): number {
+export function uint32(v?: number): number {
     return inRange(int54(v), 0, MaxUint32, 'uint32')
 }
 
-export function uint24(v?: t_numeric): number {
+export function uint24(v?: number): number {
     return inRange(int54(v), 0, MaxUint24, 'uint24')
 }
 
-export function uint16(v?: t_numeric): number {
+export function uint16(v?: number): number {
     return inRange(int54(v), 0, MaxUint16, 'uint16')
 }
 
-export function uint8(v?: t_numeric): number {
+export function uint8(v?: number): number {
     return inRange(int54(v), 0, MaxUint8, 'uint8')
 }
 

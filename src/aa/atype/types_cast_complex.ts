@@ -1,17 +1,18 @@
-import {uint16, uint24} from "./type_cast"
-import {t_date, t_datetime, t_dist, t_distri, t_numeric, t_timestamp} from "./basic_types"
+import {uint16, uint24} from "./types_cast"
+import {t_date, t_datetime, t_dist, t_distri, t_timestamp} from "./basic_types"
 import {DatePattern, DatetimePattern, MinDate, MinDatetime} from "./const"
 import {AConfig} from "../env/aconfig"
 import {TZDate} from "@date-fns/tz"
 import {format} from "date-fns";
 
-export function a_distri(n: t_numeric): t_distri {
+export function a_distri(n: number): t_distri {
     return uint24(n)
 }
 
-export function a_dist(n: t_numeric): t_dist {
+export function a_dist(n: number): t_dist {
     return uint16(n)
 }
+
 
 export function tzdate(s: string | t_timestamp | Date | TZDate, timezone?: string): TZDate | null {
     if (!s) {

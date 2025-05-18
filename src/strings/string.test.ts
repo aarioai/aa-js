@@ -1,6 +1,6 @@
 import {describe, expect, test} from "@jest/globals"
 import {randomString} from "./string";
-import {floatToInt} from "../aa/atype/type_cast";
+import {floatToInt} from "../aa/atype/types_cast";
 
 describe('randomString', () => {
     let i = floatToInt(Math.random() * 10)

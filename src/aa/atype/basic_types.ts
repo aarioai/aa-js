@@ -6,16 +6,18 @@ export type t_int8 = number
 export type t_int16 = number
 export type t_int24 = number
 export type t_int32 = number
+export type t_intMax = number
 export type t_int64 = string   // js number only support int53
 export type t_uint8 = number
 export type t_uint16 = number
 export type t_uint24 = number
 export type t_uint32 = number
+export type t_uintMax = number
 export type t_uint64 = string   // js number only support uint53
 export type t_float32 = number
 export type t_float64 = number
 
-export type t_decimal = t_int64
+export type t_decimal = t_intMax
 export type t_money = t_decimal
 export type t_vmoney = t_money
 
