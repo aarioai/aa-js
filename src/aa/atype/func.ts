@@ -1,4 +1,4 @@
-import {a_string} from "./atype_extend";
+import {a_string} from "./type_cast";
 
 /**
  * Calculates the length/size of any value with consistent fallback behavior.

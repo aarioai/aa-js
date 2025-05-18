@@ -4,7 +4,7 @@ import {language, matchLanguage} from "../aa/translate/language";
 import {AErrorDictionaries} from "./dictionaries";
 import {translate} from "../aa/translate/dictionary";
 import {LF} from "../aa/env/const";
-import {t_numeric} from "../aa/atype/types";
+import {t_numeric} from "../aa/atype/basic_types";
 
 export class AError extends Error {
     readonly code: number

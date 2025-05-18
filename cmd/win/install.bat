@@ -15,7 +15,8 @@ call :install typescript
 call :install ts-node
 call :install ts-jest
 call :install @jest/globals
-
+call :install @date-fns/tz
+call :install date-fns
 
 call :install tsdown
 

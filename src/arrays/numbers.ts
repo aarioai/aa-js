@@ -1,5 +1,5 @@
-import {numberArray} from "../aa/atype/atype_func";
-import {t_numeric} from "../aa/atype/types";
+import {numberArray} from "../aa/atype/func";
+import {t_numeric} from "../aa/atype/basic_types";
 
 export type ComparisonOperator = '<' | '=' | '>' | '>=' | '<=' | '=='
 

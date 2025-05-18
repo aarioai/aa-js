@@ -1,4 +1,4 @@
-import {t_numeric} from "../atype/types";
+import {t_numeric} from "../atype/basic_types";
 
 /**
  * Formats a number or numeric string by trimming unnecessary trailing decimal zeros.

@@ -14,7 +14,7 @@ import {
     Nif
 } from "./const";
 import {jsonify} from "../base/base";
-import {t_numeric} from "./types";
+import {t_numeric} from "./basic_types";
 
 function inRange(value: number, min: number, max: number, name: string): number {
     if ((typeof min !== 'undefined' && value < min) || (typeof max !== 'undefined' && value > max)) {
@@ -26,7 +26,6 @@ function inRange(value: number, min: number, max: number, name: string): number 
     }
     return value
 }
-
 
 /**
  * Converts any value to an array consistently.

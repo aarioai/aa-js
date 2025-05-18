@@ -1,6 +1,6 @@
-import {typeArray} from "../aa/atype/atype_func";
+import {typeArray} from "../aa/atype/func";
 import {Break} from "../aa/env/const";
-import {floatToInt} from "../aa/atype/atype_extend";
+import {floatToInt} from "../aa/atype/type_cast";
 
 /**
  * Concatenates multiple arrays into a single array, skipping empty/null inputs

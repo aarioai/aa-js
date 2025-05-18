@@ -1,4 +1,4 @@
-import {ZeroValues} from "./env/const";
+import {ZeroValues} from "./atype/const";
 
 /**
  * Sets a property on an object if the property doesn't exist or matches an excluded value.

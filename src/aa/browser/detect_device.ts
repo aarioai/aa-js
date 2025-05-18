@@ -1,5 +1,5 @@
 import {Percent, PercentMultiplicand} from "../env/const_unit";
-import {t_percent} from "../atype/types";
+import {t_percent} from "../atype/basic_types";
 
 export const MaxTabletWidth = 768
 

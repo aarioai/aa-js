@@ -14,7 +14,7 @@ aa <- aa/translate <-- aa/format
 
 aa <- aa/browser   
 aa <- aa/env <-- aa/brower
-aa <- aa/env <-- aa/atype
+aa <-- aa/atype <- aa/env
 aa <- aa/base    
 
 
