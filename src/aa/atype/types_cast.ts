@@ -21,6 +21,7 @@ import {
     t_int32,
     t_int64,
     t_int8,
+    t_numeric,
     t_uint16,
     t_uint24,
     t_uint32,
@@ -163,7 +164,7 @@ export function floatToInt(v: number): number {
     return v ? v | 0 : 0  // faster than Math.floor()
 }
 
-export function int64(v?: number): t_int64 {
+export function int64(v?: t_numeric | bigint): t_int64 {
     return BigInt(v)
 }
 
@@ -187,7 +188,7 @@ export function int8(v?: number): t_int8 {
     return inRange(int54(v), MinInt8, MaxInt8, 'int8')
 }
 
-export function uint64(v?: number): t_uint64 {
+export function uint64(v?: t_numeric | bigint): t_uint64 {
     return BigInt(v)
 }
 
