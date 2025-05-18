@@ -32,7 +32,7 @@ export const WanYuan = 10000 * Yuan
 export const MYuan = MDollar
 export const YiiYuan = 10000 * WanYuan
 
-export type percent = number
+
 export const PercentMultiplicand = 10000
 export const Percent = 100.0  // %
 export const Thousandth = 10.0 // ‰

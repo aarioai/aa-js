@@ -1,105 +1,105 @@
 import {describe, expect, test} from '@jest/globals';
 import {
+    array_t,
     atype,
     atypeAlias,
+    bigint_t,
+    boolean_t,
+    class_t,
+    date_t,
+    dict_t,
+    function_t,
     isZil,
+    map_t,
+    null_t,
+    number_t,
     objectAtype,
-    t_array,
-    t_bigint,
-    t_boolean,
-    t_class,
-    t_date,
-    t_dict,
-    t_function,
-    t_map,
-    t_null,
-    t_number,
-    t_regexp,
-    t_set,
-    t_string,
-    t_undefined,
-    TypeAlias
+    regexp_t,
+    set_t,
+    string_t,
+    TypeAlias,
+    undefined_t
 } from "./atype";
 
 describe('objectAtype', () => {
     test('objectAtype null', () => {
-        expect(objectAtype(null)).toBe(t_null)
+        expect(objectAtype(null)).toBe(null_t)
     })
 
     test('objectAtype new Date()', () => {
-        expect(objectAtype(new Date())).toBe(t_date)
+        expect(objectAtype(new Date())).toBe(date_t)
     })
 
     test('objectAtype new Map()', () => {
-        expect(objectAtype(new Map())).toBe(t_map)
+        expect(objectAtype(new Map())).toBe(map_t)
     })
 
     test('objectAtype new Set()', () => {
-        expect(objectAtype(new Set())).toBe(t_set)
+        expect(objectAtype(new Set())).toBe(set_t)
     })
 
     test('objectAtype {a: 1, b: 2n}', () => {
-        expect(objectAtype({a: 1, b: 2n})).toBe(t_dict)
+        expect(objectAtype({a: 1, b: 2n})).toBe(dict_t)
     })
 })
 
 describe('atype', () => {
     test('atype [1, "2", 3]', () => {
-        expect(atype([1, "2", 3])).toBe(t_array)
+        expect(atype([1, "2", 3])).toBe(array_t)
     })
 
     test('atype 1n', () => {
-        expect(atype(1n)).toBe(t_bigint)
+        expect(atype(1n)).toBe(bigint_t)
     })
 
     test('atype true', () => {
-        expect(atype(true)).toBe(t_boolean)
+        expect(atype(true)).toBe(boolean_t)
     })
 
     test('atype A{}', () => {
         class A {
         }
 
-        expect(atype(new A())).toBe(t_class)
+        expect(atype(new A())).toBe(class_t)
     })
 
     test('atype f()', () => {
         function f() {
         }
 
-        expect(atype(f)).toBe(t_function)
+        expect(atype(f)).toBe(function_t)
     })
 
     test('atype str', () => {
-        expect(atype("str")).toBe(t_string)
+        expect(atype("str")).toBe(string_t)
     })
 
     test('atype regexp', () => {
-        expect(atype(new RegExp(/^\d+$/))).toBe(t_regexp)
+        expect(atype(new RegExp(/^\d+$/))).toBe(regexp_t)
     })
 
     test('atype undefined', () => {
-        expect(atype(undefined)).toBe(t_undefined)
+        expect(atype(undefined)).toBe(undefined_t)
     })
 
     test('atype null', () => {
-        expect(atype(null)).toBe(t_null)
+        expect(atype(null)).toBe(null_t)
     })
 
     test('atype new Date()', () => {
-        expect(atype(new Date())).toBe(t_date)
+        expect(atype(new Date())).toBe(date_t)
     })
 
     test('atype new Map()', () => {
-        expect(atype(new Map())).toBe(t_map)
+        expect(atype(new Map())).toBe(map_t)
     })
 
     test('atype new Set()', () => {
-        expect(atype(new Set())).toBe(t_set)
+        expect(atype(new Set())).toBe(set_t)
     })
 
     test('atype {a: 1, b: 2n}', () => {
-        expect(atype({a: 1, b: 2n})).toBe(t_dict)
+        expect(atype({a: 1, b: 2n})).toBe(dict_t)
     })
 })
 
@@ -145,59 +145,59 @@ describe('isZil', () => {
 
 describe('atypeAlias', () => {
     test('atypeAlias []', () => {
-        expect(atypeAlias([])).toBe(TypeAlias[t_array])
+        expect(atypeAlias([])).toBe(TypeAlias[array_t])
     })
     test('atypeAlias true', () => {
-        expect(atypeAlias(true)).toBe(TypeAlias[t_boolean])
+        expect(atypeAlias(true)).toBe(TypeAlias[boolean_t])
     })
     test('atypeAlias false', () => {
-        expect(atypeAlias(false)).toBe(TypeAlias[t_boolean])
+        expect(atypeAlias(false)).toBe(TypeAlias[boolean_t])
     })
     test('atypeAlias A{}', () => {
         class A {
         }
 
-        expect(atypeAlias(new A())).toBe(TypeAlias[t_class])
+        expect(atypeAlias(new A())).toBe(TypeAlias[class_t])
     })
     test('atypeAlias new Date()', () => {
-        expect(atypeAlias(new Date())).toBe(TypeAlias[t_date])
+        expect(atypeAlias(new Date())).toBe(TypeAlias[date_t])
     })
     test('atypeAlias {}', () => {
-        expect(atypeAlias({})).toBe(TypeAlias[t_dict])
+        expect(atypeAlias({})).toBe(TypeAlias[dict_t])
     })
 
     test('atypeAlias 0', () => {
-        expect(atypeAlias(0)).toBe(TypeAlias[t_number])
+        expect(atypeAlias(0)).toBe(TypeAlias[number_t])
     })
     test('atypeAlias fn()', () => {
         function f() {
         }
 
-        expect(atypeAlias(f)).toBe(TypeAlias[t_function])
+        expect(atypeAlias(f)).toBe(TypeAlias[function_t])
     })
     test('atypeAlias null', () => {
-        expect(atypeAlias(null)).toBe(TypeAlias[t_null])
+        expect(atypeAlias(null)).toBe(TypeAlias[null_t])
     })
 
     test('atypeAlias new Map()', () => {
-        expect(atypeAlias(new Map())).toBe(TypeAlias[t_map])
+        expect(atypeAlias(new Map())).toBe(TypeAlias[map_t])
     })
     test('atypeAlias 1n', () => {
-        expect(atypeAlias(1n)).toBe(TypeAlias[t_bigint])
+        expect(atypeAlias(1n)).toBe(TypeAlias[bigint_t])
     })
     test('atypeAlias new RegExp', () => {
-        expect(atypeAlias(new RegExp(/^\d+$/ig))).toBe(TypeAlias[t_regexp])
+        expect(atypeAlias(new RegExp(/^\d+$/ig))).toBe(TypeAlias[regexp_t])
     })
     test('atypeAlias ""', () => {
-        expect(atypeAlias('')).toBe(TypeAlias[t_string])
+        expect(atypeAlias('')).toBe(TypeAlias[string_t])
     })
     test('atypeAlias string', () => {
-        expect(atypeAlias('string')).toBe(TypeAlias[t_string])
+        expect(atypeAlias('string')).toBe(TypeAlias[string_t])
     })
     test('atypeAlias new Set()', () => {
-        expect(atypeAlias(new Set())).toBe(TypeAlias[t_set])
+        expect(atypeAlias(new Set())).toBe(TypeAlias[set_t])
     })
     test('atypeAlias undefined', () => {
-        expect(atypeAlias(undefined)).toBe(TypeAlias[t_undefined])
+        expect(atypeAlias(undefined)).toBe(TypeAlias[undefined_t])
     })
 })

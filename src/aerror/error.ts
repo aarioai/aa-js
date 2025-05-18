@@ -1,9 +1,10 @@
 import {E_ClientThrow, E_FailedAndSeeOther, E_Gone, E_NoRowsAvailable, E_NotFound} from "./code";
 import {code2msg} from "./code2msg";
-import {language, matchLanguage} from "../aa/translation/language";
+import {language, matchLanguage} from "../aa/translate/language";
 import {AErrorDictionaries} from "./dictionaries";
-import {translate} from "../aa/translation/dictionary";
+import {translate} from "../aa/translate/dictionary";
 import {LF} from "../aa/env/const";
+import {t_numeric} from "../aa/atype/types";
 
 export class AError extends Error {
     readonly code: number
@@ -18,7 +19,7 @@ export class AError extends Error {
      * new AError(E_Unauthorized, "need login")
      * new AError("something wrong happened")
      */
-    constructor(code: number | string, msg?: string) {
+    constructor(code: t_numeric, msg?: string) {
         let c: number = E_ClientThrow
         if (typeof code === "number") {
             c = code

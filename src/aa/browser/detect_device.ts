@@ -1,4 +1,5 @@
-import {Percent, percent, PercentMultiplicand} from "../env/const_unit";
+import {Percent, PercentMultiplicand} from "../env/const_unit";
+import {t_percent} from "../atype/types";
 
 export const MaxTabletWidth = 768
 
@@ -6,7 +7,7 @@ export const MaxTabletWidth = 768
 /**
  * Gets the main width of tablet devices, e.g. phones, pads
  */
-export function tabletMainWidth(proportion: percent = 100 * Percent): number {
+export function tabletMainWidth(proportion: t_percent = 100 * Percent): number {
     if (!proportion || proportion < 0) {
         throw new RangeError(`proportion must be greater than 0`)
     }

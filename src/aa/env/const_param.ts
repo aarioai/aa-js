@@ -1,8 +1,3 @@
-export type ResponseBody = {
-    code: number,
-    msg: string,
-    data: any,
-}
 // 1 or `log` debug via log; 2 or `alert` debug via alert; 0 or others no debug
 export const P_ClientDebug = "_debug"
 export const P_ClientAuthAt = "_auth_at"

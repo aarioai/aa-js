@@ -1,3 +1,5 @@
+import {t_numeric} from "../atype/types";
+
 /**
  * Formats a number or numeric string by trimming unnecessary trailing decimal zeros.
  * Optionally rounds to specified decimal places before trimming.
@@ -10,7 +12,7 @@
  * trimFloat(1.2000, 4)  -->  '1.2'
  * trimFloat(1.2340, 4) --> '1.234'
  */
-export function trimFloat(value: number | string, digits ?: number): string {
+export function trimFloat(value: t_numeric, digits ?: number): string {
     const v = digits !== undefined ? Number(value).toFixed(digits) : String(value)
     return v.replace(/\.?0*$/, '')
 }
@@ -22,7 +24,7 @@ export function trimFloat(value: number | string, digits ?: number): string {
  * formatNumber(1234567.89, 2)      // Returns "1,234,567.89"
  * formatNumber('1234567', 0, ' ')  // Returns "1 234 567"
  */
-export function formatNumber(value: number | string, precision = 0, separator = ','): string {
+export function formatNumber(value: t_numeric, precision = 0, separator = ','): string {
     const v = Number(value)
     if (!Number.isFinite(v)) {
         return '0'

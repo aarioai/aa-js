@@ -1,4 +1,5 @@
 import {numberArray} from "../aa/atype/atype_func";
+import {t_numeric} from "../aa/atype/types";
 
 export type ComparisonOperator = '<' | '=' | '>' | '>=' | '<=' | '=='
 
@@ -10,7 +11,7 @@ export type ComparisonOperator = '<' | '=' | '>' | '>=' | '<=' | '=='
  * findClosestValue(['10', '20', '30'], '<=', 25); // 20
  * findClosestValue([5, 10, 15], '==', 12); // 10 (closest)
  */
-export function findClosestValue(candidates: Array<number | string>, operator: ComparisonOperator, target: number | string): number {
+export function findClosestValue(candidates: Array<t_numeric>, operator: ComparisonOperator, target: t_numeric): number {
     const num = Number(target)
     let cands = numberArray(candidates)
     cands.sort((a, b) => a - b)

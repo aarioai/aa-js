@@ -1,5 +1,6 @@
 {
   "name": "aa-js",
+  "description": "a javascript SDK for airis Golang restful APIs",
   "version": "0.0.1",
   "author": "Aario",
   "type": "module",
