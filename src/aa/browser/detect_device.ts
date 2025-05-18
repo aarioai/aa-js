@@ -1,5 +1,6 @@
 import {Percent, PercentMultiplicand} from "../env/const_unit";
 import {t_percent} from "../atype/basic_types";
+import {Panic} from "../atype/panic";
 
 export const MaxTabletWidth = 768
 
@@ -8,9 +9,7 @@ export const MaxTabletWidth = 768
  * Gets the main width of tablet devices, e.g. phones, pads
  */
 export function tabletMainWidth(proportion: t_percent = 100 * Percent): number {
-    if (!proportion || proportion < 0) {
-        throw new RangeError(`proportion must be greater than 0`)
-    }
+    Panic.assertLessThanZero(proportion)
     let bodyWidth = document.querySelector('body')?.offsetWidth || MaxTabletWidth
     if (proportion === 100 * Percent) {
         return bodyWidth

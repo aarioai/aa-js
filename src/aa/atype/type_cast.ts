@@ -15,6 +15,7 @@ import {
 } from "./const";
 import {jsonify} from "../base/base";
 import {t_numeric} from "./basic_types";
+import {Panic} from "./panic";
 
 function inRange(value: number, min: number, max: number, name: string): number {
     if ((typeof min !== 'undefined' && value < min) || (typeof max !== 'undefined' && value > max)) {
@@ -42,9 +43,7 @@ export function a_array<T>(value: T | T[] | null | undefined): T[] {
     if (Array.isArray(value)) {
         return value
     }
-    if (["string", "number", "boolean"].includes(typeof value)) {
-        throw new TypeError("a_array only accepts a null, undefined, dict or an array")
-    }
+    Panic.assertNotTypeof(value, ['object'])
     return Object.values(value)
 }
 

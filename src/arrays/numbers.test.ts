@@ -73,7 +73,7 @@ describe('findClosestValue', () => {
         })
 
         test('throws error for empty array', () => {
-            expect(() => findClosestValue([], '=', 10)).toThrow('No valid numeric candidates provided')
+            expect(() => findClosestValue([], '=', 10)).toThrow()
         })
 
         test('handles non-numeric strings by ignoring them', () => {

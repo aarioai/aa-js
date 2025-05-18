@@ -1,5 +1,6 @@
 import {numberArray} from "../aa/atype/func";
 import {t_numeric} from "../aa/atype/basic_types";
+import {Panic} from "../aa/atype/panic";
 
 export type ComparisonOperator = '<' | '=' | '>' | '>=' | '<=' | '=='
 
@@ -15,9 +16,7 @@ export function findClosestValue(candidates: Array<t_numeric>, operator: Compari
     const num = Number(target)
     let cands = numberArray(candidates)
     cands.sort((a, b) => a - b)
-    if (cands.length === 0) {
-        throw new Error(`No valid numeric candidates provided`)
-    }
+    Panic.assertEmptyArray(cands)
     switch (operator) {
         case '=':
         case '==':

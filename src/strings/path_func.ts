@@ -1,3 +1,5 @@
+import {Panic} from "../aa/atype/panic";
+
 export function isWindowsAbsolutePath(path: string): boolean {
     return path ? /^[A-Za-z]:[\/\\]/.test(path) : false
 }
@@ -31,9 +33,8 @@ export function joinPath(base: string, ...paths: string[]): string {
         }
 
         // window absolute path, e.g. C:\abc, d:\etc
-        if (/^[A-Za-z]:\//.test(path)) {
-            throw new Error(`illegal to join another absolute windows path ${path}`)
-        }
+        Panic.assert(/^[A-Za-z]:\//.test(path), `illegal to join another absolute windows path ${path}`)
+
         result = !result || result.endsWith('/') ? result + path : result + '/' + path
     }
 

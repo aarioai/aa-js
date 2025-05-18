@@ -1,3 +1,5 @@
+import {Panic} from "./atype/panic";
+
 /**
  * Safely instantiates a class by name
  *
@@ -73,9 +75,6 @@ export function invokeStaticMethod<T = unknown>(
     ...args: unknown[]
 ): T {
     const c = instantiateClass(className).constructor
-    if (typeof c[methodName] !== 'function') {
-        throw new TypeError(`Static method ${className}.${methodName} does not exist or is not callable`)
-    }
-
+    Panic.assertNotTypeof(c[methodName], ['function'])
     return c[methodName](...args) as T;
 }
