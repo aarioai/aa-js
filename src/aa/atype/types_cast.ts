@@ -1,4 +1,5 @@
 import {
+    False,
     MaxInt16,
     MaxInt24,
     MaxInt32,
@@ -11,21 +12,24 @@ import {
     MinInt24,
     MinInt32,
     MinInt8,
-    Nif
+    Nif,
+    True
 } from "./const";
 import {jsonify} from "../base/base";
 import {Panic} from "./panic";
 import {
+    t_booln,
     t_int16,
     t_int24,
     t_int32,
-    t_int64,
+    t_int64b,
     t_int8,
     t_numeric,
+    t_safeint,
     t_uint16,
     t_uint24,
     t_uint32,
-    t_uint64,
+    t_uint64b,
     t_uint8
 } from "./atype_server";
 
@@ -77,6 +81,10 @@ export function a_bool(value: any): boolean {
         default:
             return Boolean(value)
     }
+}
+
+export function a_booln(value: any): t_booln {
+    return a_bool(value) ? True : False
 }
 
 export function a_func(value: any) {
@@ -164,48 +172,49 @@ export function floatToInt(v: number): number {
     return v ? v | 0 : 0  // faster than Math.floor()
 }
 
-export function int64(v?: t_numeric | bigint): t_int64 {
+export function int64b(v?: t_numeric | bigint): t_int64b {
     return BigInt(v)
 }
 
-export function int54(v?: number): number {
+// [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER] [-9007199254740991, 9007199254740991]
+export function safeInt(v?: number): t_safeint {
     return floatToInt(a_number(v))
 }
 
 export function int32(v?: number): t_int32 {
-    return inRange(int54(v), MinInt32, MaxInt32, 'int32')
+    return inRange(safeInt(v), MinInt32, MaxInt32, 'int32')
 }
 
 export function int24(v?: number): t_int24 {
-    return inRange(int54(v), MinInt24, MaxInt24, 'int24')
+    return inRange(safeInt(v), MinInt24, MaxInt24, 'int24')
 }
 
 export function int16(v?: number): t_int16 {
-    return inRange(int54(v), MinInt16, MaxInt16, 'int16')
+    return inRange(safeInt(v), MinInt16, MaxInt16, 'int16')
 }
 
 export function int8(v?: number): t_int8 {
-    return inRange(int54(v), MinInt8, MaxInt8, 'int8')
+    return inRange(safeInt(v), MinInt8, MaxInt8, 'int8')
 }
 
-export function uint64(v?: t_numeric | bigint): t_uint64 {
+export function uint64b(v?: t_numeric | bigint): t_uint64b {
     return BigInt(v)
 }
 
 export function uint32(v?: number): t_uint32 {
-    return inRange(int54(v), 0, MaxUint32, 'uint32')
+    return inRange(safeInt(v), 0, MaxUint32, 'uint32')
 }
 
 export function uint24(v?: number): t_uint24 {
-    return inRange(int54(v), 0, MaxUint24, 'uint24')
+    return inRange(safeInt(v), 0, MaxUint24, 'uint24')
 }
 
 export function uint16(v?: number): t_uint16 {
-    return inRange(int54(v), 0, MaxUint16, 'uint16')
+    return inRange(safeInt(v), 0, MaxUint16, 'uint16')
 }
 
 export function uint8(v?: number): t_uint8 {
-    return inRange(int54(v), 0, MaxUint8, 'uint8')
+    return inRange(safeInt(v), 0, MaxUint8, 'uint8')
 }
 
 

@@ -1,6 +1,6 @@
 import {t_decimal, t_float64, t_money, t_percent, t_vmoney} from "./atype_server";
 import {ValueOf} from "./types";
-import {int32, int64} from "./types_cast";
+import {int32, int64b} from "./types_cast";
 
 
 /**
@@ -29,21 +29,21 @@ export function divideBigint(dividend: bigint, divisor: bigint): t_float64 {
 
 export function a_decimal(n: number | ValueOf<t_decimal>): t_decimal {
     if (typeof n === 'number') {
-        return int64(n)
+        return int64b(n)
     }
     return n.valueOf()
 }
 
 export function a_money(n: number | ValueOf<t_money>): t_money {
     if (typeof n === 'number') {
-        return int64(n)
+        return int64b(n)
     }
     return n.valueOf()
 }
 
 export function a_vmoney(n: number | ValueOf<t_vmoney>): t_vmoney {
     if (typeof n === 'number') {
-        return int64(n)
+        return int64b(n)
     }
     return n.valueOf()
 }
