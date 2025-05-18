@@ -1,5 +1,5 @@
 import {uint16, uint24} from "./types_cast"
-import {t_date, t_datetime, t_dist, t_distri, t_timestamp} from "./basic_types"
+import {t_date, t_datetime, t_dist, t_distri, t_timestamp} from "./atype_server"
 import {DatePattern, DatetimePattern, MinDate, MinDatetime} from "./const"
 import {AConfig} from "../env/aconfig"
 import {TZDate} from "@date-fns/tz"

@@ -1,4 +1,4 @@
-import {t_float64} from "./basic_types";
+import {t_float64} from "./atype_server";
 
 export type t_coordinate = {
     latitude: t_float64,

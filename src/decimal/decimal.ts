@@ -1,5 +1,5 @@
-import {t_decimal, t_float64} from "../aa/atype/basic_types";
-import {ValueOf} from "../aa/atype/interfaces";
+import {t_decimal, t_float64} from "../aa/atype/atype_server";
+import {ValueOf} from "../aa/atype/types";
 import {a_decimal, divideBigint} from "../aa/atype/types_cast_decimal";
 import {DecimalMultiplicand} from "../aa/atype/const";
 import {Percent} from "./percent";
@@ -64,7 +64,7 @@ export class Decimal implements ValueOf<t_decimal> {
     }
 
     toPercent(): Percent {
-        return new Percent(this.#value * 100n)
+        return new Percent(Number(this.#value) * 100)
     }
 
     valueOf(): t_decimal {

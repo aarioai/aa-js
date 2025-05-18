@@ -1,5 +1,5 @@
-import {ValueOf} from "../aa/atype/interfaces";
-import {t_float64, t_percent} from "../aa/atype/basic_types";
+import {ValueOf} from "../aa/atype/types"
+import {t_float64, t_percent} from "../aa/atype/atype_server";
 import {PercentMultiplicand} from "../aa/atype/const";
 import {a_percent} from "../aa/atype/types_cast_decimal";
 import {Decimal} from "./decimal";

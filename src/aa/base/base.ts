@@ -1,3 +1,5 @@
+import {Maps} from "../atype/types";
+
 /**
  * Safely converts a value to JSON string with BigInt support.
  *
@@ -38,7 +40,7 @@ export function jsonify(o: any): string {
  * parseJSON(null)      // null
  * parseJSON('invalid') // null
  */
-export function parseJSON(input: string | undefined | null | Map<any, any> | Array<any>): object {
+export function parseJSON(input: string | undefined | null | Maps | Array<any>): object {
     if (!input || (typeof input === "string" && input.trim().toLowerCase() === "null")) {
         return null
     }

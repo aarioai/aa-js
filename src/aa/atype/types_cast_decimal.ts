@@ -1,5 +1,5 @@
-import {t_decimal, t_float64, t_money, t_percent, t_vmoney} from "./basic_types";
-import {ValueOf} from "./interfaces";
+import {t_decimal, t_float64, t_money, t_percent, t_vmoney} from "./atype_server";
+import {ValueOf} from "./types";
 import {int32, int64} from "./types_cast";
 
 

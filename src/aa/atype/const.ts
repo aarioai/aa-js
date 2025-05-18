@@ -15,7 +15,7 @@ import {
     t_uint32,
     t_uint8,
     t_vmoney
-} from "./basic_types";
+} from "./atype_server";
 
 export const Nif = () => undefined
 

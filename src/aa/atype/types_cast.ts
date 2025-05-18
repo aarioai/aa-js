@@ -27,7 +27,7 @@ import {
     t_uint32,
     t_uint64,
     t_uint8
-} from "./basic_types";
+} from "./atype_server";
 
 function inRange(value: number, min: number, max: number, name: string): number {
     if ((typeof min !== 'undefined' && value < min) || (typeof max !== 'undefined' && value > max)) {
