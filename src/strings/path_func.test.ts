@@ -1,5 +1,5 @@
 import {describe, expect, test} from "@jest/globals"
-import {joinPath} from "./path";
+import {joinPath, normalizePath, parseBaseName, parsePath} from "./path_func";
 
 
 describe('joinPath', () => {
@@ -64,5 +64,52 @@ describe('joinPath', () => {
         expect(joinPath('a\\b', 'c\\d')).toBe('a/b/c/d')
         expect(joinPath('a\\b\\', '\\c\\d')).toBe('a/b/c/d')
         expect(joinPath('c:\\a\\b\\', '\\c\\d')).toBe('C:\\a\\b\\c\\d')
+    })
+})
+
+
+describe('parse path', () => {
+    test('parseBaseName', () => {
+        expect(parseBaseName('a')).toEqual({dirname: '', basename: 'a'})
+        expect(parseBaseName('C:\\tests\\a.JPG')).toEqual({dirname: 'C:\\tests', basename: 'a.JPG'})
+        expect(parseBaseName('/tests/a.test.js')).toEqual({dirname: '/tests', basename: 'a.test.js'})
+        expect(parseBaseName('a.test.js')).toEqual({dirname: '', basename: 'a.test.js'})
+        expect(parseBaseName('./.gitignore')).toEqual({dirname: '', basename: '.gitignore'})
+    })
+    test('parsePath', () => {
+        expect(parsePath('a')).toEqual({dirname: '', basename: 'a', filename: 'a', extension: ''})
+        expect(parsePath('C:\\tests\\a.JPG')).toEqual({
+            dirname: 'C:\\tests',
+            basename: 'a.JPG',
+            filename: 'a',
+            extension: '.JPG'
+        })
+        expect(parsePath('/tests/a.test.js')).toEqual({
+            dirname: '/tests',
+            basename: 'a.test.js',
+            filename: 'a.test',
+            extension: '.js'
+        })
+        expect(parsePath('a.test.js')).toEqual({
+            dirname: '',
+            basename: 'a.test.js',
+            filename: 'a.test',
+            extension: '.js'
+        })
+        expect(parsePath('./.gitignore')).toEqual({
+            dirname: '',
+            basename: '.gitignore',
+            filename: '',
+            extension: '.gitignore'
+        })
+    })
+    test('normalizePath', () => {
+        expect(normalizePath('/../a/c/')).toBe('/a/c')
+        expect(normalizePath('a/b/c/..')).toBe('a/b')
+        expect(normalizePath('./a/b/c/..')).toBe('a/b')
+        expect(normalizePath('/./a/b/c/..')).toBe('/a/b')
+        expect(normalizePath('/../a//b/c/d/e/../../../f/.//./g/.//.///./../.././i/./../.')).toBe('/a/b')
+        expect(normalizePath('../a//b/c/d/e/../../../f/.//./g/.//.///./../.././i/./../.')).toBe('../a/b')
+        expect(normalizePath('C:/a/c/')).toBe('C:\\a\\c')
     })
 })

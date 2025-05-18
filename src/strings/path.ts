@@ -1,62 +1,83 @@
-/**
- * Join paths with slash
- *
- * @example
- *  joinPath('a/b','../../../xyz')  // Returns ../xyz
- *  joinPath('a/b','..', '..', '..', '/xyz')  // Returns ../xyz
- *  joinPath('', '//test/file')     // Returns test/file
- *  joinPath('/', '//test/file')    // Returns /test/file
- *  joinPath('/a/b', '/c/d')        // Returns /a/b/c/d
- *  joinPath('C:\\a\\b', '/c/d')    // Returns C:\\a\\b\\c\\d
- *  joinPath('C:/a/b', '/c/d')      // Returns C:\\a\\b\\c\\d
- *  joinPath('\\a\\b', '..\\c\\d')   // Returns /a/c/d
- *  joinPath('', '')   // Returns ''
- */
-export function joinPath(base: string, ...paths: string[]): string {
-    let result = base.replaceAll('\\', '/').replace(/\/+/g, '/').trim()
+import {normalizePath} from "vite";
+import {isAbsolutePath, joinPath, parsePath} from "./path_func";
 
-    for (let path of paths) {
-        // for safety, sub-paths can't use absolute path
-        path = path.replaceAll('\\', '/').replace(/^\/+/, '').replace(/\/+/g, '/').trim()
-        if (!path || path === '.' || path === './') {
-            continue
-        }
+class Path {
+    separator = '/'
+    #path: string = ''
+    #dirname: string    // path = dirname + '/' + basename
+    #basename: string   // filename + extname
+    #filename: string   // filename without extension name
+    #extension: string    // extension name starts with a dot
+    #parsed: boolean = false
 
-        // window absolute path, e.g. C:\abc, d:\etc
-        if (/^[A-Za-z]:\//.test(path)) {
-            throw new Error(`illegal to join another absolute windows path ${path}`)
+    constructor(path: string, normalize: boolean = true) {
+        if (normalize) {
+            path = normalizePath(path)
         }
-        result = !result || result.endsWith('/') ? result + path : result + '/' + path
+        this.#path = path
     }
 
-    // Process relative path segments (.. and .)
-    const parts = result.split('/')
-    const newParts: string[] = []
-    let isAbsolute = result.startsWith('/')
-    let isWindowsAbsolute = /^[A-Za-z]:\//.test(result)
+    get dirname(): string {
+        this.#parse()
+        return this.#dirname
+    }
 
-    for (const part of parts) {
-        if (part === '..') {
-            if (newParts.length > 0 && newParts[newParts.length - 1] !== '..') {
-                newParts.pop()
-            } else if (!isAbsolute && !isWindowsAbsolute) {
-                newParts.push(part)
-            }
-        } else if (part !== '.' && part !== '') {
-            newParts.push(part)
+    get basename(): string {
+        this.#parse()
+        return this.#basename
+    }
+
+    get extension(): string {
+        this.#parse()
+        return this.#extension
+    }
+
+    get filename(): string {
+        this.#parse()
+        return this.#filename
+    }
+
+    withSeparator(separator: string): Path {
+        this.separator = separator
+        return this
+    }
+
+    join(...paths: string[]): Path {
+        this.#path = joinPath(this.#path, ...paths)
+        this.#parsed = false
+        return this
+    }
+
+    isAbsolute(): boolean {
+        return isAbsolutePath(this.#path)
+    }
+
+    toString() {
+        return this.separator === '/' ? this.#path : this.#path.replaceAll('/', this.separator)
+    }
+
+    #parse() {
+        if (this.#parsed) {
+            return
         }
+        this.#parsed = true
+        const path = this.#path
+        // optimize to pre-parse some paths
+        if (path === '' || path === '.' || path === './') {
+            return
+        }
+
+        if (path === '/') {
+            this.#dirname = '/'
+            return
+        }
+
+        const {dirname, basename, filename, extension} = parsePath(this.#basename)
+        this.#dirname = dirname
+        this.#basename = basename
+        this.#filename = filename
+        this.#extension = extension
+
     }
 
-    // Rebuild the path
-    if (isWindowsAbsolute) {
-        result = newParts.join('\\')
-        result = result.charAt(0).toUpperCase() + result.slice(1)
-
-    } else if (isAbsolute) {
-        result = '/' + newParts.join('/')
-    } else {
-        result = newParts.join('/')
-    }
-
-    return result
 }
