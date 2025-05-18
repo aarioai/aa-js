@@ -1,5 +1,6 @@
-import {typeArray} from "../aa/atype_func";
+import {typeArray} from "../aa/atype/atype_func";
 import {Break} from "../aa/env/const";
+import {floatToInt} from "../aa/atype/atype_extend";
 
 /**
  * Concatenates multiple arrays into a single array, skipping empty/null inputs
@@ -110,7 +111,7 @@ export function shuffle<T>(origin: readonly T[]): T[] {
 
     // While there remain elements to shuffle.
     while (i > 0) {
-        const randomIndex = Math.random() * i | 0   // faster than Math.floor()
+        const randomIndex = floatToInt(Math.random() * i)
         i--
 
         [shuffled[i], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[i]]

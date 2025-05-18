@@ -1,8 +1,8 @@
 import {E_ClientThrow, E_FailedAndSeeOther, E_Gone, E_NoRowsAvailable, E_NotFound} from "./code";
 import {code2msg} from "./code2msg";
-import {language, matchLanguage} from "../aa/language";
+import {language, matchLanguage} from "../aa/translation/language";
 import {AErrorDictionaries} from "./dictionaries";
-import {translate} from "../aa/dictionary";
+import {translate} from "../aa/translation/dictionary";
 import {LF} from "../aa/env/const";
 
 export class AError extends Error {

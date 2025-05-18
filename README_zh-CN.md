@@ -4,8 +4,20 @@ AaJS 是基于 airis Go 框架后端代码的前端调用SDK，主要服务于�
 
 ## 调用结构
 
+inside aa
+
 ```
-aa (include aa/env)
+aa <- aa/browser   
+aa <- aa/env <-- aa/brower
+
+aa <- aa/base    
+aa <- aa/atype <-- aa/base 
+aa <- aa/format <-- aa/atype
+aa <- aa/translate <-- aa/format
+```
+
+```
+aa 
 
 arrays <-- aa
 

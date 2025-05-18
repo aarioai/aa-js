@@ -1,4 +1,4 @@
-import {escapeRegExp} from "./format_regexp";
+import {escapeRegExp} from "../format/regexp";
 
 export type Dictionary = Record<string, string>
 export type Dictionaries = Record<string, Dictionary>

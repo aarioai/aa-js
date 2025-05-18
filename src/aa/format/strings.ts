@@ -1,5 +1,5 @@
-import {atype} from "./atype";
-import {a_string} from "./atype_extend";
+import {atype} from "../atype/atype";
+import {a_string} from "../atype/atype_extend";
 
 /**
  * Splits a string at the first occurrence of a separator, returning the parts and a success flag.

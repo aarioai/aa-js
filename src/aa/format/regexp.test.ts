@@ -1,5 +1,5 @@
 import {describe, expect, test} from "@jest/globals";
-import {escapeRegExp} from "./format_regexp";
+import {escapeRegExp} from "./regexp";
 
 describe('escapeRegExp', () => {
     test('escapeRegExp a/b.txt', () => {

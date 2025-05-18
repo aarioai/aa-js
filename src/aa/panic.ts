@@ -1,5 +1,5 @@
 import {Optional, Required} from "./env/const";
-import {atype} from "./atype";
+import {atype} from "./atype/atype";
 
 export class Panic extends Error {
 }

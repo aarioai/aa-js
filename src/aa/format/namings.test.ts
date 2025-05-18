@@ -1,5 +1,5 @@
-import {describe, expect, test} from "@jest/globals";
-import * as fmt from "./format_strings_case";
+import {describe, expect, test} from "@jest/globals"
+import * as fmt from "./namings"
 
 describe('cases', () => {
 

@@ -1,4 +1,4 @@
-import {shuffle} from "../arrays/arrays";
+import {shuffle} from "../arrays/array";
 import {AlphaDigits} from "../aa/env/const";
 
 export function shuffleString(s: string): string {

@@ -1,5 +1,5 @@
 import {describe, expect, test} from "@jest/globals";
-import {formatNumber, trimFloat} from "./format_numbers";
+import {formatNumber, trimFloat} from "./numerics";
 
 describe('trimFloat', () => {
     test('trimFloat(1.2, 4)', () => {

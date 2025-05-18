@@ -1,5 +1,5 @@
 import {describe, expect, test} from "@jest/globals";
-import {joinWith, joinWithSpace, replace, splitFirst, tidySplit, trim, trimLeft, trimRight} from "./format_strings";
+import {joinWith, joinWithSpace, replace, splitFirst, tidySplit, trim, trimLeft, trimRight} from "./strings";
 
 describe('splitFirst', () => {
     test("splitFirst('hello-world-!', '-')", () => {

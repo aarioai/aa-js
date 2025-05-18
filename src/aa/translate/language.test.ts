@@ -1,5 +1,5 @@
 import {describe, expect, test} from "@jest/globals"
-import {matchLanguage} from "./language";
+import {matchLanguage} from "./language"
 
 describe('matchLanguage', () => {
     test("matchLanguage('zh-CN', ['zh-CN', 'zh-TW', 'en-US'])", () => {

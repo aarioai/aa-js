@@ -1,5 +1,5 @@
 import {ALogStyle} from "./style";
-import {joinComplex} from "../aa/format_strings";
+import {joinComplex} from "../aa/format/strings";
 import {AConfig} from "../aa/env/aconfig";
 
 /**

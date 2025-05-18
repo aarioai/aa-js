@@ -1,4 +1,4 @@
-import {numberArray} from "../aa/atype_func";
+import {numberArray} from "../aa/atype/atype_func";
 
 export type ComparisonOperator = '<' | '=' | '>' | '>=' | '<=' | '=='
 
