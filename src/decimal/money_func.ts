@@ -9,7 +9,7 @@ export function moneyAddX(addend: number, ...adders: number[]): Money {
     for (const adder of adders) {
         v += adder
     }
-    return new Money(v * MoneyMultiplicand)
+    return new Money(BigInt(v) * MoneyMultiplicand)
 }
 
 export function moneyMinusX(minuend: number, ...subtrahends: number[]): Money {
@@ -17,13 +17,13 @@ export function moneyMinusX(minuend: number, ...subtrahends: number[]): Money {
     for (const sub of subtrahends) {
         v -= sub
     }
-    return new Money(v * MoneyMultiplicand)
+    return new Money(BigInt(v) * MoneyMultiplicand)
 }
 
 export function moneyMultiplyX(multiplicand: number, ...multipliers: number[]): Money {
-    let v = multiplicand * MoneyMultiplicand
+    let v = BigInt(multiplicand) * MoneyMultiplicand
     for (const m of multipliers) {
-        v *= m
+        v *= BigInt(m)
     }
     return new Money(v)
 }
@@ -32,9 +32,9 @@ export function moneyMultiplyX(multiplicand: number, ...multipliers: number[]): 
  * Instances Money by performing precise division of real numbers
  */
 export function moneyDivideX(dividend: number, ...divisors: number[]): Money {
-    let v = dividend * MoneyMultiplicand
+    let v = BigInt(dividend) * MoneyMultiplicand
     for (const divisor of divisors) {
-        v /= divisor
+        v /= BigInt(divisor)
     }
     return new Money(v)
 }

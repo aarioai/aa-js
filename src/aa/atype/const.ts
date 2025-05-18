@@ -3,14 +3,18 @@ import {
     t_booln,
     t_date,
     t_datetime,
+    t_decimal,
     t_int16,
     t_int24,
     t_int32,
     t_int8,
+    t_money,
+    t_percent,
     t_uint16,
     t_uint24,
     t_uint32,
-    t_uint8
+    t_uint8,
+    t_vmoney
 } from "./basic_types";
 
 export const Nif = () => undefined
@@ -45,12 +49,12 @@ export const MaxDatetime: t_datetime = "9999-12-31 23:59:59"
 
 export const ZeroValues = [null, '', undefined, false, 0, 0n, 0.0, '0', "0.0", "0.00", MinDate, MinDatetime]
 
+export const PercentScale = 2
+export const PercentMultiplicand: t_percent = Math.pow(10, PercentScale)// 100 = 10^2    percent is number, not big int
 
 export const DecimalScale = 4
-export const DecimalMultiplicand = Math.pow(10, DecimalScale) // 10000 = 10^4
-export const PercentScale = 2
-export const PercentMultiplicand = Math.pow(10, PercentScale) // 100 = 10^2
+export const DecimalMultiplicand: t_decimal = BigInt(Math.pow(10, DecimalScale))// 10000 = 10^4
 export const MoneyScale = 4
-export const MoneyMultiplicand = Math.pow(10, MoneyScale) // 10000 = 10^4
+export const MoneyMultiplicand: t_money = BigInt(Math.pow(10, MoneyScale)) // 10000 = 10^4
 export const VMoneyScale = 4
-export const VMoneyMultiplicand = Math.pow(10, VMoneyScale) // 10000 = 10^4
+export const VMoneyMultiplicand: t_vmoney = BigInt(Math.pow(10, VMoneyScale)) // 10000 = 10^4

@@ -15,6 +15,18 @@ import {
 } from "./const";
 import {jsonify} from "../base/base";
 import {Panic} from "./panic";
+import {
+    t_int16,
+    t_int24,
+    t_int32,
+    t_int64,
+    t_int8,
+    t_uint16,
+    t_uint24,
+    t_uint32,
+    t_uint64,
+    t_uint8
+} from "./basic_types";
 
 function inRange(value: number, min: number, max: number, name: string): number {
     if ((typeof min !== 'undefined' && value < min) || (typeof max !== 'undefined' && value > max)) {
@@ -151,39 +163,47 @@ export function floatToInt(v: number): number {
     return v ? v | 0 : 0  // faster than Math.floor()
 }
 
+export function int64(v?: number): t_int64 {
+    return BigInt(v)
+}
+
 export function int54(v?: number): number {
     return floatToInt(a_number(v))
 }
 
-export function int32(v?: number): number {
+export function int32(v?: number): t_int32 {
     return inRange(int54(v), MinInt32, MaxInt32, 'int32')
 }
 
-export function int24(v?: number): number {
+export function int24(v?: number): t_int24 {
     return inRange(int54(v), MinInt24, MaxInt24, 'int24')
 }
 
-export function int16(v?: number): number {
+export function int16(v?: number): t_int16 {
     return inRange(int54(v), MinInt16, MaxInt16, 'int16')
 }
 
-export function int8(v?: number): number {
+export function int8(v?: number): t_int8 {
     return inRange(int54(v), MinInt8, MaxInt8, 'int8')
 }
 
-export function uint32(v?: number): number {
+export function uint64(v?: number): t_uint64 {
+    return BigInt(v)
+}
+
+export function uint32(v?: number): t_uint32 {
     return inRange(int54(v), 0, MaxUint32, 'uint32')
 }
 
-export function uint24(v?: number): number {
+export function uint24(v?: number): t_uint24 {
     return inRange(int54(v), 0, MaxUint24, 'uint24')
 }
 
-export function uint16(v?: number): number {
+export function uint16(v?: number): t_uint16 {
     return inRange(int54(v), 0, MaxUint16, 'uint16')
 }
 
-export function uint8(v?: number): number {
+export function uint8(v?: number): t_uint8 {
     return inRange(int54(v), 0, MaxUint8, 'uint8')
 }
 

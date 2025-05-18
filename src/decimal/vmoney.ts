@@ -1,71 +1,67 @@
-import {ValueOf} from "../aa/atype/types";
-import {t_decimal, t_float64, t_vmoney} from "../aa/atype/basic_types";
-import {a_vmoney} from "../aa/atype/types_cast_decimal";
-import {MoneyScale, VMoneyMultiplicand} from "../aa/atype/const";
+import {ValueOf} from "../aa/atype/interfaces";
+import {t_float64, t_vmoney} from "../aa/atype/basic_types";
+import {VMoneyMultiplicand} from "../aa/atype/const";
+import {a_money, divideBigint} from "../aa/atype/types_cast_decimal";
 
 export class VMoney implements ValueOf<t_vmoney> {
     name = 'aa-money'
     round: (x: number) => number = Math.round
 
-    #value: t_decimal
+    #value: t_vmoney
 
 
-    constructor(value: t_decimal) {
+    constructor(value: t_vmoney) {
         this.#value = value
+
     }
 
-    withRound(round: (x: number) => number): VMoney {
-        this.round = round
+    add(d: t_vmoney | VMoney): VMoney {
+        this.#value += a_money(d)
         return this
     }
 
-    add(d: t_decimal | VMoney): VMoney {
-        this.#value += a_vmoney(d)
+    minus(d: t_vmoney | VMoney): VMoney {
+        this.#value -= a_money(d)
         return this
     }
 
-    minus(d: t_decimal | VMoney): VMoney {
-        this.#value -= a_vmoney(d)
+    multiply(d: t_vmoney | VMoney): VMoney {
+        this.#value = this.#value * a_money(d) / VMoneyMultiplicand
         return this
     }
 
-    multiply(d: t_decimal | VMoney): VMoney {
-        this.#value = this.#value * a_vmoney(d) / MoneyScale
-        return this
-    }
-
-    divide(d: t_decimal | VMoney): VMoney {
-        this.#value = this.#value * MoneyScale / a_vmoney(d)
+    divide(d: t_vmoney | VMoney): VMoney {
+        this.#value = this.#value * VMoneyMultiplicand / a_money(d)
         return this
     }
 
     addX(n: number): VMoney {
-        this.#value += n * MoneyScale
+        this.#value += BigInt(n) * VMoneyMultiplicand
         return this
     }
 
     minusX(n: number): VMoney {
-        this.#value *= n * MoneyScale
+        this.#value *= BigInt(n) * VMoneyMultiplicand
         return this
     }
 
     multiplyX(n: number): VMoney {
-        this.#value *= n
+        this.#value *= BigInt(n)
         return this
     }
 
     divideX(n: number): VMoney {
-        this.#value /= n
+        this.#value /= BigInt(n)
         return this
     }
 
     // convert to real number
     toReal(): t_float64 {
-        return this.#value / VMoneyMultiplicand
+        return divideBigint(this.#value, VMoneyMultiplicand)
     }
 
     valueOf(): t_vmoney {
-        return this.round(this.#value)
+        return this.#value
     }
 
     toString() {

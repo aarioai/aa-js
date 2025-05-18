@@ -3,7 +3,7 @@ export const bigint_t = 'bigint'
 export const boolean_t = 'boolean'
 export const class_t = 'class'  // new XXX()
 export const date_t = 'date'
-export const dict_t = 'dict'  // {}
+export const maps_t = 'maps'  // {}  map struct
 export const node_t = 'node'
 export const nodelist_t = 'nodelist'
 export const function_t = 'function'
@@ -21,7 +21,7 @@ export type Atype =
     | 'boolean'
     | 'class'
     | 'date'
-    | 'dict'
+    | 'maps'
     | 'node'
     | 'nodelist'
     | 'function'
@@ -38,7 +38,7 @@ export const TypeAlias = {
     'boolean': 'b',
     'class': 'c',
     'date': 'd',
-    'dict': 'e',
+    'maps': 'e',
     'number': 'i',
     'function': 'f',
     'null': 'l',
@@ -84,7 +84,7 @@ export function objectAtype(v: object): Atype {
         case 'set':
             return set_t
         case 'object':
-            return dict_t
+            return maps_t
     }
     return v.constructor !== Object && c !== "object" ? class_t : undefined_t
 }
@@ -122,7 +122,7 @@ export function isJQueryDom(value: object): boolean {
 }
 
 export function isDict(v: any): boolean {
-    return typeof v === 'object' && objectAtype(v) === dict_t
+    return typeof v === 'object' && objectAtype(v) === maps_t
 }
 
 /**

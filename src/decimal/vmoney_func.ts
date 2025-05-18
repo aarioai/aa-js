@@ -9,7 +9,7 @@ export function vmoneyAddX(addend: number, ...adders: number[]): VMoney {
     for (const adder of adders) {
         v += adder
     }
-    return new VMoney(v * VMoneyMultiplicand)
+    return new VMoney(BigInt(v) * VMoneyMultiplicand)
 }
 
 export function vmoneyMinusX(minuend: number, ...subtrahends: number[]): VMoney {
@@ -17,13 +17,13 @@ export function vmoneyMinusX(minuend: number, ...subtrahends: number[]): VMoney 
     for (const sub of subtrahends) {
         v -= sub
     }
-    return new VMoney(v * VMoneyMultiplicand)
+    return new VMoney(BigInt(v) * VMoneyMultiplicand)
 }
 
 export function vmoneyMultiplyX(multiplicand: number, ...multipliers: number[]): VMoney {
-    let v = multiplicand * VMoneyMultiplicand
+    let v = BigInt(multiplicand) * VMoneyMultiplicand
     for (const m of multipliers) {
-        v *= m
+        v *= BigInt(m)
     }
     return new VMoney(v)
 }
@@ -32,9 +32,9 @@ export function vmoneyMultiplyX(multiplicand: number, ...multipliers: number[]):
  * Instances VMoney by performing precise division of real numbers
  */
 export function vmoneyDivideX(dividend: number, ...divisors: number[]): VMoney {
-    let v = dividend * VMoneyMultiplicand
+    let v = BigInt(dividend) * VMoneyMultiplicand
     for (const divisor of divisors) {
-        v /= divisor
+        v /= BigInt(divisor)
     }
     return new VMoney(v)
 }

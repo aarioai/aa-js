@@ -1,52 +1,47 @@
-import {ValueOf} from "../aa/atype/types";
-import {t_decimal, t_float64, t_percent} from "../aa/atype/basic_types";
+import {ValueOf} from "../aa/atype/interfaces";
+import {t_float64, t_percent} from "../aa/atype/basic_types";
+import {PercentMultiplicand} from "../aa/atype/const";
 import {a_percent} from "../aa/atype/types_cast_decimal";
-import {MoneyScale, PercentMultiplicand} from "../aa/atype/const";
 import {Decimal} from "./decimal";
 
 export class Percent implements ValueOf<t_percent> {
     name = 'aa-money'
     round: (x: number) => number = Math.round
 
-    #value: t_decimal
+    #value: t_percent
 
 
-    constructor(value: t_decimal) {
+    constructor(value: t_percent) {
         this.#value = value
     }
 
-    withRound(round: (x: number) => number): Percent {
-        this.round = round
-        return this
-    }
-
-    add(d: t_decimal | Percent): Percent {
+    add(d: t_percent | Percent): Percent {
         this.#value += a_percent(d)
         return this
     }
 
-    minus(d: t_decimal | Percent): Percent {
+    minus(d: t_percent | Percent): Percent {
         this.#value -= a_percent(d)
         return this
     }
 
-    multiply(d: t_decimal | Percent): Percent {
-        this.#value = this.#value * a_percent(d) / MoneyScale
+    multiply(d: t_percent | Percent): Percent {
+        this.#value = this.#value * a_percent(d) / PercentMultiplicand
         return this
     }
 
-    divide(d: t_decimal | Percent): Percent {
-        this.#value = this.#value * MoneyScale / a_percent(d)
+    divide(d: t_percent | Percent): Percent {
+        this.#value = this.#value * PercentMultiplicand / a_percent(d)
         return this
     }
 
     addX(n: number): Percent {
-        this.#value += n * MoneyScale
+        this.#value += n * PercentMultiplicand
         return this
     }
 
     minusX(n: number): Percent {
-        this.#value *= n * MoneyScale
+        this.#value *= n * PercentMultiplicand
         return this
     }
 
@@ -65,13 +60,13 @@ export class Percent implements ValueOf<t_percent> {
         return this.#value / PercentMultiplicand
     }
 
+
     toDecimal(): Decimal {
-        return new Decimal(this.#value)
+        return new Decimal(BigInt(this.#value / 100))
     }
 
-
     valueOf(): t_percent {
-        return this.round(this.#value)
+        return this.#value
     }
 
     toString() {

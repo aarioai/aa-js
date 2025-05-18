@@ -157,7 +157,7 @@ describe('a_number', () => {
         expect(a_number(undefined)).toBe(0)
     })
     test('a_number .300', () => {
-        expect(a_number(".300")).toBe(0.3)
+        expect(a_number(Number(".300"))).toBe(0.3)
     })
     test('a_number .25', () => {
         expect(a_number(.25)).toBe(0.25)
@@ -166,7 +166,7 @@ describe('a_number', () => {
         expect(() => uint8(-1)).toThrow(RangeError)
     })
     test('uint16 "-1"', () => {
-        expect(() => uint16("-1")).toThrow(RangeError)
+        expect(() => uint16(Number("-1"))).toThrow(RangeError)
     })
 
 })

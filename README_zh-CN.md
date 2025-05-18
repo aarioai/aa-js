@@ -1,6 +1,6 @@
 # aa-js 说明
 
-AaJS 是基于 airis Go 框架后端代码的前端调用SDK，主要服务于调用 airis Go Restful API接口。
+AaJS 是基于 airis Go 框架后端代码的前端调用SDK，主要用于同步后端类型、枚举值，以及快捷调用 airis Go Restful API接口。
 
 ## 调用结构
 

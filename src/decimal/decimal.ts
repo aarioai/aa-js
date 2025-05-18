@@ -1,12 +1,11 @@
 import {t_decimal, t_float64} from "../aa/atype/basic_types";
-import {ValueOf} from "../aa/atype/types";
-import {a_decimal} from "../aa/atype/types_cast_decimal";
+import {ValueOf} from "../aa/atype/interfaces";
+import {a_decimal, divideBigint} from "../aa/atype/types_cast_decimal";
 import {DecimalMultiplicand} from "../aa/atype/const";
 import {Percent} from "./percent";
 
 export class Decimal implements ValueOf<t_decimal> {
     name = 'aa-decimal'
-    round: (x: number) => number = Math.round
 
     #value: t_decimal
 
@@ -14,10 +13,6 @@ export class Decimal implements ValueOf<t_decimal> {
         this.#value = value
     }
 
-    withRound(round: (x: number) => number): Decimal {
-        this.round = round
-        return this
-    }
 
     add(d: t_decimal | Decimal): Decimal {
         this.#value += a_decimal(d)
@@ -40,40 +35,40 @@ export class Decimal implements ValueOf<t_decimal> {
     }
 
     addX(n: number): Decimal {
-        this.#value += n * DecimalMultiplicand
+        this.#value += BigInt(n) * DecimalMultiplicand
         return this
     }
 
     minusX(n: number): Decimal {
-        this.#value *= n * DecimalMultiplicand
+        this.#value *= BigInt(n) * DecimalMultiplicand
         return this
     }
 
     multiplyX(n: number): Decimal {
-        this.#value *= n
+        this.#value *= BigInt(n)
         return this
     }
 
     divideX(n: number): Decimal {
-        this.#value /= n
+        this.#value /= BigInt(n)
         return this
     }
 
     // convert to real number
     toReal(): t_float64 {
-        return this.#value / DecimalMultiplicand
+        return divideBigint(this.#value, DecimalMultiplicand)
     }
 
     toRealPercent(): t_float64 {
-        return this.#value * 100 / DecimalMultiplicand
+        return divideBigint(this.#value * 100n, DecimalMultiplicand)
     }
 
     toPercent(): Percent {
-        return new Percent(this.#value * 100)
+        return new Percent(this.#value * 100n)
     }
 
     valueOf(): t_decimal {
-        return this.round(this.#value)
+        return this.#value
     }
 
     toString() {
