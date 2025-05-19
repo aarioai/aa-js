@@ -165,8 +165,7 @@ export function cloneAny<T = unknown>(source: T): T {
             if (!Object.prototype.hasOwnProperty.call(clone, key)) {
                 continue
             }
-            const value = clone[key]
-            target[key] = (value && typeof value === 'object') ? JSON.parse(JSON.stringify(value)) : value
+            target[key] = cloneAny(clone[key])
         }
         return target
     } catch {
