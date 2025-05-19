@@ -1,7 +1,15 @@
 import {describe, expect, test} from "@jest/globals"
-import {concat, concatInType, contains, generateArray} from "./array"
+import {concat, concatInType, contains, generateArray, trim} from "./array"
 import {a_string, uint8} from "../aa/atype/types_cast"
 
+describe('array functions', () => {
+    test('trim', () => {
+        expect(trim(['', 'a', 'b', '', null])).toEqual(['a', 'b'])
+        expect(trim([undefined, '', null])).toEqual([])
+        expect(trim([1, 2, '', 3])).toEqual([1, 2, '', 3])
+        expect(trim([null, undefined, 'hello', 0, false])).toEqual(['hello', 0, false])
+    })
+})
 describe('concat', () => {
     test('concat([1, 2], [3, 4])', () => {
         expect(concat([1, 2], [3, 4])).toEqual([1, 2, 3, 4])

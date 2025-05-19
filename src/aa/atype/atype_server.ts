@@ -38,8 +38,6 @@ export type t_district = number  // 12 digits district code
 
 export type t_version = number  // Semantic Versioning https://semver.org/lang/zh-CN/
 
-
-export const HttpMethods = ['HEAD', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
 export type http_method =
     'HEAD'
     | 'GET'
@@ -48,5 +46,8 @@ export type http_method =
     | 'PUT'
     | 'PATCH'
     | 'OPTIONS'
+
+export const HttpMethods: http_method[] = ['HEAD', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+export const HttpMethodReplacer = new RegExp('^(' + HttpMethods.join('|') + ')\\s+', 'i')
 
 

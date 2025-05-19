@@ -2,6 +2,38 @@ import {typeArray} from "../aa/atype/func";
 import {Break} from "../aa/env/const";
 import {floatToInt} from "../aa/atype/types_cast";
 
+function isEmpty(ele: any): boolean {
+    return ele === null || ele === undefined || ele === ''
+}
+
+/**
+ * Removes empty elements (null, undefined, empty strings) from the beginning and end of an array
+ *
+ * @example
+ *  trim(['', 'a', 'b', '', null])              //  ['a', 'b']
+ *  trim([undefined, '', null])                 //  []
+ *  trim([1, 2, '', 3])                         //  [1, 2, '', 3]
+ *  trim([null, undefined, 'hello', 0, false])  // ['hello', 0, false]
+ */
+export function trim(arr: any[]): any[] {
+    if (!arr?.length) {
+        return []
+    }
+    let start = 0
+    // trim left
+    while (start < arr.length && isEmpty(arr[start])) {
+        start++
+    }
+    let end = arr.length - 1
+    while (end > -1 && isEmpty(arr[end])) {
+        end--
+    }
+    if (start > end) {
+        return []
+    }
+    return arr.slice(start, end + 1)
+}
+
 /**
  * Concatenates multiple arrays into a single array, skipping empty/null inputs
  *

@@ -1,4 +1,5 @@
 import {Panic} from "../aa/atype/panic";
+import {Stringable} from '../aa/atype/types'
 
 export function isWindowsAbsolutePath(path: string): boolean {
     return path ? /^[A-Za-z]:[\/\\]/.test(path) : false
@@ -6,6 +7,57 @@ export function isWindowsAbsolutePath(path: string): boolean {
 
 export function isAbsolutePath(path: string): boolean {
     return path ? (path.startsWith('/') || isWindowsAbsolutePath(path)) : false
+}
+
+/**
+ * Splits joint path parts into a path segment array
+ *
+ * @example
+ *  splitPath('/a/','/','b')            //  ['a', 'b']
+ *  splitPath('/a', '/b/c', 'd')        //  ['a', 'b', 'c', 'd']
+ *  splitPath('/a', ' b c ', 'd')       //  ['a', 'b', 'c', 'd']
+ *  splitPath('/a', '.', 'd')           //  ['a', 'b']
+ *  splitPath('/a', '../.', 'd')        //  ['d']
+ *  splitPath('/a', '../.././..','.', 'd')    //  ['..', '..', 'd']
+ */
+export function splitPath(...parts: Stringable[]): string[] {
+    if (!parts.length) {
+        return []
+    }
+    let segs: string[] = []
+    for (let part of parts) {
+        const p = String(part)
+            .replace(/[\s\\]/g, '/')
+            .replace(/\/+/g, '/')
+            .replace(/^\/|\/$/g, '')
+        if (p === '' || p === '.') {
+            continue
+        }
+        if (p.includes('/')) {
+            segs.push(...p.split('/').filter(s => s != '.'))
+        } else {
+            segs.push(p)
+        }
+    }
+    let parent = 0
+    let newSegs: string[] = []
+    for (let i = segs.length - 1; i > -1; i--) {
+        const seg = segs[i]
+        if (seg === '..') {
+            parent = parent < 1 ? 1 : (parent + 1)
+            continue
+        }
+        if (parent > 0) {
+            parent--
+            continue
+        }
+        newSegs.unshift(seg)
+    }
+    while ((parent--) > 0) {
+        newSegs.unshift('..')
+    }
+
+    return newSegs
 }
 
 /**

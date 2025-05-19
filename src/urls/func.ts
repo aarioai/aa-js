@@ -1,6 +1,5 @@
-import {joinPath, parseBaseName} from "../strings/path_func";
+import {joinPath, parseBaseName, splitPath} from "../strings/path_func";
 import {http_method, HttpMethods} from "../aa/atype/atype_server";
-import {Maps} from "../aa/atype/types";
 
 /**
  * Fully decodes a URI-encoded string until no further decoding is possible.
@@ -28,10 +27,67 @@ export function deepDecodeURI(uri: string): string {
  * Optimized URI encoder that first fully decodes then encodes the input.
  *
  * @example
- * encodeURI('hello%2520world') // returns 'hello%20world'
+ * deepEncodeURI('/hello%2520world') // returns '%2Fhello%20world'
  */
-export function encodeURI(uri: string): string {
+export function deepEncodeURI(uri: string): string {
     return uri ? encodeURIComponent(deepDecodeURI(uri)) : ''
+}
+
+/**
+ * Splits a URL string into uppercased method and URL parts
+ *
+ * @example
+ *  splitURLMethod('//luexu.com/m')   // {method:'', url:'//luexu.com/m'}
+ *  splitURLMethod('GET  //luexu.com/m')   // {method:'GET', url:'//luexu.com/m'}
+ *  splitURLMethod('Put //luexu.com/m')   // {method:'PUT', url:'//luexu.com/m'}
+ *  splitURLMethod('ANY //luexu.com/m')   // {method:'', url:'ANY //luexu.com/m'}
+ */
+export function splitURLMethod(url: string): { method: http_method | '', url: string } {
+    url = url.trim()
+    const spaceIndex = url.indexOf(' ')
+    if (spaceIndex < 0) {
+        return {method: '', url: url}
+    }
+    const uppercaseMethod = url.slice(0, spaceIndex).toUpperCase() as http_method
+    if (!HttpMethods.includes(uppercaseMethod)) {
+        return {method: '', url: url}
+    }
+    return {
+        method: uppercaseMethod,
+        url: url.slice(spaceIndex + 1).trim().replaceAll(' ', '%20') // %20 = encodeURIComponent(' ')
+    }
+}
+
+/**
+ * Split a URLs into host and path
+ *
+ * @example
+ *  splitURLHost('https://luexu.com/m')     // {host:'https://luexu.com', path:'/m'}
+ *  splitURLHost('//luexu.com/m')           // {host:'//luexu.com', path:'/m'}
+ *  splitURLHost('luexu.com/m')             // {host:'', path:'luexu.com/m'}
+ *  splitURLHost('/m')                      // {host:'', path:'/m'}
+ */
+export function splitURLHost(url: string): { host: string, path: string } {
+    if (!url) {
+        return {host: '', path: ''}
+    }
+    const index = url.indexOf('//')
+    if (index < 0) {
+        return {host: '', path: url}
+    }
+    const scheme = url.slice(0, index)
+    let path = url.slice(index + 2)
+
+    const slashIndex = path.indexOf('/')
+    if (slashIndex < 0) {
+        return {host: url, path: ''}
+    }
+    let host = scheme + '//' + path.slice(0, slashIndex)
+    path = path.slice(slashIndex)
+    return {
+        host,
+        path
+    }
 }
 
 /**
@@ -41,25 +97,28 @@ export function encodeURI(uri: string): string {
  * @example
  * // On https://luexu.com/about/rule/user
  *  normalizeURL('//luexu.com/m')   // https://luexu.com/m
- *  normalizeURL('/m')              // https://luexu.com/m
+ *  normalizeURL('GET /m')              // https://luexu.com/m
+ *  normalizeURL('GET /m')              // GET https://luexu.com/m
  *  normalizeURL('user_privacy')    // https://luexu.com/about/rule/user_privacy
  *  normalizeURL('./user_privacy')    // https://luexu.com/about/rule/user_privacy
  *  normalizeURL('../../us')    // https://luexu.com/about/us
  */
-export function normalizeURL(url: string): string {
-    url = url ? url.trim() : ''
-    if (!url) {
+export function normalizeURL(rawURL: string, keepMethod: boolean = false): string {
+    rawURL = rawURL ? rawURL.trim() : ''
+    if (!rawURL) {
         return location.origin
     }
+
+    let {method, url} = splitURLMethod(rawURL)
+    const m = (!method || !keepMethod) ? '' : (method + ' ')
     if (url.startsWith('//')) {
-        return location.protocol + url
+        return m + location.protocol + url
     }
     if (url.startsWith('/')) {
-        return location.origin + url
+        return m + location.origin + url
     }
-
     if (url.indexOf('://') > -1) {
-        return url
+        return m + url
     }
 
     let path = location.href.replace(location.origin, '')
@@ -69,7 +128,7 @@ export function normalizeURL(url: string): string {
         path = dirname
     }
     const newPath = joinPath(path, url)
-    return location.origin + newPath
+    return m + location.origin + newPath
 }
 
 /**
@@ -85,22 +144,17 @@ export function normalizeURL(url: string): string {
  *  normalizeURLWithMethod('Delete ../../us')    // {method:'DELETE', url:'https://luexu.com/about/us'}
  */
 export function normalizeURLWithMethod(url: string): { method: http_method | '', url: string } {
-    url = url ? url.trim() : ''
-    if (!url) {
-        return {method: '', url: ''}
-    }
-    let method: http_method | '' = ''
-    const parts = url.split(' ')
-    if (parts.length > 1) {
-        const m = parts[0].toUpperCase()
-        if (HttpMethods.includes(m)) {
-            method = m as http_method
-            url = parts.slice(1).join('%20')  // %20 is encodeURIComponent(' ')
+    url = normalizeURL(url, true)
+
+    if (url.indexOf(' ') <= 0) {
+        return {
+            method: '', url: url
         }
     }
+    const arr = url.split(' ')
     return {
-        method,
-        url
+        method: arr[0] as http_method,
+        url: arr[1]
     }
 }
 
@@ -108,37 +162,30 @@ export function normalizeURLWithMethod(url: string): { method: http_method | '',
  * Safely joins URI segments, handling leading/trailing slashes and encoding components.
  *
  * @example
+ * // On https://luexu.com/about/rule/user
  * joinURI('https://luexu.com', 'api', 'v1/users')    // returns 'https://luexu.com/api/v1/users'
- * joinURI('/api/', '/users/', '/1/')                   // returns '/api/users/1/'
+ * joinURI('/api/', '/users/', '/1/')                   // returns 'https://luexu.com/api/users/1/'
+ * joinURI('/api/v1', '../.', 'v2', 'test')                   // returns 'https://luexu.com/api/v2/test'
  */
-export function joinURI(base: string, ...segs: any[]): string {
-    base = normalizeURL(base)
+export function joinURL(base: string, ...parts: (number | string)[]): string {
     if (!base) {
         return ''
     }
-    if (!segs?.length) {
-        return base
-    }
-    const encodedSegs = segs
-        .map(seg => String(seg).trim())
-        .filter(seg => seg.length > 0)
-        .map(encodeURI)
-    let result = base.replace(/\/+$/, '')
-    for (const seg of encodedSegs) {
-        if (seg) {
-            result += '/' + seg
-        }
-    }
+    const {host, path} = splitURLHost(base)
+    let newPath = splitPath(path, ...parts).join('/')
 
     // Preserve trailing slash if last segment had one
-    const lastSeg = segs[segs.length - 1];
+    const lastSeg = parts[parts.length - 1];
     if (typeof lastSeg === 'string' && lastSeg.endsWith('/')) {
-        result += '/';
+        newPath += '/'
     }
-    return result
+    if (newPath) {
+        newPath = '/' + newPath
+    }
+    return normalizeURL(host + newPath)
 }
 
 
-export function replaceURLPathParams(url: string, params: Maps | URLSearchParams): string {
-    return ''
-}
+// export function replaceURLPathParams(url: string, params: Maps | URLSearchParams): string {
+//     return ''
+// }

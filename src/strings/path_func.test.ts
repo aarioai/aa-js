@@ -1,6 +1,16 @@
 import {describe, expect, test} from "@jest/globals"
-import {joinPath, normalizePath, parseBaseName, parsePath} from "./path_func";
+import {joinPath, normalizePath, parseBaseName, parsePath, splitPath} from "./path_func";
 
+describe('path functions', () => {
+    test('splitPath', () => {
+        expect(splitPath('/a/', '/', 'b')).toEqual(['a', 'b'])
+        expect(splitPath('/a', '/b/c', 'd')).toEqual(['a', 'b', 'c', 'd'])
+        expect(splitPath('/a', ' b c ', 'd')).toEqual(['a', 'b', 'c', 'd'])
+        expect(splitPath('/a', '.', 'd')).toEqual(['a', 'd'])
+        expect(splitPath('/a', '../.', 'd')).toEqual(['d'])
+        expect(splitPath('/a', '../.././..', '.', 'd')).toEqual(['..', '..', 'd'])
+    })
+})
 
 describe('joinPath', () => {
     test('should handle basic path joining', () => {
