@@ -1,4 +1,6 @@
-export type Maps = Record<string, unknown>
+export type MapObject<T = unknown> = Record<string, T>  // same as {[key:string]:T
+export type StringMap = Map<string, string>
+export type AnyMap = Map<string, unknown>
 
 export interface ValueOf<T = number> {
     valueOf(): T

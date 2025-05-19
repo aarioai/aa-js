@@ -1,7 +1,8 @@
 import {joinPath, parseBaseName, splitPath} from "../strings/path_func";
 import {http_method, HttpMethods} from "../aa/atype/atype_server";
-import {Maps} from '../aa/atype/types'
-import {forEachCopy} from '../maps/func'
+import {AnyMap, MapObject, StringMap} from '../aa/atype/types'
+import {cloneMap, cloneObjectMap} from '../maps/func'
+
 
 /**
  * Fully decodes a URI-encoded string until no further decoding is possible.
@@ -188,18 +189,45 @@ export function joinURL(base: string, ...parts: (number | string)[]): string {
 }
 
 
-function replaceURLSearchParams(url: string, params: URLSearchParams): {
+function _replaceSafeURLSearchParams<T extends URLSearchParams = URLSearchParams>(url: string, pathParams: StringMap, params: T): {
     url: string,
-    search: URLSearchParams,
-    handled: boolean
+    search: T,
+    cloned: boolean,
+    ok: boolean
 } {
     if (params.size == 0) {
-        return {url: url, search: params, handled: false}
+        return {url: url, search: params, cloned: false, ok: false}
     }
-    // @warn do not use let search = new URLSearchParams(params.toString()) to clone params.
-    // Because
-    let search = forEachCopy(params, new URLSearchParams())
+    let search = new URLSearchParams(params.toString())
 
+}
+
+function _replaceSafeURLMapParams<T extends AnyMap = AnyMap>(url: string, pathParams: StringMap, params: T): {
+    url: string,
+    search: T,
+    cloned: boolean,
+    ok: boolean
+} {
+    if (params.size == 0) {
+        return {url: url, search: params, cloned: false, ok: false}
+    }
+    let search = cloneMap(params)
+
+    return
+}
+
+function _replaceSafeURLObjectParams<T extends MapObject = MapObject>(url: string, pathParams: StringMap, params: T): {
+    url: string,
+    search: T,
+    cloned: boolean,
+    ok: boolean
+} {
+    if (!Object.keys(params)?.length) {
+        return {url: url, search: params, cloned: false, ok: false}
+    }
+    let search = cloneObjectMap(params)
+
+    return
 }
 
 /**
@@ -209,15 +237,51 @@ function replaceURLSearchParams(url: string, params: URLSearchParams): {
  *  replaceURLPathParams('/api/{version}/users/{uid:uint64}', {version:'v1', uid:100n})
  *  // Returns '/api/v1/users/100
  */
-export function replaceURLPathParams<T = Maps | URLSearchParams>(url: string, params: T): {
+export function replaceURLPathParams<T extends MapObject | URLSearchParams | AnyMap>(url: string, params: T): {
     url: string,
     search: T,
-    handled: boolean
+    cloned: boolean,
+    ok: boolean
 } {
     if (!url) {
-        return {url: '', search: params, handled: false}
+        return {url: '', search: params, cloned: false, ok: false}
     }
     if (!url.includes('{')) {
-        return {url: url, search: params, handled: false}
+        return {url: url, search: params, cloned: false, ok: true}
+    }
+    const pathParams: StringMap = new Map<string, string>()
+
+    // Handle {<key>} format, e.g. {page}
+    const simpleRegex = /{(\w+)}/ig
+    let match: RegExpExecArray
+    while ((match = simpleRegex.exec(url)) !== null) {
+        pathParams.set(match[1], '');
+    }
+
+    // Handle {<key>:<type>} format , e.g. {uid:uint64}
+    const typedRegex = /{(\w+):(\w+)}/ig
+    while ((match = typedRegex.exec(url)) !== null) {
+        const [pattern, paramName, paramType] = match
+        url = url.replace(pattern, `{${paramName}}`)     // format to {<key>}
+        pathParams.set(paramName, paramType)
+    }
+
+    if (pathParams.size === 0) {
+        if (!url) {
+            return {url: url, search: params, cloned: false, ok: true}
+        }
+    }
+    if (params instanceof URLSearchParams) {
+        return _replaceSafeURLSearchParams(url, pathParams, params)
+    }
+    if (params instanceof Map) {
+        return _replaceSafeURLMapParams(url, pathParams, params)
+    }
+
+    return _replaceSafeURLObjectParams(url, pathParams, params) as {
+        url: string,
+        search: T,
+        cloned: boolean,
+        ok: boolean
     }
 }

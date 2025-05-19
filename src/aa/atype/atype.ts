@@ -3,17 +3,17 @@ export const bigint_t = 'bigint'
 export const boolean_t = 'boolean'
 export const class_t = 'class'  // new XXX()
 export const date_t = 'date'
-export const maps_t = 'maps'  // {}  map struct
+export const function_t = 'function'
+export const map_t = 'map'   // new Map()
+export const mapobject_t = 'mapobject'  // {}  map object
 export const node_t = 'node'
 export const nodelist_t = 'nodelist'
-export const function_t = 'function'
 export const null_t = 'null'
 export const number_t = 'number'
-export const map_t = 'map'   // new Map()
 export const set_t = 'set'  // new Set()
 export const string_t = 'string'
-export const undefined_t = 'undefined'
 export const regexp_t = 'regexp'
+export const undefined_t = 'undefined'
 
 export type Atype =
     'array'
@@ -21,37 +21,35 @@ export type Atype =
     | 'boolean'
     | 'class'
     | 'date'
-    | 'maps'
+    | 'function'
+    | 'map'
+    | 'mapobject'
     | 'node'
     | 'nodelist'
-    | 'function'
     | 'null'
     | 'number'
-    | 'map'
     | 'set'
     | 'string'
-    | 'undefined'
     | 'regexp'
+    | 'undefined'
 
 export const TypeAlias = {
     'array': 'a',
+    'bigint': 'i',
     'boolean': 'b',
     'class': 'c',
     'date': 'd',
-    'maps': 'e',
-    'number': 'i',
     'function': 'f',
-    'null': 'l',
     'map': 'm',
-    'bigint': 'n',
+    'mapobject': 'o',
     'node': 'p',
     'nodelist': 'q',
-    'regexp': 'r',
-    'string': 's',
+    'null': 'l',
+    'number': 'n',
     'set': 't',
+    'string': 's',
+    'regexp': 'r',
     'undefined': 'u',
-
-    '_serializable': 'z'         // 特殊类，可以序列化为JSON字符串，并且将字符串对应的JSON作为构造参数，自动还原
 }
 
 
@@ -84,7 +82,7 @@ export function objectAtype(v: object): Atype {
         case 'set':
             return set_t
         case 'object':
-            return maps_t
+            return mapobject_t
     }
     return v.constructor !== Object && c !== "object" ? class_t : undefined_t
 }
@@ -121,8 +119,8 @@ export function isJQueryDom(value: object): boolean {
         (value as any).length > 0;
 }
 
-export function isMaps(v: unknown): boolean {
-    return typeof v === 'object' && objectAtype(v) === maps_t
+export function isMapObject(v: unknown): boolean {
+    return typeof v === 'object' && objectAtype(v) === mapobject_t
 }
 
 /**

@@ -32,7 +32,7 @@ import {
     t_uint64b,
     t_uint8
 } from "./atype_server";
-import {Maps} from './types'
+import {MapObject} from './types'
 import {typeArray} from './func'
 
 function inRange(value: number, min: number, max: number, name: string): number {
@@ -89,7 +89,7 @@ export function a_func(value: Function | undefined | null) {
     return typeof value === "function" ? value : Nif
 }
 
-export function a_maps(value: Maps | unknown[] | undefined | null): Maps {
+export function a_maps(value: MapObject | unknown[] | undefined | null): MapObject {
     if (!value) {
         return {}
     }

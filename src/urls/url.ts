@@ -1,4 +1,4 @@
-import {Maps} from "../aa/atype/types";
+import {MapObject} from "../aa/atype/types";
 import {normalizeURLWithMethod} from "./func";
 import {
     http_method,
@@ -34,13 +34,13 @@ import {
     uint64b,
     uint8
 } from "../aa/atype/types_cast";
-import {sortMaps} from '../maps/func'
+import {sortObjectMap} from '../maps/func'
 
 
 class AaURL {
     name = 'aa-url'
     method: http_method | ''
-    searchParams: Maps = {}  // use Maps to enable set object values, URLSearchParams only supports string values
+    searchParams: MapObject = {}  // use Maps to enable set object values, URLSearchParams only supports string values
     pathParams: Map<string, string> = new Map()
     autoSort: boolean = false
     sortCompareFunc?: (a: string, b: string) => number
@@ -63,7 +63,7 @@ class AaURL {
      * @param params
      * @param hash
      */
-    constructor(routingURL: string, params?: Maps | URLSearchParams, hash?: string) {
+    constructor(routingURL: string, params?: MapObject | URLSearchParams, hash?: string) {
         const {method, url} = normalizeURLWithMethod(routingURL)
         let escapedURL = this.convertPathPatterns(url)
         const u = new URL(escapedURL)
@@ -82,8 +82,6 @@ class AaURL {
         if (this.autoSort) {
             this.sortParams()
         }
-
-
         return ``
     }
 
@@ -95,14 +93,14 @@ class AaURL {
         return s.replaceAll('%00!', '{').replaceAll('!%00', '}')
     }
 
-    // Converts url path {key}, {key:type} to %00!key!%00
+    // Converts url path {key}, {key:type} to %00!key!%00 to avoid new URL() escape
     convertPathPatterns(url: string): string {
         // Handle path parameters with format  {<key>}, e.g. {page}
         const matches = url.matchAll(/{([\w-]+)}/ig)
         for (const match of matches) {
             const pattern = match[0]
             const paramName = match[1]
-            url = url.replaceAll(pattern, `%00!${paramName}!%00`)
+            url = url.replace(pattern, `%00!${paramName}!%00`)
             this.pathParams.set(paramName, '')
         }
 
@@ -112,7 +110,7 @@ class AaURL {
             const pattern = match[0]
             const paramName = match[1]
             const paramType = match[2]
-            url = url.replaceAll(pattern, `%00!${paramName}!%00`)
+            url = url.replace(pattern, `%00!${paramName}!%00`)
             this.pathParams.set(paramName, paramType)
         }
 
@@ -129,7 +127,7 @@ class AaURL {
         return this
     }
 
-    setParams(params?: Maps | URLSearchParams): AaURL {
+    setParams(params?: MapObject | URLSearchParams): AaURL {
         if (!params) {
             return this
         }
@@ -150,7 +148,7 @@ class AaURL {
     }
 
     sortParams(): AaURL {
-        sortMaps(this.searchParams, this.sortCompareFunc)
+        sortObjectMap(this.searchParams, this.sortCompareFunc)
         return this
     }
 

@@ -10,7 +10,7 @@ import {
     function_t,
     isZil,
     map_t,
-    maps_t,
+    mapobject_t,
     null_t,
     number_t,
     objectAtype,
@@ -39,7 +39,7 @@ describe('objectAtype', () => {
     })
 
     test('objectAtype {a: 1, b: 2n}', () => {
-        expect(objectAtype({a: 1, b: 2n})).toBe(maps_t)
+        expect(objectAtype({a: 1, b: 2n})).toBe(mapobject_t)
     })
 })
 
@@ -99,7 +99,7 @@ describe('atype', () => {
     })
 
     test('atype {a: 1, b: 2n}', () => {
-        expect(atype({a: 1, b: 2n})).toBe(maps_t)
+        expect(atype({a: 1, b: 2n})).toBe(mapobject_t)
     })
 })
 
@@ -163,7 +163,7 @@ describe('atypeAlias', () => {
         expect(atypeAlias(new Date())).toBe(TypeAlias[date_t])
     })
     test('atypeAlias {}', () => {
-        expect(atypeAlias({})).toBe(TypeAlias[maps_t])
+        expect(atypeAlias({})).toBe(TypeAlias[mapobject_t])
     })
 
     test('atypeAlias 0', () => {
