@@ -31,7 +31,7 @@ export function once(ready: () => boolean, run: () => void, interval: number, re
 /**
  * Run forever
  */
-function forever(run: (i: number) => any, interval: number, i: number = 0) {
+function forever(run: (i: number) => unknown, interval: number, i: number = 0) {
     if (run(i) === Break) {
         return
     }
@@ -43,7 +43,7 @@ function forever(run: (i: number) => any, interval: number, i: number = 0) {
 /**
  * Try call the method if the method is a function
  */
-export function safeCall<T = any>(fn: ((...args: any[]) => T) | null | undefined, ...args: any[]): T | null {
+export function safeCall<T = unknown>(fn: ((...args: unknown[]) => T) | null | undefined, ...args: unknown[]): T | null {
     if (!fn) {
         return null
     }

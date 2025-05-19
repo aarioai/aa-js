@@ -19,14 +19,14 @@ export function tabletMainWidth(proportion: t_percent = 100 * Percent): number {
 
 // Device Pixel Ratio
 export function devicePixelRatio(): number {
-    return Number((window?.devicePixelRatio || 1).toFixed(2))
+    return window.devicePixelRatio
 }
 
 
 export function softDevicePixelRatio(): number {
     const dpr = devicePixelRatio()
     const mainWidth = tabletMainWidth()
-    const ratio = (mainWidth / MaxTabletWidth) * Number(dpr)
+    const ratio = (mainWidth / MaxTabletWidth) * dpr
     return Number(ratio.toFixed(2))
 }
 

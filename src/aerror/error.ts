@@ -4,6 +4,8 @@ import {language, matchLanguage} from "../aa/translate/language";
 import {AErrorDictionaries} from "./dictionaries";
 import {translate} from "../aa/translate/dictionary";
 import {LF} from "../aa/env/const";
+import {t_numeric} from '../aa/atype/atype_server'
+import {a_number} from '../aa/atype/types_cast'
 
 export class AError extends Error {
     readonly code: number
@@ -18,7 +20,7 @@ export class AError extends Error {
      * new AError(E_Unauthorized, "need login")
      * new AError("something wrong happened")
      */
-    constructor(code: number, msg?: string) {
+    constructor(code: number | string, msg?: string) {
         let c: number = E_ClientThrow
         if (typeof code === "number") {
             c = code
@@ -93,8 +95,8 @@ export class AError extends Error {
         return e
     }
 
-    is(code: string | number): boolean {
-        return Number(code) === this.code
+    is(code: t_numeric): boolean {
+        return a_number(code) === this.code
     }
 
     isNotFound(): boolean {

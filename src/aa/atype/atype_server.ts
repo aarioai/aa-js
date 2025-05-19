@@ -1,7 +1,7 @@
 export type t_bin = string  // binary string
 export type t_booln = 0 | 1
 
-export type t_numeric = number | string
+export type t_numeric = number | bigint | string
 export type t_safeint = number  // [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER] [-9007199254740991, 9007199254740991]
 export type t_int8 = number
 export type t_int16 = number

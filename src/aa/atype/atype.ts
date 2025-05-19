@@ -89,7 +89,7 @@ export function objectAtype(v: object): Atype {
     return v.constructor !== Object && c !== "object" ? class_t : undefined_t
 }
 
-export function atype(v: any): Atype {
+export function atype(v: unknown): Atype {
     if (v === null) {
         return null_t
     }
@@ -121,7 +121,7 @@ export function isJQueryDom(value: object): boolean {
         (value as any).length > 0;
 }
 
-export function isDict(v: any): boolean {
+export function isMaps(v: unknown): boolean {
     return typeof v === 'object' && objectAtype(v) === maps_t
 }
 
@@ -129,7 +129,7 @@ export function isDict(v: any): boolean {
  * Is node or node list
  * @param v
  */
-export function isDOM(v: any): boolean {
+export function isDOM(v: unknown): boolean {
     if (typeof v !== 'object') {
         return false
     }
@@ -137,18 +137,18 @@ export function isDOM(v: any): boolean {
     return t === nodelist_t || t === node_t
 }
 
-export function isNode(v: any): boolean {
+export function isNode(v: unknown): boolean {
     return typeof v === 'object' && objectAtype(v) === node_t
 }
 
-export function isNodelist(v: any): boolean {
+export function isNodelist(v: unknown): boolean {
     return typeof v === 'object' && objectAtype(v) === nodelist_t
 }
 
 /**
  * Is the value a zero value
  */
-export function isZil(value: any): boolean {
+export function isZil(value: unknown): boolean {
     if (value === undefined || value === null || value === '' || value === 0) {
         return true
     }
@@ -164,7 +164,7 @@ export function isZil(value: any): boolean {
 }
 
 
-export function atypeAlias(t: any): string | any {
+export function atypeAlias(t: unknown): string | unknown {
     if (typeof t === 'undefined') {
         return TypeAlias.undefined
     }
@@ -174,6 +174,6 @@ export function atypeAlias(t: any): string | any {
     if (typeof t !== 'string' || t !== string_t) {
         t = atype(t)
     }
-    return TypeAlias[t]
+    return TypeAlias[t as Atype]
 }
 

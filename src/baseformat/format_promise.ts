@@ -1,16 +1,16 @@
 import {AError} from "../aerror/error";
 import {aerror} from "../aerror/function";
 
-export function asleep(delay: number, ...args: any[]) {
+export function asleep(delay: number, ...args: unknown[]) {
     return new Promise(resolve => setTimeout(resolve, delay, ...args))
 }
 
-export function asleepx(p: Promise<unknown>, delay: number, ...args: any[]): Promise<unknown> {
+export function asleepx(p: Promise<unknown>, delay: number, ...args: unknown[]): Promise<unknown> {
     return p.then((...params) => asleep(delay, ...args));
 }
 
 
-export function resolve(value: any) {
+export function resolve(value: unknown) {
     return Promise.resolve(value)
 }
 

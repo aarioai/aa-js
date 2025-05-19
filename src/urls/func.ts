@@ -1,5 +1,7 @@
 import {joinPath, parseBaseName, splitPath} from "../strings/path_func";
 import {http_method, HttpMethods} from "../aa/atype/atype_server";
+import {Maps} from '../aa/atype/types'
+import {forEachCopy} from '../maps/func'
 
 /**
  * Fully decodes a URI-encoded string until no further decoding is possible.
@@ -186,6 +188,36 @@ export function joinURL(base: string, ...parts: (number | string)[]): string {
 }
 
 
-// export function replaceURLPathParams(url: string, params: Maps | URLSearchParams): string {
-//     return ''
-// }
+function replaceURLSearchParams(url: string, params: URLSearchParams): {
+    url: string,
+    search: URLSearchParams,
+    handled: boolean
+} {
+    if (params.size == 0) {
+        return {url: url, search: params, handled: false}
+    }
+    // @warn do not use let search = new URLSearchParams(params.toString()) to clone params.
+    // Because
+    let search = forEachCopy(params, new URLSearchParams())
+
+}
+
+/**
+ * Replaces iris-like path parameters to its value in a URL string
+ *
+ * @example
+ *  replaceURLPathParams('/api/{version}/users/{uid:uint64}', {version:'v1', uid:100n})
+ *  // Returns '/api/v1/users/100
+ */
+export function replaceURLPathParams<T = Maps | URLSearchParams>(url: string, params: T): {
+    url: string,
+    search: T,
+    handled: boolean
+} {
+    if (!url) {
+        return {url: '', search: params, handled: false}
+    }
+    if (!url.includes('{')) {
+        return {url: url, search: params, handled: false}
+    }
+}

@@ -16,7 +16,7 @@ import {ZeroValues} from "./atype/const";
  * // Auto-create target
  * setIfNotExists(null, 'a', 1); // { a: 1 }
  */
-export function setNX<T extends object, K extends keyof any>(target: T, key: K, value: any, exclude?: any[]): T {
+export function setNX<T extends object, K extends keyof unknown>(target: T, key: K, value: unknown, exclude?: unknown[]): T {
     if (!target) {
         target = (typeof key === 'number' ? [] : {}) as T
     }
@@ -42,7 +42,7 @@ export function setNX<T extends object, K extends keyof any>(target: T, key: K, 
 }
 
 
-export function setNotZero<T extends object, K extends keyof any>(target: T, key: K, value: any): T {
+export function setNotZero<T extends object, K extends keyof unknown>(target: T, key: K, value: unknown): T {
     return setNX(target, key, value, ZeroValues)
 }
 

@@ -1,34 +1,32 @@
-import {Maps} from "../atype/types";
+import {Maps, ToJSON} from "../atype/types";
 
 /**
  * Safely converts a value to JSON string with BigInt support.
- *
- * Features:
- * - Handles null/undefined inputs by returning null
- * - Automatically converts BigInt values to strings
- * - Provides detailed error logging
- * - Maintains circular reference safety (via JSON.stringify)
- *
- * @param {any} o - The value to serialize to JSON
- * @returns {string | null} The JSON string or null if serialization fails
+ * Returns 'null' is safer than returns empty string ''
  *
  * @example
  * jsonify({a: 1, b: 2n}) // '{"a":1,"b":"2"}'
  * jsonify(null)           // null
  * jsonify(undefined)      // null
- * jsonify({x: new Date()}) // stringified date
  */
-export function jsonify(o: any): string {
+export function jsonify(o: object | ToJSON<string> | null | undefined): string {
     if (!o) {
-        return null
+        return 'null'
     }
+
     try {
-        // bigint should be converted into string
+        if ((o as any).toJSON === 'function') {
+            const s = (o as any).toJSON()
+            if (typeof s === 'string') {
+                return s
+            }
+        }
+        // Convert bigint into string
         return JSON.stringify(o, (_, v) => typeof v === 'bigint' ? v.toString() : v)
     } catch (error) {
         console.error(`jsonify error: ${error}`, o)
     }
-    return null
+    return 'null'
 }
 
 /**
@@ -40,7 +38,7 @@ export function jsonify(o: any): string {
  * parseJSON(null)      // null
  * parseJSON('invalid') // null
  */
-export function parseJSON(input: string | undefined | null | Maps | Array<any>): object {
+export function parseJSON(input: string | undefined | null | Maps | Array<unknown>): object {
     if (!input || (typeof input === "string" && input.trim().toLowerCase() === "null")) {
         return null
     }

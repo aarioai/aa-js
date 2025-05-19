@@ -1,5 +1,6 @@
 import {describe, expect, test} from '@jest/globals';
-import {a_array, a_bool, a_dict, a_func, a_number, a_string, floatToInt, uint16, uint8} from "./types_cast";
+import {a_array, a_bool, a_func, a_maps, a_number, a_string, floatToInt, uint16, uint8} from "./types_cast";
+import {False} from './const'
 
 describe('a_array', () => {
     test('a_array null', () => {
@@ -20,15 +21,6 @@ describe('a_array', () => {
     test('a_array {"a":1, "b":2}', () => {
         expect(a_array({"a": 1, "b": 2})).toEqual([1, 2])
     })
-    test('a_array string', () => {
-        expect(() => a_array("string")).toThrow(TypeError)
-    })
-    test('a_array 1', () => {
-        expect(() => a_array(1)).toThrow(TypeError)
-    })
-    test('a_array false', () => {
-        expect(() => a_array(false)).toThrow(TypeError)
-    })
 })
 
 
@@ -39,10 +31,6 @@ describe('a_bool', () => {
 
     test('a_bool undefined', () => {
         expect(a_bool(undefined)).toBe(false)
-    })
-
-    test('a_bool []', () => {
-        expect(a_bool([])).toBe(true)
     })
 
     test('a_bool true', () => {
@@ -88,22 +76,22 @@ describe('a_func', () => {
 
 describe('a_dict', () => {
     test('a_dict null', () => {
-        expect(a_dict(null)).toEqual({})
+        expect(a_maps(null)).toEqual({})
     })
     test('a_dict undefined', () => {
-        expect(a_dict(undefined)).toEqual({})
+        expect(a_maps(undefined)).toEqual({})
     })
     test('a_dict []', () => {
-        expect(a_dict([])).toEqual({})
+        expect(a_maps([])).toEqual({})
     })
     test('a_dict [a,b,c]', () => {
-        expect(a_dict(["a", "b", "c"])).toEqual({0: "a", 1: "b", 2: "c"})
+        expect(a_maps(["a", "b", "c"])).toEqual({0: "a", 1: "b", 2: "c"})
     })
     test('a_dict {}', () => {
-        expect(a_dict({})).toEqual({})
+        expect(a_maps({})).toEqual({})
     })
     test('a_dict {"a":100,"b":200}', () => {
-        expect(a_dict({"a": 100, "b": 200})).toEqual({"a": 100, "b": 200})
+        expect(a_maps({"a": 100, "b": 200})).toEqual({"a": 100, "b": 200})
     })
 })
 
@@ -115,10 +103,10 @@ describe('a_string', () => {
         expect(a_string(undefined)).toBe('')
     })
     test('a_string false', () => {
-        expect(a_string(false)).toBe('false')
+        expect(a_string(false)).toBe(String(False))
     })
-    test('a_string 1', () => {
-        expect(a_string(1)).toBe('1')
+    test('a_string 1n', () => {
+        expect(a_string(1n)).toBe('1')
     })
     test('a_string []', () => {
         expect(a_string([])).toBe('[]')
@@ -157,7 +145,7 @@ describe('a_number', () => {
         expect(a_number(undefined)).toBe(0)
     })
     test('a_number .300', () => {
-        expect(a_number(Number(".300"))).toBe(0.3)
+        expect(a_number(".300")).toBe(0.3)
     })
     test('a_number .25', () => {
         expect(a_number(.25)).toBe(0.25)
@@ -166,7 +154,7 @@ describe('a_number', () => {
         expect(() => uint8(-1)).toThrow(RangeError)
     })
     test('uint16 "-1"', () => {
-        expect(() => uint16(Number("-1"))).toThrow(RangeError)
+        expect(() => uint16("-1")).toThrow(RangeError)
     })
 
 })

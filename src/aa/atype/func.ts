@@ -1,4 +1,4 @@
-import {a_string} from "./types_cast";
+import {a_bool, a_string} from "./types_cast";
 
 /**
  * Calculates the length/size of any value with consistent fallback behavior.
@@ -53,7 +53,7 @@ export function len(value: unknown): number {
  * @example
  * typeArray([1,"3","5"], a_number)
  */
-export function typeArray<T>(cast: (value: any) => T, arr: any[]): T[] {
+export function typeArray<T>(cast: (value: unknown) => T, arr: unknown[]): T[] {
     if (arr.length === 0) {
         return []
     }
@@ -64,14 +64,14 @@ export function typeArray<T>(cast: (value: any) => T, arr: any[]): T[] {
     return result
 }
 
-export function stringArray(arr: any[]): string[] {
+export function stringArray(arr: unknown[]): string[] {
     return arr.map(v => String(v))
 }
 
-export function numberArray(arr: any[]): number[] {
+export function numberArray(arr: unknown[]): number[] {
     return arr.map(v => Number(v)).filter(v => !isNaN(v))
 }
 
-export function booleanArray(arr: any[]): boolean[] {
-    return arr.map(v => Boolean(v))
+export function boolArray(arr: unknown[]): boolean[] {
+    return arr.map(v => v && a_bool(v as any))
 }

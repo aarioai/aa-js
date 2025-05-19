@@ -1,6 +1,6 @@
-import {Maps} from "../aa/atype/types";
+import {ForEachCopyable, Maps} from "../aa/atype/types";
 
-export function clone(source: Maps): Maps {
+export function cloneMaps(source: Maps): Maps {
     if (!source) {
         return {}
     }
@@ -19,6 +19,24 @@ export function clone(source: Maps): Maps {
     }
     return target
 }
+
+export function forEachCopy<T extends ForEachCopyable>(source: T, target: T): T {
+    if (!source) {
+        return target
+    }
+    source.forEach((value, key) => {
+        target.set(key, value)
+    })
+    return target
+}
+
+export function sortMaps<T = Maps>(source: T, compareFn?: (a: string, b: string) => number): T {
+    return Object.keys(source).sort(compareFn).reduce((acc: T, key: string): T => {
+        acc[key] = source[key]
+        return acc
+    }, {} as T)
+}
+
 
 export function assign(target: Maps, source: Maps) {
 

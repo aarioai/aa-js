@@ -2,30 +2,29 @@ import {typeArray} from "../aa/atype/func";
 import {Break} from "../aa/env/const";
 import {floatToInt} from "../aa/atype/types_cast";
 
-function isEmpty(ele: any): boolean {
-    return ele === null || ele === undefined || ele === ''
-}
 
 /**
- * Removes empty elements (null, undefined, empty strings) from the beginning and end of an array
+ * Removes falsy elements from the start and end of an array
  *
  * @example
- *  trim(['', 'a', 'b', '', null])              //  ['a', 'b']
- *  trim([undefined, '', null])                 //  []
- *  trim([1, 2, '', 3])                         //  [1, 2, '', 3]
- *  trim([null, undefined, 'hello', 0, false])  // ['hello', 0, false]
+ *  trimArray([undefined, '', undefined, 'a', undefined, 'b', '', null])               //  ['', undefined, 'a',undefined, 'b', '', null]
+ *  trimArray([undefined, '', undefined, 'a', undefined, 'b', '', null],v=>!v)         //  ['a', undefined, 'b']
+ *  trimArray([1, 2, '', 3])                                                //  [1, 2, '', 3]
+ *  trimArray([null, undefined, 'hello', undefined, 0, false], v => v === undefined || v === null)  // ['hello', undefined, 0, false]
  */
-export function trim(arr: any[]): any[] {
+export function trimArray<T = unknown>(arr: T[], trimable: (v: T) => boolean = v => v === undefined): T[] {
     if (!arr?.length) {
         return []
     }
+    // Trim start
     let start = 0
-    // trim left
-    while (start < arr.length && isEmpty(arr[start])) {
+    while (start < arr.length && trimable(arr[start])) {
         start++
     }
+
+    // Trim end
     let end = arr.length - 1
-    while (end > -1 && isEmpty(arr[end])) {
+    while (end > -1 && trimable(arr[end])) {
         end--
     }
     if (start > end) {
@@ -42,9 +41,12 @@ export function trim(arr: any[]): any[] {
  * concat([1], null, [2]) // [1, 2]
  * concat([], [1, 2])     // [1, 2]
  */
-export function concat(...args: (any[] | null | undefined)[]): any[] {
-    let result: any[] = []
-    for (const arr of args) {
+export function concat(...arrays: (unknown[] | null | undefined)[]): unknown[] {
+    let result: unknown[] = []
+    for (const arr of arrays) {
+        if (!arr) {
+            continue
+        }
         if (arr?.length) {
             result.push(...arr)
         }
@@ -52,7 +54,7 @@ export function concat(...args: (any[] | null | undefined)[]): any[] {
     return result
 }
 
-export function concatInType<T>(cast: (v: any) => T, ...args: (any[] | null | undefined)[]): T[] {
+export function concatInType<T>(cast: (v: unknown) => T, ...args: (unknown[] | null | undefined)[]): T[] {
     let arr = concat(...args)
     if (!arr.length) {
         return []

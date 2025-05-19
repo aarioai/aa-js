@@ -37,16 +37,12 @@ export function splitFirst(s: string, separator: string | number = ','): [string
  * - Converts non-string values to strings
  * - Only adds the separator between non-empty values
  *
- * @param {string} separator - The string used to separate the joined values
- * @param {...any} args - The values to be joined (any type)
- * @returns {string} A string containing the joined values separated by the specified separator
- *
  * @example
  * joinWith(', ', 'apple', null, 'banana', 42, '', undefined) // Returns "apple, banana, 42"
  * joinWith(' - ', 'Hello', 'World')                          // Returns "Hello - World"
  * joinWith('/', '2023', '05', '15')                         // Returns "2023/05/15"
  */
-export function joinWith(separator: string, ...args: any[]): string {
+export function joinWith(separator: string, ...args: unknown[]): string {
     const validValues: string[] = [];
 
     for (const arg of args) {
@@ -69,7 +65,7 @@ export function joinWithSpace(...args: string[]): string {
     return joinWith(' ', ...args);
 }
 
-export function joinComplexWith(separator: string, ...args: any[]): string {
+export function joinComplexWith(separator: string, ...args: unknown[]): string {
     let arr: string[] = new Array(args.length)
     for (let i = 0; i < args.length; i++) {
         let v = a_string(args[i])
@@ -78,7 +74,7 @@ export function joinComplexWith(separator: string, ...args: any[]): string {
     return arr.join(separator)
 }
 
-export function joinComplex(...args: any[]): string {
+export function joinComplex(...args: unknown[]): string {
     return joinComplexWith(' ', ...args)
 }
 

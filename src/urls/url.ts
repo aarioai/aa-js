@@ -19,6 +19,7 @@ import {
 import {
     a_bool,
     a_booln,
+    a_string,
     float32,
     float64,
     int16,
@@ -33,14 +34,16 @@ import {
     uint64b,
     uint8
 } from "../aa/atype/types_cast";
+import {sortMaps} from '../maps/func'
 
 
 class AaURL {
     name = 'aa-url'
     method: http_method | ''
-    searchParams: URLSearchParams | null = null
+    searchParams: Maps = {}  // use Maps to enable set object values, URLSearchParams only supports string values
     pathParams: Map<string, string> = new Map()
     autoSort: boolean = false
+    sortCompareFunc?: (a: string, b: string) => number
 
     hash: string = ''  // #<hash>, e.g. #head
     hostname: string   // e.g. test.luexu.com
@@ -72,7 +75,6 @@ class AaURL {
         this.protocol = this.revertPathPatterns(u.protocol)
         this.username = this.revertPathPatterns(u.username)
         this.password = this.revertPathPatterns(u.password)
-        this.searchParams = u.searchParams
         this.setParams(params)
     }
 
@@ -117,19 +119,18 @@ class AaURL {
         return url
     }
 
-    setParam(key: string, value: any): AaURL {
-        this.searchParams.set(key, value)
+    withSortCompareFunc(compareFn: (a: string, b: string) => number): AaURL {
+        this.sortCompareFunc = compareFn
+        return this
+    }
+
+    setParam(key: string, value: unknown): AaURL {
+        this.searchParams[key] = value
         return this
     }
 
     setParams(params?: Maps | URLSearchParams): AaURL {
         if (!params) {
-            return this
-        }
-        if (params instanceof URLSearchParams) {
-            for (const [key, value] of params) {
-                this.setParam(key, value)
-            }
             return this
         }
         for (const [key, value] of Object.entries(params)) {
@@ -138,24 +139,33 @@ class AaURL {
         return this
     }
 
+
     deleteParam(key: string): AaURL {
-        this.searchParams.delete(key)
+        delete this.searchParams[key]
         return this
     }
 
     hasParam(key: string): boolean {
-        return this.searchParams.has(key)
+        return this.searchParams.hasOwnProperty(key) && this[key] !== undefined
     }
 
     sortParams(): AaURL {
-        this.searchParams.sort()
+        sortMaps(this.searchParams, this.sortCompareFunc)
         return this
     }
 
-    search<T = string>(key: string, cast?: (value: unknown) => T): T | null {
-        const value = this.searchParams.get(key)
+    clearParams(): AaURL {
+        this.searchParams = {}
+        return this
+    }
+
+    search<T = unknown>(key: string, cast?: (value: unknown) => T): T | null | undefined {
+        if (!this.hasParam(key)) {
+            return undefined
+        }
+        const value = this.searchParams[key]
         if (!cast) {
-            return value as T
+            return value
         }
         return cast(value)
     }
@@ -166,6 +176,10 @@ class AaURL {
 
     searchBooln(key: string): t_booln | null {
         return this.search(key, a_booln)
+    }
+
+    searchString(key: string): string {
+        return this.search(key, a_string)
     }
 
     searchNumber(key: string): number | null {

@@ -13,7 +13,7 @@ export function escapeArgument(msg: string): string {
     return msg.replaceAll('%', '%%')
 }
 
-export function joinArguments(...messages: any[]): string {
+export function joinArguments(...messages: unknown[]): string {
     return joinComplex(...messages)
 }
 
@@ -36,12 +36,12 @@ export function printRaw(msg: string) {
     handler(msg)
 }
 
-export function log(...messages: any[]) {
+export function log(...messages: unknown[]) {
     const msg = joinArguments(...messages)
     printRaw(msg)
 }
 
-export function prints(style: ALogStyle, ...messages: any[]) {
+export function prints(style: ALogStyle, ...messages: unknown[]) {
     if (AConfig.debugger.disabled()) {
         return
     }
@@ -59,11 +59,11 @@ export function prints(style: ALogStyle, ...messages: any[]) {
  * @example
  * printColor('#666', 'Hello, World!')
  */
-export function printColor(color: string, ...messages: any[]) {
+export function printColor(color: string, ...messages: unknown[]) {
     prints(new ALogStyle(color), ...messages)
 }
 
-export function println(first: any, ...others: any[]) {
+export function println(first: unknown, ...others: unknown[]) {
     if (AConfig.debugger.disabled()) {
         return
     }
@@ -77,18 +77,18 @@ export function println(first: any, ...others: any[]) {
     }
 }
 
-export function error(...messages: any[]) {
+export function error(...messages: unknown[]) {
     log('[error]', ...messages)
 }
 
-export function debug(...messages: any[]) {
+export function debug(...messages: unknown[]) {
     log('[debug]', ...messages)
 }
 
-export function info(...messages: any[]) {
+export function info(...messages: unknown[]) {
     log('[info]', ...messages)
 }
 
-export function warn(...messages: any[]) {
+export function warn(...messages: unknown[]) {
     log('[warn]', ...messages)
 }

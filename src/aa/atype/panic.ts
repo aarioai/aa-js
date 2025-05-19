@@ -26,7 +26,7 @@ export class Panic extends Error {
         Panic.assert(n < min, `input ${n} is less than ${min}`, RangeError)
     }
 
-    static assertEmptyArray(arr: any[]) {
+    static assertEmptyArray(arr: unknown[]) {
         Panic.assert(!arr || arr.length < 0, `input array is empty`)
     }
 
@@ -34,11 +34,11 @@ export class Panic extends Error {
         Panic.assertLessThan(n, 0)
     }
 
-    static assertTypeof(value: any, types: string[]) {
+    static assertTypeof(value: unknown, types: string[]) {
         Panic.assert(types.includes(typeof value), `input type ${typeof value} is in the type of ${types.join(', ')}`, TypeError)
     }
 
-    static assertNotTypeof(value: any, types: string[]) {
+    static assertNotTypeof(value: unknown, types: string[]) {
         Panic.assert(!types.includes(typeof value), `input type ${typeof value} is not in the type of ${types.join(', ')}`, TypeError)
     }
 

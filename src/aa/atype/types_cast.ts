@@ -32,6 +32,8 @@ import {
     t_uint64b,
     t_uint8
 } from "./atype_server";
+import {Maps} from './types'
+import {typeArray} from './func'
 
 function inRange(value: number, min: number, max: number, name: string): number {
     if ((typeof min !== 'undefined' && value < min) || (typeof max !== 'undefined' && value > max)) {
@@ -45,54 +47,50 @@ function inRange(value: number, min: number, max: number, name: string): number 
 }
 
 /**
- * Converts any value to an array consistently.
+ * Converts a value to an array consistently.
  *
  * @example
  * a_array(null)         // => []
  * a_array([1, 2, 3])    // => [1, 2, 3]
  * a_array({a: 1, b: 2}) // => [1, 2]
  */
-export function a_array<T>(value: T | T[] | null | undefined): T[] {
+export function a_array<T = unknown>(value: object | unknown[] | null | undefined, cast?: (value: unknown) => T): T[] {
     if (value === undefined || value == null) {
         return []
     }
     if (Array.isArray(value)) {
-        return value
+        return cast ? typeArray(cast, value) : value as T[]
     }
     Panic.assertNotTypeof(value, ['object'])
     return Object.values(value)
 }
 
-export function a_bool(value: any): boolean {
+export function a_bool(value: boolean | number | bigint | string | undefined | null): boolean {
     switch (typeof value) {
         case "boolean":
             return value
-        case 'undefined':
-            return false
         case "number":
             return value > 0
+        case 'bigint':
+            return value > 0n
         case "string":
             value = value.trim().toLowerCase()
-            return !["", "false", "f", "0", "no", "off", "null"].includes(value)
-        case 'function':
-            return Boolean(value())
-        case 'object':
-            return value !== null
+            return !["", "false", "f", "0", "0n", "no", "off", "null"].includes(value)
         default:
             return Boolean(value)
     }
 }
 
-export function a_booln(value: any): t_booln {
+export function a_booln(value: boolean | number | bigint | string | undefined | null): t_booln {
     return a_bool(value) ? True : False
 }
 
-export function a_func(value: any) {
+export function a_func(value: Function | undefined | null) {
     return typeof value === "function" ? value : Nif
 }
 
-export function a_dict(value: any): object {
-    if (typeof value === "undefined" || value == null) {
+export function a_maps(value: Maps | unknown[] | undefined | null): Maps {
+    if (!value) {
         return {}
     }
     // convert array to {0:a[0], 1:a[1]...}
@@ -120,15 +118,25 @@ export function a_dict(value: any): object {
  * a_string([1, 2, 3])     // "[1,2,3]" (array serialization)
  */
 export function a_string(value: unknown): string {
-    if (typeof (value) === 'string') {
-        return value
+    switch (typeof value) {
+        case 'boolean':
+            return value ? String(True) : String(False)
+        case 'string':
+            return value
+        case 'number':
+            return isNaN(value) ? '' : String(value)
+        case 'bigint':
+            return String(value)
+        case 'undefined':
+            return ''
     }
-    if (typeof value == 'undefined' || value === null) {
+    if (value === null) {
         return ''
     }
 
+    // toJSON() > toString() > valueOf()
     if (typeof (value as any).toJSON === 'function') {
-        return (value as any).toJSON()
+        return a_string((value as any).toJSON())
     }
 
     if (Array.isArray(value)) {
@@ -150,21 +158,32 @@ export function a_string(value: unknown): string {
         }
     }
 
-    if (typeof value === 'object') {
-        return jsonify(value)
+    const j = typeof value === 'object' ? jsonify(value) : ''
+    return j ? j : String(value)
+}
+
+/**
+ * Converts number except NaN, bigint into a number, NaN into 0, and boolean into a t_bool
+ * @param v
+ */
+export function a_number(v?: t_numeric | boolean): number {
+    switch (typeof v) {
+        case 'undefined':
+            return 0
+        case 'number':
+            return isNaN(v) ? 0 : v
+        case 'boolean':
+            return v ? True : False
+        default:
+            return Number(v)
     }
-    return String(value)
 }
 
-export function a_number(v?: number): number {
-    return Number(v ? v : 0)
+export function float64(v?: t_numeric): number {
+    return a_number(v)
 }
 
-export function float64(v?: number): number {
-    return Number(v)
-}
-
-export function float32(v?: number): number {
+export function float32(v?: t_numeric): number {
     return float64(v)
 }
 
@@ -172,44 +191,44 @@ export function floatToInt(v: number): number {
     return v ? v | 0 : 0  // faster than Math.floor()
 }
 
-export function int64b(v?: t_numeric | bigint): t_int64b {
+export function int64b(v?: t_numeric): t_int64b {
     return BigInt(v)
 }
 
 // [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER] [-9007199254740991, 9007199254740991]
-export function safeInt(v?: number): t_safeint {
+export function safeInt(v?: t_numeric): t_safeint {
     return floatToInt(a_number(v))
 }
 
-export function int32(v?: number): t_int32 {
+export function int32(v?: t_numeric): t_int32 {
     return inRange(safeInt(v), MinInt32, MaxInt32, 'int32')
 }
 
-export function int24(v?: number): t_int24 {
+export function int24(v?: t_numeric): t_int24 {
     return inRange(safeInt(v), MinInt24, MaxInt24, 'int24')
 }
 
-export function int16(v?: number): t_int16 {
+export function int16(v?: t_numeric): t_int16 {
     return inRange(safeInt(v), MinInt16, MaxInt16, 'int16')
 }
 
-export function int8(v?: number): t_int8 {
+export function int8(v?: t_numeric): t_int8 {
     return inRange(safeInt(v), MinInt8, MaxInt8, 'int8')
 }
 
-export function uint64b(v?: t_numeric | bigint): t_uint64b {
+export function uint64b(v?: t_numeric): t_uint64b {
     return BigInt(v)
 }
 
-export function uint32(v?: number): t_uint32 {
+export function uint32(v?: t_numeric): t_uint32 {
     return inRange(safeInt(v), 0, MaxUint32, 'uint32')
 }
 
-export function uint24(v?: number): t_uint24 {
+export function uint24(v?: t_numeric): t_uint24 {
     return inRange(safeInt(v), 0, MaxUint24, 'uint24')
 }
 
-export function uint16(v?: number): t_uint16 {
+export function uint16(v?: t_numeric): t_uint16 {
     return inRange(safeInt(v), 0, MaxUint16, 'uint16')
 }
 
