@@ -13,7 +13,7 @@ import {Panic} from "./atype/panic";
  * instantiateClass('Date'); // Returns new Date()
  */
 export function instantiateClass(className: string): object {
-    if (typeof window === 'object' && window[className]?.prototype) {
+    if (typeof window !== 'undefined' && window[className]?.prototype) {
         return new window[className]();
     }
     try {

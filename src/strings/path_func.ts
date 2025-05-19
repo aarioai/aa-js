@@ -22,8 +22,8 @@ export function isAbsolutePath(path: string): boolean {
  *  joinPath('\\a\\b', '..\\c\\d')   // Returns /a/c/d
  *  joinPath('', '')   // Returns ''
  */
-export function joinPath(base: string, ...paths: string[]): string {
-    let result = base.replaceAll('\\', '/').replace(/\/+/g, '/').trim()
+export function joinPath(baseDir: string, ...paths: string[]): string {
+    let result = baseDir.replaceAll('\\', '/').replace(/\/+/g, '/').trim()
 
     for (let path of paths) {
         // for safety, sub-paths can't use absolute path

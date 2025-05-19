@@ -1,15 +1,12 @@
-import {MaxTabletWidth} from "./detect_device";
+import {t_safeint} from '../atype/atype_server'
 
 /**
  * Converts rem to pixels
  * @return number float
  */
 export function remToPx(rem: number): number {
-    let unit = 16 // default 1rem=16px
-    if (typeof window !== 'undefined') {
-        const style = window.getComputedStyle(document.documentElement)
-        unit = parseFloat(style?.fontSize) || unit
-    }
+    const style = window.getComputedStyle(document.documentElement)
+    const unit = parseFloat(style?.fontSize) || 16 // default 1rem=16px
     return rem * unit
 }
 
@@ -18,7 +15,7 @@ export function remToPx(rem: number): number {
  * @return number float
  */
 export function vwToPx(vw: number): number {
-    const innerWidth = typeof window !== 'undefined' ? window.innerWidth : MaxTabletWidth
+    const innerWidth = window.innerWidth
     if (vw === 100) {
         return innerWidth
     }
@@ -30,11 +27,11 @@ export function vwToPx(vw: number): number {
  * @return number float
  */
 export function vhToPx(vh: number): number {
-    const innerWidth = typeof window !== 'undefined' ? window.innerHeight : 1024
+    const innerHeight = window.innerHeight
     if (vh === 100) {
-        return innerWidth
+        return innerHeight
     }
-    return innerWidth * vh / 100
+    return innerHeight * vh / 100
 }
 
 /**
@@ -76,4 +73,8 @@ export function px(size: number | string): number {
         return parseFloat(size)
     }
     throw new Error(`Unsupported size unit: "${size}". Supported units: px, rem, vw, vh, or unit-less numbers.`)
+}
+
+export function pxInt(size: number | string): t_safeint {
+    return px(size) | 0
 }

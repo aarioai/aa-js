@@ -10,13 +10,17 @@ if not exist "package.json" (
     npm init
 )
 
-:: install jest
+:: install dependencies
 call :install typescript
 call :install ts-node
-call :install ts-jest
-call :install @jest/globals
 call :install @date-fns/tz
 call :install date-fns
+
+:: install jest
+call :install ts-jest
+call :install @types/jest
+call :install @jest/globals
+call :install jest-environment-jsdom
 
 call :install tsdown
 

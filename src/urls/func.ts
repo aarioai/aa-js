@@ -1,4 +1,4 @@
-import {joinPath} from "../strings/path_func";
+import {joinPath, parseBaseName} from "../strings/path_func";
 import {http_method, HttpMethods} from "../aa/atype/atype_server";
 import {Maps} from "../aa/atype/types";
 
@@ -63,13 +63,13 @@ export function normalizeURL(url: string): string {
     }
 
     let path = location.href.replace(location.origin, '')
+    // move to current directory
     if (path.charAt(path.length - 1) !== '/') {
-        let parts = path.split('/')
-        let dirname = parts.join('/')
-        dirname = joinPath(dirname, url)
-        return location.origin + dirname
+        const {dirname} = parseBaseName(path)
+        path = dirname
     }
-    return location.origin + '/' + url
+    const newPath = joinPath(path, url)
+    return location.origin + newPath
 }
 
 /**
@@ -140,5 +140,5 @@ export function joinURI(base: string, ...segs: any[]): string {
 
 
 export function replaceURLPathParams(url: string, params: Maps | URLSearchParams): string {
-
+    return ''
 }

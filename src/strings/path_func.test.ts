@@ -37,7 +37,8 @@ describe('joinPath', () => {
     test('should handle root path correctly', () => {
         expect(joinPath('/', 'a/b')).toBe('/a/b')
         expect(joinPath('/', '../a/b')).toBe('/a/b')
-        expect(joinPath('/', '../../a/b')).toBe('/a/b')
+        expect(joinPath('/a/b/d', '../../c')).toBe('/a/c')
+        expect(joinPath('/about/rule', '../us')).toBe('/about/us')
     })
 
     test('should handle multiple arguments', () => {
