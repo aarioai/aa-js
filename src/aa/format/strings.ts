@@ -1,4 +1,3 @@
-import {atype} from "../atype/atype";
 import {a_string} from "../atype/types_cast";
 
 /**
@@ -43,40 +42,27 @@ export function splitFirst(s: string, separator: string | number = ','): [string
  * joinWith('/', '2023', '05', '15')                         // Returns "2023/05/15"
  */
 export function joinWith(separator: string, ...args: unknown[]): string {
-    const validValues: string[] = [];
+    const validValues: string[] = []
 
     for (const arg of args) {
         if (arg !== null && arg !== undefined && arg !== '') {
-            const value = typeof arg === "string" ? arg.trim() : String(arg);
+            const value = a_string(arg)
             if (value) {  // Check again after trimming/conversion
-                validValues.push(value);
+                validValues.push(value)
             }
         }
     }
 
-    return validValues.join(separator);
+    return validValues.join(separator)
 }
 
 /**
  * Joins non-empty values with a whitespace
- * @param args
  */
 export function joinWithSpace(...args: string[]): string {
     return joinWith(' ', ...args);
 }
 
-export function joinComplexWith(separator: string, ...args: unknown[]): string {
-    let arr: string[] = new Array(args.length)
-    for (let i = 0; i < args.length; i++) {
-        let v = a_string(args[i])
-        arr[i] = v ? v : atype(args[i])
-    }
-    return arr.join(separator)
-}
-
-export function joinComplex(...args: unknown[]): string {
-    return joinComplexWith(' ', ...args)
-}
 
 type replacements =
     | Array<[string | RegExp, string | number]>

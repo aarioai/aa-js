@@ -1,3 +1,5 @@
+import {isJQueryDom} from './type_check'
+
 export const array_t = 'array'
 export const bigint_t = 'bigint'
 export const boolean_t = 'boolean'
@@ -52,6 +54,19 @@ export const TypeAlias = {
     'undefined': 'u',
 }
 
+
+export function atypeAlias(t: unknown): string | unknown {
+    if (typeof t === 'undefined') {
+        return TypeAlias.undefined
+    }
+    if (t === null) {
+        return TypeAlias.null
+    }
+    if (typeof t !== 'string' || t !== string_t) {
+        t = atype(t)
+    }
+    return TypeAlias[t as Atype]
+}
 
 export function objectAtype(v: object): Atype {
     if (v === null) {
@@ -111,67 +126,3 @@ export function atype(v: unknown): Atype {
 
     return typeof v === "object" ? objectAtype(v) : undefined_t
 }
-
-export function isJQueryDom(value: object): boolean {
-    return value !== null &&
-        'jquery' in value &&
-        !!value.jquery &&
-        (value as any).length > 0;
-}
-
-export function isMapObject(v: unknown): boolean {
-    return typeof v === 'object' && objectAtype(v) === mapobject_t
-}
-
-/**
- * Is node or node list
- * @param v
- */
-export function isDOM(v: unknown): boolean {
-    if (typeof v !== 'object') {
-        return false
-    }
-    const t = objectAtype(v)
-    return t === nodelist_t || t === node_t
-}
-
-export function isNode(v: unknown): boolean {
-    return typeof v === 'object' && objectAtype(v) === node_t
-}
-
-export function isNodelist(v: unknown): boolean {
-    return typeof v === 'object' && objectAtype(v) === nodelist_t
-}
-
-/**
- * Is the value a zero value
- */
-export function isZil(value: unknown): boolean {
-    if (value === undefined || value === null || value === '' || value === 0) {
-        return true
-    }
-
-    if (typeof value === 'boolean') {
-        return !value
-    }
-    if (Array.isArray(value)) {
-        return value.length === 0
-    }
-
-    return typeof value === 'object' && Object.keys(value).length === 0
-}
-
-
-export function atypeAlias(t: unknown): string | unknown {
-    if (typeof t === 'undefined') {
-        return TypeAlias.undefined
-    }
-    if (t === null) {
-        return TypeAlias.null
-    }
-    if (typeof t !== 'string' || t !== string_t) {
-        t = atype(t)
-    }
-    return TypeAlias[t as Atype]
-}
-

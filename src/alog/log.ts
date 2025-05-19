@@ -1,21 +1,7 @@
 import {ALogStyle} from "./style";
-import {joinComplex} from "../aa/format/strings";
+import {joinWith} from "../aa/format/strings";
 import {AConfig} from "../aa/env/aconfig";
 
-/**
- * Escape string formatting placeholders (%s, %d, etc.)
- *
- * console.log("I'm %s.", 'Aario') // Outputs I'm Aario.
- * console.log("I'm %s.") // Outputs I'm
- * console.log(escapeArgument("I'm %s.")) // Outputs I'm %s.
- */
-export function escapeArgument(msg: string): string {
-    return msg.replaceAll('%', '%%')
-}
-
-export function joinArguments(...messages: unknown[]): string {
-    return joinComplex(...messages)
-}
 
 export function printRaw(msg: string) {
     if (AConfig.debugger.isAlert()) {
@@ -37,7 +23,7 @@ export function printRaw(msg: string) {
 }
 
 export function log(...messages: unknown[]) {
-    const msg = joinArguments(...messages)
+    const msg = joinWith(' ', ...messages)
     printRaw(msg)
 }
 
@@ -45,7 +31,7 @@ export function prints(style: ALogStyle, ...messages: unknown[]) {
     if (AConfig.debugger.disabled()) {
         return
     }
-    const msg = joinArguments(...messages)
+    const msg = joinWith(' ', ...messages)
     if (AConfig.debugger.isAlert()) {
         printRaw(msg)
         return

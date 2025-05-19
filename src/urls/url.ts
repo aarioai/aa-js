@@ -163,7 +163,7 @@ class AaURL {
         }
         const value = this.searchParams[key]
         if (!cast) {
-            return value
+            return value as T
         }
         return cast(value)
     }

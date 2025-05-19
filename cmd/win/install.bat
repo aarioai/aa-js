@@ -10,6 +10,11 @@ if not exist "package.json" (
     npm init
 )
 
+:: node js must support structuredClone
+node -e "if(typeof structuredClone!=='function'){console.error('[error] requires NodeJS 17+ to support structuredClone')}"
+
+
+
 :: install dependencies
 call :install typescript
 call :install ts-node
@@ -19,6 +24,7 @@ call :install date-fns
 :: install jest
 call :install ts-jest
 call :install @types/jest
+call :install @types/node
 call :install @jest/globals
 call :install jest-environment-jsdom
 
@@ -30,6 +36,6 @@ call :install tsdown
     set "package=%~1"
     if not exist ".\node_modules\.bin\%package%" (
         echo install %package%
-        npm install -D %package%
+        npm install --save-dev %package%
     )
 endlocal & exit /b 0

@@ -1,5 +1,6 @@
 import {a_bool, a_string} from "./types_cast";
 
+
 /**
  * Calculates the length/size of any value with consistent fallback behavior.
  *

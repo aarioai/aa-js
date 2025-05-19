@@ -28,3 +28,5 @@ export interface ToStringable {
 }
 
 export type Stringable = string | number | ToStringable
+
+export type Builder<T> = new(...args: any[]) => T

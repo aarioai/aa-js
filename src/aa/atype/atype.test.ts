@@ -8,7 +8,6 @@ import {
     class_t,
     date_t,
     function_t,
-    isZil,
     map_t,
     mapobject_t,
     null_t,
@@ -20,6 +19,7 @@ import {
     TypeAlias,
     undefined_t
 } from "./atype";
+import {isZil} from './type_check'
 
 describe('objectAtype', () => {
     test('objectAtype null', () => {
