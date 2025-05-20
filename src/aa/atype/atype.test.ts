@@ -4,7 +4,7 @@ import {
     atype,
     atypeAlias,
     bigint_t,
-    boolean_t,
+    bool_t,
     class_t,
     date_t,
     function_t,
@@ -44,62 +44,59 @@ describe('objectAtype', () => {
 })
 
 describe('atype', () => {
-    test('atype [1, "2", 3]', () => {
+    test('atype', () => {
         expect(atype([1, "2", 3])).toBe(array_t)
-    })
-
-    test('atype 1n', () => {
         expect(atype(1n)).toBe(bigint_t)
-    })
+        expect(atype(true)).toBe(bool_t)
 
-    test('atype true', () => {
-        expect(atype(true)).toBe(boolean_t)
-    })
-
-    test('atype A{}', () => {
         class A {
         }
 
-        expect(atype(new A())).toBe(class_t)
-    })
+        expect(atype(A)).toBe(class_t)
+        expect(atype(new A())).toBe(undefined_t)
 
-    test('atype f()', () => {
         function f() {
         }
 
         expect(atype(f)).toBe(function_t)
-    })
 
-    test('atype str', () => {
         expect(atype("str")).toBe(string_t)
-    })
-
-    test('atype regexp', () => {
         expect(atype(new RegExp(/^\d+$/))).toBe(regexp_t)
-    })
-
-    test('atype undefined', () => {
         expect(atype(undefined)).toBe(undefined_t)
-    })
-
-    test('atype null', () => {
         expect(atype(null)).toBe(null_t)
-    })
-
-    test('atype new Date()', () => {
+        expect(atype(Date)).toBe(function_t)
         expect(atype(new Date())).toBe(date_t)
-    })
-
-    test('atype new Map()', () => {
         expect(atype(new Map())).toBe(map_t)
-    })
-
-    test('atype new Set()', () => {
         expect(atype(new Set())).toBe(set_t)
+        expect(atype({a: 1, b: 2n})).toBe(mapobject_t)
     })
 
-    test('atype {a: 1, b: 2n}', () => {
-        expect(atype({a: 1, b: 2n})).toBe(mapobject_t)
+    test('atypeAlias', () => {
+        expect(atypeAlias([])).toBe(TypeAlias[array_t])
+        expect(atypeAlias(true)).toBe(TypeAlias[bool_t])
+        expect(atypeAlias(false)).toBe(TypeAlias[bool_t])
+
+        class A {
+        }
+
+        expect(atypeAlias(A)).toBe(TypeAlias[class_t])
+        expect(atypeAlias(Date)).toBe(TypeAlias[function_t])
+        expect(atypeAlias(new Date())).toBe(TypeAlias[date_t])
+        expect(atypeAlias({})).toBe(TypeAlias[mapobject_t])
+        expect(atypeAlias(0)).toBe(TypeAlias[number_t])
+
+        function f() {
+        }
+
+        expect(atypeAlias(f)).toBe(TypeAlias[function_t])
+        expect(atypeAlias(null)).toBe(TypeAlias[null_t])
+        expect(atypeAlias(new Map())).toBe(TypeAlias[map_t])
+        expect(atypeAlias(1n)).toBe(TypeAlias[bigint_t])
+        expect(atypeAlias(new RegExp(/^\d+$/ig))).toBe(TypeAlias[regexp_t])
+        expect(atypeAlias('')).toBe(TypeAlias[string_t])
+        expect(atypeAlias('string')).toBe(TypeAlias[string_t])
+        expect(atypeAlias(new Set())).toBe(TypeAlias[set_t])
+        expect(atypeAlias(undefined)).toBe(TypeAlias[undefined_t])
     })
 })
 
@@ -142,62 +139,3 @@ describe('isZil', () => {
     })
 })
 
-
-describe('atypeAlias', () => {
-    test('atypeAlias []', () => {
-        expect(atypeAlias([])).toBe(TypeAlias[array_t])
-    })
-    test('atypeAlias true', () => {
-        expect(atypeAlias(true)).toBe(TypeAlias[boolean_t])
-    })
-    test('atypeAlias false', () => {
-        expect(atypeAlias(false)).toBe(TypeAlias[boolean_t])
-    })
-    test('atypeAlias A{}', () => {
-        class A {
-        }
-
-        expect(atypeAlias(new A())).toBe(TypeAlias[class_t])
-    })
-    test('atypeAlias new Date()', () => {
-        expect(atypeAlias(new Date())).toBe(TypeAlias[date_t])
-    })
-    test('atypeAlias {}', () => {
-        expect(atypeAlias({})).toBe(TypeAlias[mapobject_t])
-    })
-
-    test('atypeAlias 0', () => {
-        expect(atypeAlias(0)).toBe(TypeAlias[number_t])
-    })
-    test('atypeAlias fn()', () => {
-        function f() {
-        }
-
-        expect(atypeAlias(f)).toBe(TypeAlias[function_t])
-    })
-    test('atypeAlias null', () => {
-        expect(atypeAlias(null)).toBe(TypeAlias[null_t])
-    })
-
-    test('atypeAlias new Map()', () => {
-        expect(atypeAlias(new Map())).toBe(TypeAlias[map_t])
-    })
-    test('atypeAlias 1n', () => {
-        expect(atypeAlias(1n)).toBe(TypeAlias[bigint_t])
-    })
-    test('atypeAlias new RegExp', () => {
-        expect(atypeAlias(new RegExp(/^\d+$/ig))).toBe(TypeAlias[regexp_t])
-    })
-    test('atypeAlias ""', () => {
-        expect(atypeAlias('')).toBe(TypeAlias[string_t])
-    })
-    test('atypeAlias string', () => {
-        expect(atypeAlias('string')).toBe(TypeAlias[string_t])
-    })
-    test('atypeAlias new Set()', () => {
-        expect(atypeAlias(new Set())).toBe(TypeAlias[set_t])
-    })
-    test('atypeAlias undefined', () => {
-        expect(atypeAlias(undefined)).toBe(TypeAlias[undefined_t])
-    })
-})

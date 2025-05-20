@@ -1,4 +1,4 @@
-import {a_string} from "../atype/types_cast";
+import {a_string} from "../atype/t_basic";
 
 /**
  * Splits a string at the first occurrence of a separator, returning the parts and a success flag.

@@ -1,4 +1,4 @@
-import {t_safeint} from '../atype/atype_server'
+import {t_safeint} from '../atype/a_define'
 
 /**
  * Converts rem to pixels

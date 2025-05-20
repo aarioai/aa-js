@@ -1,4 +1,4 @@
-import {a_bool, a_string} from "./types_cast";
+import {a_bool, a_string} from "./t_basic";
 
 
 /**

@@ -14,8 +14,4 @@ export const Incr = 'INCR'
 export const Decr = 'DECR'
 
 
-export const atoz = 'abcdefghijklmnopqrstuvwxyz'
-export const AtoZ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-export const Alphabet = atoz + AtoZ
-export const Digits = '0123456789'
-export const AlphaDigits = Alphabet + Digits
+

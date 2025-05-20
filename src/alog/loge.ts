@@ -1,4 +1,4 @@
-import {AError} from "../types/aerror/error";
+import {AError} from "../basic/aerror/error";
 import * as log from "./log";
 
 export function loge(err: Error | AError) {

@@ -1,4 +1,4 @@
-import {MapObject, ToJSON} from "../atype/types";
+import {MapObject, ToJSON} from "../atype/a_define_complex";
 
 /**
  * Safely converts a value to JSON string with BigInt support.

@@ -1,71 +1,66 @@
 import {isJQueryDom} from './type_check'
 
-export const array_t = 'array'
-export const bigint_t = 'bigint'
-export const boolean_t = 'boolean'
-export const class_t = 'class'  // new XXX()
-export const date_t = 'date'
-export const function_t = 'function'
-export const map_t = 'map'   // new Map()
-export const mapobject_t = 'mapobject'  // {}  map object
-export const node_t = 'node'
-export const nodelist_t = 'nodelist'
-export const null_t = 'null'
-export const number_t = 'number'
-export const set_t = 'set'  // new Set()
-export const string_t = 'string'
-export const regexp_t = 'regexp'
-export const undefined_t = 'undefined'
+export const array_t = ':array'
+export const bigint_t = ':bigint'
+export const bool_t = ':bool'
+export const class_t = ':class' // class A{}   A is :class, but (new A{}()) is :undefined
+export const date_t = ':date'// Date is :function, but (new Date()) is :date
+export const function_t = ':function'
+export const map_t = ':map'   // new Map()
+export const mapobject_t = ':mapobject'  // {}  map object
+export const node_t = ':node'
+export const nodelist_t = ':nodelist'
+export const null_t = ':null'
+export const number_t = ':number'
+export const set_t = ':set'  // new Set()
+export const symbol_t = ':symbol'
+export const string_t = ':string'
+export const regexp_t = ':regexp'
+export const undefined_t = ':undefined'
+
 
 export type Atype =
-    'array'
-    | 'bigint'
-    | 'boolean'
-    | 'class'
-    | 'date'
-    | 'function'
-    | 'map'
-    | 'mapobject'
-    | 'node'
-    | 'nodelist'
-    | 'null'
-    | 'number'
-    | 'set'
-    | 'string'
-    | 'regexp'
-    | 'undefined'
+    ':array'
+    | ':bigint'
+    | ':bool'
+    | ':class'
+    | ':date'
+    | ':function'
+    | ':map'
+    | ':mapobject'
+    | ':node'
+    | ':nodelist'
+    | ':null'
+    | ':number'
+    | ':set'
+    | ':symbol'
+    | ':string'
+    | ':regexp'
+    | ':undefined'
 
 export const TypeAlias = {
-    'array': 'a',
-    'bigint': 'i',
-    'boolean': 'b',
-    'class': 'c',
-    'date': 'd',
-    'function': 'f',
-    'map': 'm',
-    'mapobject': 'o',
-    'node': 'p',
-    'nodelist': 'q',
-    'null': 'l',
-    'number': 'n',
-    'set': 't',
-    'string': 's',
-    'regexp': 'r',
-    'undefined': 'u',
+    ':array': 'a',
+    ':bigint': 'i',
+    ':boolean': 'b',
+    ':class': 'c',
+    ':date': 'd',
+    ':function': 'f',
+    ':map': 'm',
+    ':mapobject': 'o',
+    ':node': 'p',
+    ':nodelist': 'q',
+    ':null': 'l',
+    ':number': 'n',
+    ':set': 't',
+    ':symbol': 'y',
+    ':string': 's',
+    ':regexp': 'r',
+    ':undefined': 'u',
 }
 
 
-export function atypeAlias(t: unknown): string | unknown {
-    if (typeof t === 'undefined') {
-        return TypeAlias.undefined
-    }
-    if (t === null) {
-        return TypeAlias.null
-    }
-    if (typeof t !== 'string' || t !== string_t) {
-        t = atype(t)
-    }
-    return TypeAlias[t as Atype]
+export function atypeAlias(value: unknown): string | unknown {
+    return TypeAlias[atype(value)]
 }
 
 export function objectAtype(v: object): Atype {
@@ -99,29 +94,38 @@ export function objectAtype(v: object): Atype {
         case 'object':
             return mapobject_t
     }
-    return v.constructor !== Object && c !== "object" ? class_t : undefined_t
+    return undefined_t
 }
 
+/**
+ *
+ * class A{}
+ * atype(A) // ':class'
+ * atype (new A())  // ':undefined'
+ * atype(Date)  // ':function'
+ * atype(new Date())    // ':date'
+ */
 export function atype(v: unknown): Atype {
     if (v === null) {
         return null_t
     }
-    if (v === undefined) {
-        return undefined_t
-    }
 
     const t = typeof v
     switch (t) {
-        case boolean_t:
-            return boolean_t
-        case bigint_t:
+        case 'undefined':
+            return undefined_t
+        case 'boolean':
+            return bool_t
+        case 'bigint':
             return bigint_t
-        case function_t:
-            return function_t
-        case number_t:
+        case 'function':
+            return v.toString().startsWith('class ') ? class_t : function_t
+        case 'number':
             return number_t
-        case string_t:
+        case 'string':
             return string_t
+        case 'symbol':
+            return symbol_t
     }
 
     return typeof v === "object" ? objectAtype(v) : undefined_t

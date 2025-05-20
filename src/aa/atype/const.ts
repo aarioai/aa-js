@@ -1,21 +1,26 @@
 // a nil function
 import {
+    t_alphabetical,
+    t_alphadigits,
     t_booln,
     t_date,
     t_datetime,
     t_decimal,
+    t_digits,
     t_int16,
     t_int24,
     t_int32,
     t_int8,
+    t_lowers,
     t_money,
     t_percent,
     t_uint16,
     t_uint24,
     t_uint32,
     t_uint8,
+    t_uppers,
     t_vmoney
-} from "./atype_server";
+} from "./a_define_server";
 
 export const Nif = () => undefined
 
@@ -58,3 +63,10 @@ export const MoneyScale = 4
 export const MoneyMultiplicand: t_money = BigInt(Math.pow(10, MoneyScale)) // 10000 = 10^4
 export const VMoneyScale = 4
 export const VMoneyMultiplicand: t_vmoney = BigInt(Math.pow(10, VMoneyScale)) // 10000 = 10^4
+
+
+export const atoz: t_lowers = 'abcdefghijklmnopqrstuvwxyz'
+export const AtoZ: t_uppers = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+export const Alphabetical: t_alphabetical = atoz + AtoZ
+export const Digits: t_digits = '0123456789'
+export const AlphaDigits: t_alphadigits = Alphabetical + Digits
