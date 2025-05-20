@@ -34,7 +34,7 @@ import {
     uint64b,
     uint8
 } from "../aa/atype/types_cast";
-import {sortObjectMap} from '../maps/func'
+import {sortObjectMap} from '../types/maps/func'
 
 
 class AaURL {

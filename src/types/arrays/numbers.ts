@@ -1,7 +1,7 @@
-import {numberArray} from "../aa/atype/func";
-import {t_numeric} from "../aa/atype/atype_server";
-import {Panic} from "../aa/atype/panic";
-import {a_number} from '../aa/atype/types_cast'
+import {numberArray} from "../../aa/atype/func";
+import {t_numeric} from "../../aa/atype/atype_server";
+import {Panic} from "../../aa/atype/panic";
+import {a_number} from '../../aa/atype/types_cast'
 
 export type ComparisonOperator = '<' | '=' | '>' | '>=' | '<=' | '=='
 

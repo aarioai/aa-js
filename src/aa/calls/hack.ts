@@ -1,4 +1,4 @@
-import {Panic} from "./atype/panic";
+import {Panic} from "../atype/panic";
 
 /**
  * Safely instantiates a class by name

@@ -1,6 +1,6 @@
-import {Second} from "./env/const_unit";
-import {Break} from "./env/const";
-import {formatArguments} from "./format/format";
+import {Second} from "../env/const_unit";
+import {Break} from "../env/const";
+import {formatArguments} from "../format/format";
 
 /**
  *  Executes a function once a readiness condition is met, with retry logic.

@@ -1,5 +1,5 @@
 import {Decimal} from "./decimal";
-import {DecimalMultiplicand} from "../aa/atype/const";
+import {DecimalMultiplicand} from "../../aa/atype/const";
 
 
 /**

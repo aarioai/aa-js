@@ -1,5 +1,5 @@
 import {VMoney} from "./vmoney";
-import {VMoneyMultiplicand} from "../aa/atype/const";
+import {VMoneyMultiplicand} from "../../aa/atype/const";
 
 /**
  * Instances VMoney by performing precise add of real numbers

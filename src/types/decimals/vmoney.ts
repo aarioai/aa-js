@@ -1,7 +1,7 @@
-import {ValueOf} from "../aa/atype/types"
-import {t_float64, t_vmoney} from "../aa/atype/atype_server";
-import {VMoneyMultiplicand} from "../aa/atype/const";
-import {a_money, divideBigint} from "../aa/atype/types_cast_decimal";
+import {ValueOf} from "../../aa/atype/types"
+import {t_float64, t_vmoney} from "../../aa/atype/atype_server";
+import {VMoneyMultiplicand} from "../../aa/atype/const";
+import {a_money, divideBigint} from "../../aa/atype/types_cast_decimal";
 
 export class VMoney implements ValueOf<t_vmoney> {
     name = 'aa-money'

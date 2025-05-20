@@ -1,6 +1,6 @@
 import {describe, expect, test} from "@jest/globals"
 import {concat, concatInType, contains, generateArray, trimArray} from "./array"
-import {a_string, uint8} from "../aa/atype/types_cast"
+import {a_string, uint8} from "../../aa/atype/types_cast"
 
 describe('array functions', () => {
     test('trimArray', () => {

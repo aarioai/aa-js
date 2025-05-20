@@ -1,4 +1,4 @@
-import {MapObject} from "../aa/atype/types";
+import {MapObject} from "../../aa/atype/types";
 
 
 export function sortObjectMap<T = MapObject>(source: T, compareFn?: (a: string, b: string) => number): T {

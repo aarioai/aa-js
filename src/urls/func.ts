@@ -1,4 +1,4 @@
-import {joinPath, parseBaseName, splitPath} from "../strings/path_func";
+import {joinPath, parseBaseName, splitPath} from "../types/strings/path_func";
 import {http_method, HttpMethods} from "../aa/atype/atype_server";
 import {AnyMap, MapObject, StringMap} from '../aa/atype/types'
 import {cloneMap, cloneObjectMap} from '../aa/atype/clone'

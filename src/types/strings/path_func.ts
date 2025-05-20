@@ -1,5 +1,5 @@
-import {Panic} from "../aa/atype/panic";
-import {Stringable} from '../aa/atype/types'
+import {Panic} from "../../aa/atype/panic";
+import {Stringable} from '../../aa/atype/types'
 
 export function isWindowsAbsolutePath(path: string): boolean {
     return path ? /^[A-Za-z]:[\/\\]/.test(path) : false

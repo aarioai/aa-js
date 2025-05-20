@@ -1,5 +1,5 @@
 import {Percent} from "./percent";
-import {PercentMultiplicand} from "../aa/atype/const";
+import {PercentMultiplicand} from "../../aa/atype/const";
 
 /**
  * Instances Percent by performing precise add of real numbers

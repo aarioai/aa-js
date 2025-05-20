@@ -1,5 +1,5 @@
 import {shuffle} from "../arrays/array";
-import {AlphaDigits} from "../aa/env/const";
+import {AlphaDigits} from "../../aa/env/const";
 
 export function shuffleString(s: string): string {
     return shuffle(s.split('')).join('')
