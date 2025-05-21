@@ -1,8 +1,8 @@
 import {joinPath, parseBaseName, splitPath} from "../strings/path_func";
-import {HttpMethods, t_httpmethod} from "../../aa/atype/a_define";
-import {a_string} from '../../aa/atype/t_basic'
+import {HttpMethods, SortStringFunc, t_httpmethod} from "../../aa/atype/a_define";
+import {a_string, sortStringFunc} from '../../aa/atype/t_basic'
 import {ParamsType, PathParamMap, safePathParamValue, SearchParamsType, URLPathError, URLPattern} from './base'
-import {PathParamsMatchesRegex, PathParamTestRegexp} from '../../aa/atype/const_server'
+import {PathParamsMatchesRegex, PathParamString, PathParamTestRegexp} from '../../aa/atype/const_server'
 import {t_path_param} from '../../aa/atype/a_define_server'
 
 
@@ -203,16 +203,36 @@ export function searchParam(params: ParamsType, name: string): unknown {
 
 
 export function spreadSearchParams(target: SearchParamsType, source: ParamsType) {
+    const alias = []
+    // Handle parameter alias, e.g. winner={max_score}&best={winner:string}
+    for (const [key, value] of Object.entries(target)) {
+        if (!value || !value.startsWith('{')) {
+            continue
+        }
+        const match = value.match(PathParamTestRegexp)
+        if (!match) {
+            continue
+        }
+        const [_, name, paramType] = match
+        target[key] = safePathParamValue(searchParam(source, name), paramType)
+        alias.push(key)
+    }
+
+
     if (source instanceof Map || source instanceof URLSearchParams) {
         for (const [key, value] of source) {
-            target[key] = a_string(value)
+            if (!alias.includes(key)) {
+                target[key] = a_string(value)
+            }
         }
         return
     }
 
     for (const key in source) {
         if (Object.prototype.hasOwnProperty.call(source, key)) {
-            target[key] = a_string(source[key])
+            if (!alias.includes(key)) {
+                target[key] = a_string(source[key])
+            }
         }
     }
 }
@@ -329,7 +349,7 @@ export function splitURLSearch(urlPattern: string): { base: string, hash: string
  *
  * @example
  *  revertURLPathParams('/api/{version}/users/{uid:uint64}?name=Aario&from={from}#top', {version:'v1', uid:100n, age:10})
- *  // Returns {base:"/api/v1/users/100", hash:"top", search:{name:"Aario", age:"10", from:"{from}"}}
+ *  // Returns {base:"/api/v1/users/100", hash:"top", search:{name:"Aario", age:"10", from:""}}
  *
  * @example
  * // Params in path are required
@@ -343,7 +363,7 @@ export function splitURLSearch(urlPattern: string): { base: string, hash: string
  * @example
  * // Params in hash or query string are optional
  * revertURLPathParams('/api/{version}/users/{uid:uint64}#{hash}?work={work}', {version:'v1', uid:100n, age:10,})
- * // Returns {base:"/api/v1/users/100", hash:'', search:{age:"10", work="{work}"}}
+ * // Returns {base:"/api/v1/users/100", hash:'', search:{age:"10", work=""}}
  */
 export function revertURLPathParams(urlPattern: URLPattern, params: ParamsType): {
     base: string,
@@ -357,20 +377,20 @@ export function revertURLPathParams(urlPattern: URLPattern, params: ParamsType):
     spreadSearchParams(search, params)
 
     // Handle hash parameter {<key>} or {<key><type>}
-    let isHashPattern = false
-    let hashParam: { name: string, type: t_path_param } = {name: '', type: ''}
     if (hash && hash.startsWith('#{')) {
         const match = hash.slice(1).match(PathParamTestRegexp)
         if (match) {
-            isHashPattern = true
             const [_, name, paramType] = match
-            hashParam.name = name
-            hashParam.type = paramType ? paramType : ':string'
+            hash = safePathParamValue(searchParam(search, name), paramType)
+            if (hash) {
+                hash = '#' + hash
+            }
+            delete search[name]
         }
     }
 
     // Handle no parameter
-    if (!base.includes('{') && !isHashPattern) {
+    if (!base.includes('{')) {
         return {base: base, hash, search}
     }
     const pathParams: PathParamMap = new Map<string, t_path_param>()
@@ -379,7 +399,7 @@ export function revertURLPathParams(urlPattern: URLPattern, params: ParamsType):
     const matches = base.matchAll(PathParamsMatchesRegex)
     for (const match of matches) {
         const [pattern, name, paramType] = match
-        let type: t_path_param = ':string'
+        let type: t_path_param = PathParamString
         if (paramType) {
             type = paramType
             base = base.replace(pattern, `{${name}}`)     // format to {<key>}
@@ -398,16 +418,35 @@ export function revertURLPathParams(urlPattern: URLPattern, params: ParamsType):
         base = base.replaceAll(`{${name}}`, value)
         delete search[name]
     }
-    if (!isHashPattern) {
-        return {base, hash, search}
-    }
-
-    // Handle hash parameter
-    const hashValue = safePathParamValue(searchParam(search, hashParam.name), hashParam.type)
-    if (hashValue) {
-        hash = '#' + hashValue
-        delete search[hashParam.name]
-    }
 
     return {base, hash, search}
+}
+
+export function buildSearchString(search: SearchParamsType, keySortFunc?: SortStringFunc, keepEmpty: boolean = false): string {
+    let keys = search ? Object.keys(search) : []
+    if (keys.length === 0) {
+        return ''
+    }
+    if (keySortFunc) {
+        keys = keys.sort(sortStringFunc(keySortFunc))
+    }
+
+    const p = new URLSearchParams()
+    keys.forEach(key => {
+        const value = search[key]
+        if (value === '' && !keepEmpty) {
+            return
+        }
+        p.append(key, value)
+    })
+    const s = p.toString()
+    return s ? '?' + s : ''
+}
+
+/**
+ * Builds a URL string with result from revertURLPathParams
+ */
+export function buildURL(base: string, hash: string, search: SearchParamsType, keySortFunc?: SortStringFunc, keepEmpty: boolean = false): string {
+    const searchString = buildSearchString(search, keySortFunc, keepEmpty)
+    return base + searchString + hash
 }

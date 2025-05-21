@@ -1,5 +1,6 @@
 import {describe, expect, test} from '@jest/globals';
 import {
+    buildURL,
     deepDecodeURI,
     deepEncodeURI,
     joinURL,
@@ -12,6 +13,7 @@ import {
     splitURLSearch
 } from './func';
 import {URLPathError} from './base'
+import {DescStringFunc} from '../../aa/atype/const'
 
 describe('url func', () => {
     test('deepDecodeURI', () => {
@@ -127,6 +129,20 @@ describe('revertURLPathParams', () => {
     const urlPatternTyped = 'https://luexu.com/api/v1/users/{uid:uint64}#tag?&name=Aario&&age=30&age=18#middle'
     const urlPatternMixed = 'https://luexu.com/api/v1/users/{uid:uint64}/records/page/{page}#middle'
     const urlPatternComplex = '/api/v1/users/{uid:uint64}/records/page/{page:int}?redirect={redirect}#{hash:string}'
+    const urlPatternWithAlias = '/api/v1/users/{uid:uint64}/records/page/{page:int}?sex={gender}&name={name}#{hash:string}'
+
+    expect(revertURLPathParams(urlPatternWithAlias, {
+        uid: 1000n,
+        page: 1,
+        hash: 'alias',
+        name: 'Aario',
+        sex: 'female',
+        gender: 'male'          // sex={gender}  alias has priority
+    })).toEqual({
+        base: '/api/v1/users/1000/records/page/1',
+        hash: '#alias',
+        search: {name: 'Aario', sex: 'male', gender: 'male'},
+    })
 
     test('revertURLPathParams MapObject', () => {
         expect(revertURLPathParams(urlPatternNoParams, {uid: 1000n})).toEqual({
@@ -163,7 +179,13 @@ describe('revertURLPathParams', () => {
         expect(revertURLPathParams(urlPatternComplex, {uid: 1000n, page: 1, hash: 'end'})).toEqual({
             base: '/api/v1/users/1000/records/page/1',
             hash: '#end',
-            search: {redirect: '{redirect}'},
+            search: {redirect: ''},
+        })
+
+        expect(revertURLPathParams(urlPatternComplex, {uid: 1000n, page: 1, hash: 'end'})).toEqual({
+            base: '/api/v1/users/1000/records/page/1',
+            hash: '#end',
+            search: {redirect: ''},
         })
     })
 
@@ -205,7 +227,7 @@ describe('revertURLPathParams', () => {
         expect(revertURLPathParams(urlPatternComplex, new Map<string, unknown>([['uid', 1000n], ['page', 1], ['hash', 'end']]))).toEqual({
             base: '/api/v1/users/1000/records/page/1',
             hash: '#end',
-            search: {redirect: '{redirect}'},
+            search: {redirect: ''},
         })
     })
 
@@ -246,9 +268,41 @@ describe('revertURLPathParams', () => {
         expect(revertURLPathParams(urlPatternComplex, new URLSearchParams('uid=1000&page=1&hash=end'))).toEqual({
             base: '/api/v1/users/1000/records/page/1',
             hash: '#end',
-            search: {redirect: '{redirect}'},
+            search: {redirect: ''},
         })
     })
 
 
+})
+
+
+describe('buildURL', () => {
+    test('buildURL simple', () => {
+        const urlPattern = 'https://luexu.com/api/v1/users/{uid:uint64}/records/page/{page:int}?redirect={redirect}#{hash:string}'
+        const params = {
+            'uid': 123n,
+            'page': 100,
+        }
+        const {base, hash, search} = revertURLPathParams(urlPattern, params)
+        console.log(search)
+        expect(buildURL(base, hash, search, true)).toBe('https://luexu.com/api/v1/users/123/records/page/100')
+        expect(buildURL(base, hash, search, true, true)).toBe('https://luexu.com/api/v1/users/123/records/page/100?redirect=')
+    })
+
+    test('buildURL with descending sort', () => {
+        const urlPattern = 'https://luexu.com/api/v1/users/{uid:uint64}/records/page/{page:int}?redirect={redirect}#{hash:string}'
+        const params = {
+            'uid': 123n,
+            'page': 100,
+            'name': 'Aario',
+            'age': '18',
+            'zig': 'zag',
+        }
+        const {base, hash, search} = revertURLPathParams(urlPattern, params)
+        expect(buildURL(base, hash, search, true)).toBe('https://luexu.com/api/v1/users/123/records/page/100?age=18&name=Aario&zig=zag')
+        expect(buildURL(base, hash, search, true, true)).toBe('https://luexu.com/api/v1/users/123/records/page/100?age=18&name=Aario&redirect=&zig=zag')
+
+        expect(buildURL(base, hash, search, DescStringFunc)).toBe('https://luexu.com/api/v1/users/123/records/page/100?zig=zag&name=Aario&age=18')
+        expect(buildURL(base, hash, search, DescStringFunc, true)).toBe('https://luexu.com/api/v1/users/123/records/page/100?zig=zag&redirect=&name=Aario&age=18')
+    })
 })

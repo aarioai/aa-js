@@ -1,5 +1,5 @@
 import {MapObject} from "../../aa/atype/a_define_complex";
-import {normalizeSearchParams, normalizeURLWithMethod, revertURLPathParams} from "./func";
+import {buildURL, normalizeSearchParams, normalizeURLWithMethod, revertURLPathParams} from "./func";
 import {
     t_booln,
     t_char,
@@ -37,7 +37,7 @@ import {
     uint64b,
     uint8
 } from "../../aa/atype/t_basic";
-import {t_httpmethod, t_safeint} from '../../aa/atype/a_define'
+import {SortStringFunc, t_httpmethod, t_safeint} from '../../aa/atype/a_define'
 import {ParamsType, SearchParamsType} from './base'
 import {a_weekday} from '../../aa/atype/t_basic_server'
 
@@ -46,7 +46,8 @@ class AaURL {
     name = 'aa-url'
     method: t_httpmethod | ''
     searchParams: SearchParamsType = {}  // use Maps to enable set object values, URLSearchParams only supports string values
-    sortCompareFunc?: (a: string, b: string) => number
+    keepEmptyParams: boolean = false
+    sort: SortStringFunc = false
 
     protocol: string   // e.g. https:
     hostname: string   // e.g. test.luexu.com
@@ -95,8 +96,13 @@ class AaURL {
     }
 
 
-    withSortCompareFunc(compareFn: (a: string, b: string) => number): AaURL {
-        this.sortCompareFunc = compareFn
+    withSort(sort: SortStringFunc): AaURL {
+        this.sort = sort
+        return this
+    }
+
+    withKeepEmptyParams(keep: boolean): AaURL {
+        this.keepEmptyParams = keep
         return this
     }
 
@@ -225,11 +231,7 @@ class AaURL {
 
     toString() {
         const urlPattern = this.protocol + '//' + this.hostname + this.port + this.pathname + this.hash
-        const {url, search} = revertURLPathParams(urlPattern, this.searchParams)
-
-        if (typeof this.sortCompareFunc == "function") {
-
-        }
-
+        const {base, hash, search} = revertURLPathParams(urlPattern, this.searchParams)
+        return buildURL(base, hash, search, this.sort, this.keepEmptyParams)
     }
 }

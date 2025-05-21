@@ -21,6 +21,7 @@ import {
 } from "./a_define_server";
 
 export const PathParams: t_path_param[] = pathParams
+export const PathParamString: t_path_param = ':string'
 export const PathParamTestRegexp = new RegExp(`^{([_a-z]\\w*)(${pathParams.join('|')})?}$`, 'i')
 export const PathParamsMatchesRegex = new RegExp(`{([_a-z]\\w*)(${pathParams.join('|')})?}`, 'ig')   // {<key>} or {<key><type>}
 
