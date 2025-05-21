@@ -1,6 +1,9 @@
 import {a_booln, a_string, int16, int32, int64b, int8, uint16, uint32, uint64b, uint8} from '../../aa/atype/t_basic'
 import {t_path_param} from '../../aa/atype/a_define_server'
+import {AnyMap, MapObject} from '../../aa/atype/a_define_complex'
 
+export type SearchParamsType = MapObject<string>
+export type ParamsType = MapObject | URLSearchParams | AnyMap
 /**
  * A URL string with iris-like routing path pattern {<key>} or {<key>:<type>}
  * <key> must starts with a _ or alphabet, and only contains _, alphabets or numbers

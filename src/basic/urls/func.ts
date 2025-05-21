@@ -1,8 +1,15 @@
 import {joinPath, parseBaseName, splitPath} from "../strings/path_func";
 import {HttpMethods, t_httpmethod} from "../../aa/atype/a_define";
-import {AnyMap, MapObject} from '../../aa/atype/a_define_complex'
 import {a_string} from '../../aa/atype/t_basic'
-import {PathParamMap, PathParamValue, safePathParamValue, URLPathError, URLPattern} from './base'
+import {
+    ParamsType,
+    PathParamMap,
+    PathParamValue,
+    safePathParamValue,
+    SearchParamsType,
+    URLPathError,
+    URLPattern
+} from './base'
 import {PathParamsTypedRegex} from '../../aa/atype/const_server'
 import {t_path_param} from '../../aa/atype/a_define_server'
 
@@ -192,7 +199,7 @@ export function joinURL(base: string, ...parts: (number | string)[]): string {
 }
 
 
-export function searchParam(params: MapObject | URLSearchParams | AnyMap, name: string): unknown {
+export function searchParam(params: ParamsType, name: string): unknown {
     if (!name || !params) {
         return undefined
     }
@@ -202,8 +209,8 @@ export function searchParam(params: MapObject | URLSearchParams | AnyMap, name: 
     return params.hasOwnProperty(name) ? params[name] : undefined
 }
 
-export function normalizeSearchParams<T extends MapObject | URLSearchParams | AnyMap>(params: T): MapObject<string> {
-    const result: MapObject<string> = {}
+export function normalizeSearchParams<T extends ParamsType>(params: T): SearchParamsType {
+    const result: SearchParamsType = {}
 
     if (params instanceof Map || params instanceof URLSearchParams) {
         for (const [key, value] of params) {
@@ -222,7 +229,7 @@ export function normalizeSearchParams<T extends MapObject | URLSearchParams | An
 }
 
 /**
- * Replaces iris-like path parameters to its value in a URL string
+ * Reverts iris-like path parameters to its value in a URL string
  *
  * @example
  *  revertURLPathParams('/api/{version}/users/{uid:uint64}', {version:'v1', uid:100n, age:10})
@@ -242,9 +249,9 @@ export function normalizeSearchParams<T extends MapObject | URLSearchParams | An
  * revertURLPathParams('/api/{version}/users/{uid:uint64}#{hash}?work={work}', {version:'v1', uid:100n, age:10,})
  * // Returns {url:"/api/v1/users/100#?work=", search:{age:"10"}, ok:true}
  */
-export function revertURLPathParams<T extends MapObject | URLSearchParams | AnyMap>(urlPattern: URLPattern, params: T): {
+export function revertURLPathParams(urlPattern: URLPattern, params: ParamsType): {
     url: string,
-    search: MapObject<string>,
+    search: SearchParamsType,
     ok: boolean
 } {
     const search = normalizeSearchParams(params)

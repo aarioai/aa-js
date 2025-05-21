@@ -21,6 +21,7 @@ import {MapObject} from './a_define_complex'
 import {typeArray} from './func'
 import {
     t_booln,
+    t_byte,
     t_int16,
     t_int24,
     t_int32,
@@ -64,26 +65,6 @@ export function a_array<T = unknown>(value: object | unknown[] | null | undefine
     return Object.values(value)
 }
 
-export function a_bool(value: boolean | number | bigint | string | undefined | null): boolean {
-    switch (typeof value) {
-        case "boolean":
-            return value
-        case "number":
-            return value > 0
-        case 'bigint':
-            return value > 0n
-        case "string":
-            value = value.trim().toLowerCase()
-            return !["", "false", "f", "0", "0n", "no", "off", "null"].includes(value)
-        default:
-            return Boolean(value)
-    }
-}
-
-export function a_booln(value: boolean | number | bigint | string | undefined | null): t_booln {
-    return a_bool(value) ? True : False
-}
-
 export function a_func(value: Function | undefined | null) {
     return typeof value === "function" ? value : Nif
 }
@@ -97,6 +78,24 @@ export function a_maps(value: MapObject | unknown[] | undefined | null): MapObje
         return {...value}
     }
     return typeof value === "object" ? value : {}
+}
+
+/**
+ * Converts number except NaN, bigint into a number, NaN into 0, and boolean into a t_bool
+ * @param v
+ */
+export function a_number(v?: t_numeric | boolean): number {
+    switch (typeof v) {
+        case 'undefined':
+            return 0
+        case 'number':
+            return isNaN(v) ? 0 : v
+        case 'boolean':
+            return v ? True : False
+        default:
+            const num = Number(v)
+            return isNaN(num) ? 0 : num
+    }
 }
 
 /**
@@ -161,23 +160,50 @@ export function a_string(value: unknown): string {
     return j ? j : String(value)
 }
 
+
 /**
- * Converts number except NaN, bigint into a number, NaN into 0, and boolean into a t_bool
- * @param v
+ * Converts a visible ASCII byte character
+ * @returns Single ASCII character or null character (\0) if conversion fails
  */
-export function a_number(v?: t_numeric | boolean): number {
-    switch (typeof v) {
-        case 'undefined':
-            return 0
-        case 'number':
-            return isNaN(v) ? 0 : v
-        case 'boolean':
-            return v ? True : False
+export function a_byte(value: string | number | undefined | null): t_byte {
+    if (!value) {
+        return '\0' // String.fromCharCode(0)
+    }
+    if (typeof value === 'number') {
+        return (value > 31 && value < 127) ? String.fromCharCode(value) : '\0'
+    }
+
+    if (typeof value === 'string') {
+        if (value.length !== 1) {
+            return '\0'
+        }
+        const charCode = value.charCodeAt(0);
+        return (charCode > 31 && charCode < 127) ? value : '\0';
+    }
+
+    return '\0';
+}
+
+export function a_bool(value: boolean | number | bigint | string | undefined | null): boolean {
+    switch (typeof value) {
+        case "boolean":
+            return value
+        case "number":
+            return value > 0
+        case 'bigint':
+            return value > 0n
+        case "string":
+            value = value.trim().toLowerCase()
+            return !["", "false", "f", "0", "0n", "no", "off", "null"].includes(value)
         default:
-            const num = Number(v)
-            return isNaN(num) ? 0 : num
+            return Boolean(value)
     }
 }
+
+export function a_booln(value: boolean | number | bigint | string | undefined | null): t_booln {
+    return a_bool(value) ? True : False
+}
+
 
 export function float64(v?: t_numeric): number {
     return a_number(v)

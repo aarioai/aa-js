@@ -2,7 +2,10 @@
 
 import {t_safeint} from './a_define'
 
-export type t_byte = string
+export type t_booln = 0 | 1
+export type t_byte = string  // single character in ASCII characters [32, 126]
+export type t_float64 = number
+export type t_float32 = number
 export type t_int8 = number
 export type t_int16 = number
 export type t_int24 = number
@@ -15,13 +18,10 @@ export type t_uint24 = number
 export type t_uint32 = number
 export type t_uint = t_uint32
 export type t_uint64b = bigint   // js number only support uint53
-export type t_float32 = number
-export type t_float64 = number
-
 export type t_bin = string  // binary string
 export type t_bitpos = t_uint8
 export type t_bitposition = t_uint16
-export type t_booln = 0 | 1
+
 export type t_millisecond = t_safeint
 export type t_second = t_safeint
 
@@ -54,7 +54,7 @@ export type t_alphabetical = string // [a-zA-Z]+
 export type t_alphadigits = string   // [a-zA-Z\d]+
 export type t_word = string         //  \w+
 export type t_email = string
-export type t_weekday = t_uint8        // [0-6] from sunday to saturday
+export type t_weekday = t_int8        // [0-6] from sunday to saturday, -1 to invalid weekday
 
 // @see ./t_path.ts
 

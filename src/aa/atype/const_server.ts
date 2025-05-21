@@ -16,7 +16,8 @@ import {
     t_uint24,
     t_uint32,
     t_uint8,
-    t_vmoney
+    t_vmoney,
+    t_weekday
 } from "./a_define_server";
 
 export const PathParams: t_path_param[] = pathParams
@@ -58,3 +59,12 @@ export const MoneyScale = 4
 export const MoneyMultiplicand: t_money = BigInt(Math.pow(10, MoneyScale)) // 10000 = 10^4
 export const VMoneyScale = 4
 export const VMoneyMultiplicand: t_vmoney = BigInt(Math.pow(10, VMoneyScale)) // 10000 = 10^4
+
+export const InvalidWeekday = -1
+export const Sunday: t_weekday = 0
+export const Monday: t_weekday = 1
+export const Tuesday: t_weekday = 2
+export const Wednesday: t_weekday = 3
+export const Thursday: t_weekday = 4
+export const Friday: t_weekday = 5
+export const Saturday: t_weekday = 6

@@ -1,13 +1,16 @@
 import {MapObject} from "../../aa/atype/a_define_complex";
-import {normalizeURLWithMethod} from "./func";
+import {normalizeSearchParams, normalizeURLWithMethod} from "./func";
 import {
     t_booln,
+    t_byte,
     t_float64,
     t_int16,
     t_int24,
     t_int32,
     t_int64b,
     t_int8,
+    t_millisecond,
+    t_second,
     t_uint16,
     t_uint24,
     t_uint32,
@@ -17,6 +20,7 @@ import {
 import {
     a_bool,
     a_booln,
+    a_byte,
     a_string,
     float32,
     float64,
@@ -34,12 +38,13 @@ import {
 } from "../../aa/atype/t_basic";
 import {sortObjectMap} from '../maps/func'
 import {t_httpmethod, t_safeint} from '../../aa/atype/a_define'
+import {ParamsType, SearchParamsType} from './base'
 
 
 class AaURL {
     name = 'aa-url'
     method: t_httpmethod | ''
-    searchParams: MapObject = {}  // use Maps to enable set object values, URLSearchParams only supports string values
+    searchParams: SearchParamsType = {}  // use Maps to enable set object values, URLSearchParams only supports string values
     pathParams: Map<string, string> = new Map()
     autoSort: boolean = false
     sortCompareFunc?: (a: string, b: string) => number
@@ -52,12 +57,11 @@ class AaURL {
     username: string = ''
     password: string = ''
 
-    #isTemplate: boolean = false
-
     /**
+     * Creates an AaURL instance
      *
      * @param routingURL iris path parameter routing URL,   path parameters with format {<key>:<type>} or {<key>}
-     *          e.g. /api/v1/users/{uid:uint64}/logs/page/{page}       // <url>
+     *          e.g. /api/v1/users/{uid:uint64}/logs/page/{page}?param=value       // <url>
      *          e.g. GET https://luexu.com/api/v1/users/{uid:uint64}   // <http_method> <url>
      * @param params
      * @param hash
@@ -74,6 +78,7 @@ class AaURL {
         this.protocol = this.revertPathPatterns(u.protocol)
         this.username = this.revertPathPatterns(u.username)
         this.password = this.revertPathPatterns(u.password)
+        this.setParams(u.searchParams)
         this.setParams(params)
     }
 
@@ -122,20 +127,20 @@ class AaURL {
     }
 
     setParam(key: string, value: unknown): AaURL {
-        this.searchParams[key] = value
+        this.searchParams[key] = a_string(value)
         return this
     }
 
-    setParams(params?: MapObject | URLSearchParams): AaURL {
+    setParams(params?: ParamsType): AaURL {
         if (!params) {
             return this
         }
-        for (const [key, value] of Object.entries(params)) {
+        const searchParams = normalizeSearchParams(params)
+        for (const [key, value] of Object.entries(searchParams)) {
             this.setParam(key, value)
         }
         return this
     }
-
 
     deleteParam(key: string): AaURL {
         delete this.searchParams[key]
@@ -156,7 +161,7 @@ class AaURL {
         return this
     }
 
-    search<T = unknown>(key: string, cast?: (value: unknown) => T): T | null | undefined {
+    search<T = unknown>(key: string, cast?: (value: unknown) => T): T | undefined {
         if (!this.hasParam(key)) {
             return undefined
         }
@@ -167,72 +172,82 @@ class AaURL {
         return cast(value)
     }
 
-    searchBool(key: string): boolean | null {
-        return this.search(key, a_bool)
+    searchByte(key: string): t_byte | undefined {
+        const value = this.search(key, a_byte)
+        return value != '\0' ? value : undefined
     }
 
-    searchBooln(key: string): t_booln | null {
-        return this.search(key, a_booln)
-    }
 
     searchString(key: string): string {
         return this.search(key, a_string)
     }
 
-    searchNumber(key: string): number | null {
-        return this.search(key, Number)
-    }
-
-    searchFloat64(key: string): t_float64 | null {
-        return this.search(key, float64)
-    }
-
-    searchFloat32(key: string): t_float64 | null {
-        return this.search(key, float32)
-    }
-
-    searchInt64b(key: string): t_int64b | null {
+    searchInt64b(key: string): t_int64b | undefined {
         return this.search(key, int64b)
     }
 
-    searchSafeInt(key: string): t_safeint | null {
+    searchSafeInt(key: string): t_safeint | undefined {
         return this.search(key, safeInt)
     }
 
-    searchInt32(key: string): t_int32 | null {
+    searchInt32(key: string): t_int32 | undefined {
         return this.search(key, int32)
     }
 
-    searchInt24(key: string): t_int24 | null {
+    searchInt24(key: string): t_int24 | undefined {
         return this.search(key, int24)
     }
 
-    searchInt16(key: string): t_int16 | null {
+    searchInt16(key: string): t_int16 | undefined {
         return this.search(key, int16)
     }
 
-    searchInt8(key: string): t_int8 | null {
+    searchInt8(key: string): t_int8 | undefined {
         return this.search(key, int8)
     }
 
-    searchUint64b(key: string): t_uint64b | null {
+    searchUint64b(key: string): t_uint64b | undefined {
         return this.search(key, uint64b)
     }
 
-    searchUint32(key: string): t_uint32 | null {
+    searchUint32(key: string): t_uint32 | undefined {
         return this.search(key, uint32)
     }
 
-    searchUint24(key: string): t_uint24 | null {
+    searchUint24(key: string): t_uint24 | undefined {
         return this.search(key, uint24)
     }
 
-    searchUint16(key: string): t_uint16 | null {
+    searchUint16(key: string): t_uint16 | undefined {
         return this.search(key, uint16)
     }
 
-    searchUint8(key: string): t_uint8 | null {
+    searchUint8(key: string): t_uint8 | undefined {
         return this.search(key, uint8)
+    }
+
+    searchFloat64(key: string): t_float64 | undefined {
+        return this.search(key, float64)
+    }
+
+    searchFloat32(key: string): t_float64 | undefined {
+        return this.search(key, float32)
+    }
+
+    searchBool(key: string): boolean | undefined {
+        return this.search(key, a_bool)
+    }
+
+    searchBooln(key: string): t_booln | undefined {
+        return this.search(key, a_booln)
+    }
+
+    searchMillisecond(key: string): t_millisecond | undefined {
+        return this.search(key, safeInt)
+    }
+
+    searchSecond(key: string): t_second | undefined {
+        return this.search(key, safeInt)
     }
 
     toString() {
