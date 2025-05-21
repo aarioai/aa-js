@@ -15,7 +15,6 @@ export type URLPattern = string
 export type PathParamValue = {
     type: t_path_param,
     required: boolean,
-    value: unknown,
 }
 export type PathParamMap = Map<string, PathParamValue>
 

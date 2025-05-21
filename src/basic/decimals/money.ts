@@ -1,6 +1,6 @@
 import {ValueOf} from "../../aa/atype/a_define_complex"
 import {t_float64, t_money} from "../../aa/atype/a_define_server";
-import {MoneyMultiplicand} from "../../aa/atype/const";
+import {MoneyMultiplicand} from "../../aa/atype/const_server";
 import {a_money, divideBigint} from "../../aa/atype/t_decimal";
 
 export class Money implements ValueOf<t_money> {

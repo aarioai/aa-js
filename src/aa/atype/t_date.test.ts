@@ -1,5 +1,5 @@
 import {describe, expect, test} from "@jest/globals";
-import {DatePattern, DatetimePattern, MinDate} from "./const";
+import {DatePattern, DatetimePattern, MinDate} from "./const_server";
 import {a_date, tzdate} from "./t_date";
 import {format} from "date-fns";
 

@@ -1,5 +1,5 @@
 import {Money} from "./money";
-import {MoneyMultiplicand} from "../../aa/atype/const";
+import {MoneyMultiplicand} from "../../aa/atype/const_server";
 
 /**
  * Instances by performing precise add of real numbers

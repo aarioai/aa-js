@@ -1,6 +1,6 @@
 import {ValueOf} from "../../aa/atype/a_define_complex"
 import {t_float64, t_vmoney} from "../../aa/atype/a_define_server";
-import {VMoneyMultiplicand} from "../../aa/atype/const";
+import {VMoneyMultiplicand} from "../../aa/atype/const_server";
 import {a_money, divideBigint} from "../../aa/atype/t_decimal";
 
 export class VMoney implements ValueOf<t_vmoney> {

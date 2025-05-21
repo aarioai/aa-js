@@ -12,9 +12,8 @@ import {
     MinInt24,
     MinInt32,
     MinInt8,
-    Nif,
     True
-} from "./const";
+} from "./const_server";
 import {jsonify} from "../base/base";
 import {Panic} from "./panic";
 import {t_numeric, t_safeint,} from "./a_define";
@@ -33,6 +32,7 @@ import {
     t_uint64b,
     t_uint8
 } from './a_define_server'
+import {Nif} from './const'
 
 function inRange(value: number, min: number, max: number, name: string): number {
     if ((typeof min !== 'undefined' && value < min) || (typeof max !== 'undefined' && value > max)) {

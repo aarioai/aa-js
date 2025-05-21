@@ -2,7 +2,7 @@ import {a_bool, a_string} from "./t_basic";
 
 
 /**
- * Calculates the length/size of any value with consistent fallback behavior.
+ * Gets the length/size of any value with consistent fallback behavior.
  *
  * Handles:
  * - null/undefined → 0

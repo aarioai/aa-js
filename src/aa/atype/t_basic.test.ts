@@ -1,6 +1,6 @@
 import {describe, expect, test} from '@jest/globals';
 import {a_array, a_bool, a_func, a_maps, a_number, a_string, floatToInt, uint16, uint8} from "./t_basic";
-import {False} from './const'
+import {False} from './const_server'
 
 describe('a_array', () => {
     test('a_array null', () => {

@@ -113,11 +113,10 @@ export function cloneObjectMap(source: MapObject): MapObject {
 
     const target = {}
     for (const key in source) {
-        if (!Object.prototype.hasOwnProperty.call(source, key)) {
-            continue
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+            const value = source[key]
+            target[key] = (value && typeof value === 'object') ? JSON.parse(JSON.stringify(value)) : value
         }
-        const value = source[key]
-        target[key] = (value && typeof value === 'object') ? JSON.parse(JSON.stringify(value)) : value
     }
     return target
 }

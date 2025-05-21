@@ -1,9 +1,10 @@
 import {joinPath, parseBaseName, splitPath} from "../strings/path_func";
 import {HttpMethods, t_httpmethod} from "../../aa/atype/a_define";
 import {AnyMap, MapObject} from '../../aa/atype/a_define_complex'
-import {cloneMap, cloneObjectMap} from '../../aa/atype/clone'
 import {a_string} from '../../aa/atype/t_basic'
 import {PathParamMap, PathParamValue, safePathParamValue, URLPathError, URLPattern} from './base'
+import {PathParamsTypedRegex} from '../../aa/atype/const_server'
+import {t_path_param} from '../../aa/atype/a_define_server'
 
 
 /**
@@ -190,52 +191,8 @@ export function joinURL(base: string, ...parts: (number | string)[]): string {
     return normalizeURL(host + newPath)
 }
 
-// Replaces simple path parameters to its value in a URL, simple means only contains {<key>} format path parameter
-function _revertSimpleSearchParamsURL<T extends URLSearchParams = URLSearchParams>(url: string, pathParams: PathParamMap, params: T): {
-    url: string,
-    search: T,
-    cloned: boolean,
-    ok: boolean
-} {
-    if (params.size == 0) {
-        return {url: url, search: params, cloned: false, ok: false}
-    }
-    let search = new URLSearchParams(params.toString())
 
-}
-
-// Replaces simple path parameters to its value in a URL, simple means only contains {<key>} format path parameter
-function _revertSimpleMapParamsURL<T extends AnyMap = AnyMap>(url: string, pathParams: PathParamMap, params: T): {
-    url: string,
-    search: T,
-    cloned: boolean,
-    ok: boolean
-} {
-    if (params.size == 0) {
-        return {url: url, search: params, cloned: false, ok: false}
-    }
-    let search = cloneMap(params)
-
-    return
-}
-
-// Replaces simple path parameters to its value in a URL, simple means only contains {<key>} format path parameter
-function _revertSimpleObjectParamsURL<T extends MapObject = MapObject>(url: string, pathParams: PathParamMap, params: T): {
-    url: string,
-    search: T,
-    cloned: boolean,
-    ok: boolean
-} {
-    if (!Object.keys(params)?.length) {
-        return {url: url, search: params, cloned: false, ok: false}
-    }
-    let search = cloneObjectMap(params)
-
-
-    return
-}
-
-export function searchParam(name: string, params: MapObject | URLSearchParams | AnyMap): unknown {
+export function searchParam(params: MapObject | URLSearchParams | AnyMap, name: string): unknown {
     if (!name || !params) {
         return undefined
     }
@@ -245,78 +202,93 @@ export function searchParam(name: string, params: MapObject | URLSearchParams | 
     return params.hasOwnProperty(name) ? params[name] : undefined
 }
 
+export function normalizeSearchParams<T extends MapObject | URLSearchParams | AnyMap>(params: T): MapObject<string> {
+    const result: MapObject<string> = {}
+
+    if (params instanceof Map || params instanceof URLSearchParams) {
+        for (const [key, value] of params) {
+            result[key] = a_string(value)
+        }
+        return result
+    }
+
+    for (const key in params) {
+        if (Object.prototype.hasOwnProperty.call(params, key)) {
+            result[key] = a_string(params[key])
+        }
+    }
+
+    return result
+}
 
 /**
  * Replaces iris-like path parameters to its value in a URL string
  *
  * @example
- *  replaceURLPathParams('/api/{version}/users/{uid:uint64}', {version:'v1', uid:100n})
- *  // Returns '/api/v1/users/100
+ *  revertURLPathParams('/api/{version}/users/{uid:uint64}', {version:'v1', uid:100n, age:10})
+ *  // Returns {url:"/api/v1/users/100", search:{age:"10"}, ok:true}
+ *
+ * @example
+ * // Params in path are required
+ * revertURLPathParams('/api/{version}/users/{uid:uint64}', {version:'v1', age:10})
+ *  // Throws new URLPathError
+ *
+ * @example
+ * revertURLPathParams('/api/{version}/users/{uid:uint64}#{hash}', {version:'v1', uid:100n, age:10, hash:'home'})
+ * // Returns {url:"/api/v1/users/100#home", search:{age:"10"}, ok:true}
+ *
+ * @example
+ * // Params in hash or query string are optional
+ * revertURLPathParams('/api/{version}/users/{uid:uint64}#{hash}?work={work}', {version:'v1', uid:100n, age:10,})
+ * // Returns {url:"/api/v1/users/100#?work=", search:{age:"10"}, ok:true}
  */
-export function replaceURLPathParams<T extends MapObject | URLSearchParams | AnyMap>(urlPattern: URLPattern, params: T): {
+export function revertURLPathParams<T extends MapObject | URLSearchParams | AnyMap>(urlPattern: URLPattern, params: T): {
     url: string,
-    search: T,
-    cloned: boolean,
+    search: MapObject<string>,
     ok: boolean
 } {
+    const search = normalizeSearchParams(params)
+
     if (!urlPattern) {
-        return {url: '', search: params, cloned: false, ok: false}
+        return {url: '', search: search, ok: false}
     }
     if (!urlPattern.includes('{')) {
-        return {url: urlPattern, search: params, cloned: false, ok: true}
+        return {url: urlPattern, search: search, ok: true}
     }
     const pathParams: PathParamMap = new Map<string, PathParamValue>()
 
-    // Handle {<key>} format, e.g. {page}
-    const simpleRegex = /\/?{([_a-zA-Z]\w*)}/ig
-    let match: RegExpExecArray
-    while ((match = simpleRegex.exec(urlPattern)) !== null) {
-        const [pattern, paramName] = match
-        const required = pattern.startsWith('/')
-        const pathParam: PathParamValue = {type: ':string', required: required, value: undefined}
-        pathParams.set(paramName, pathParam);
-    }
 
-    // Handle {<key>:<type>} format , e.g. {uid:uint64}
-    const typedRegex = /\/?{([_a-zA-Z]\w*):([a-z][a-z\d]+)}/ig
-    while ((match = typedRegex.exec(urlPattern)) !== null) {
-        const [pattern, paramName, paramType] = match
+    // Handle {<key>} or {<key><type>}
+    const matches = urlPattern.matchAll(PathParamsTypedRegex)
+    for (const match of matches) {
+        const [pattern, name, paramType] = match
         const required = pattern.startsWith('/')
-        const replaceTo = required ? `/{${paramName}}` : `{${paramName}}`
-        urlPattern = urlPattern.replace(pattern, replaceTo)     // format to {<key>}
-        const pathParam: PathParamValue = {type: paramType as any, required: required, value: undefined}
-        pathParams.set(paramName, pathParam)
+        const replaceTo = required ? `/{${name}}` : `{${name}}`
+        let type: t_path_param = ':string'
+        if (paramType) {
+            type = paramType
+            urlPattern = urlPattern.replace(pattern, replaceTo)     // format to {<key>}
+        }
+        const pathParam: PathParamValue = {type: type, required: required}
+        pathParams.set(name, pathParam)
     }
 
     if (pathParams.size === 0) {
         if (!urlPattern) {
-            return {url: urlPattern, search: params, cloned: false, ok: true}
+            return {url: urlPattern, search: search, ok: true}
         }
     }
 
     // Sets path param values and checks all required path parameters are all exists in  the specific parameters
     for (const [name, param] of pathParams) {
-        const value = safePathParamValue(searchParam(name, params), param.type)
+        const value = safePathParamValue(searchParam(search, name), param.type)
         if (param.required) {
             if (!a_string(value)) {
                 throw new URLPathError(`missing required path parameter ${name}`)
             }
         }
-        pathParams[name].value = value
+        urlPattern = urlPattern.replaceAll(`{${name}}`, value)
+        delete search[name]
     }
-
-
-    if (params instanceof URLSearchParams) {
-        return _revertSimpleSearchParamsURL(urlPattern, pathParams, params)
-    }
-    if (params instanceof Map) {
-        return _revertSimpleMapParamsURL(urlPattern, pathParams, params)
-    }
-
-    return _revertSimpleObjectParamsURL(urlPattern, pathParams, params) as {
-        url: string,
-        search: T,
-        cloned: boolean,
-        ok: boolean
-    }
+    return {url: urlPattern, search: search, ok: true}
 }

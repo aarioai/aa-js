@@ -25,25 +25,27 @@ export type t_booln = 0 | 1
 export type t_millisecond = t_safeint
 export type t_second = t_safeint
 
+export const pathParams = [
+    ':bool',
+    ':int8',
+    ':int16',  // no :int24 and :uint24, floats
+    ':int32',
+    ':int',
+    ':int64',
+    ':uint8',
+    ':uint16',
+    ':uint32',
+    ':uint',
+    ':uint64',
+    ':string',
+    ':uuid',
+    ':alphabetical',
+    ':email',
+    ':mail',     // mail is same to email, but mail without server domain validation
+    ':weekday',
+]
 // @see ./t_path_param.ts
-export type t_path_param =
-    ':bool'
-    | ':int8'
-    | ':int16'   // no :int24 and :uint24, floats
-    | ':int32'
-    | ':int'
-    | ':int64'
-    | ':uint8'
-    | ':uint16'
-    | ':uint32'
-    | ':uint'
-    | ':uint64'
-    | ':string'
-    | ':uuid'
-    | ':alphabetical'
-    | ':email'
-    | ':mail'       // mail is same to email, but mail without server domain validation
-    | ':weekday'
+export type t_path_param = typeof pathParams[number]
 export type t_uuid = string       // 32 or 36 bytes, 8-4-4-4-12
 export type t_digits = string  // \d+
 export type t_lowers = string // [a-z]+
@@ -62,8 +64,8 @@ export type t_filename = string// [\w-.!@#$%^&(){}~]+ , unicode filename
 export type t_std_path = string         // [\w-.\/]+
 export type t_path = string // [\w-.!@#$%^&(){}~/]+ , unicode path
 export type t_url = string  // e.g. https://xxx/video.avi?quality=80
-export type t_filename_pattern = string // e.g. video_${size}.avi
-export type t_path_pattern = string   // e.g. /a/b/video_${size}.avi
+export type t_filename_pattern = string // e.g. {name}_{size:int}.avi
+export type t_path_pattern = string   // e.g. /a/b/{name}_{size:int}.avi
 export type t_url_pattern = string // e.g. https://xxx/{user}/video.avi?quality={quality:int}
 
 // @see ./t_path_mime.ts

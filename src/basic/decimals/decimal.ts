@@ -1,7 +1,7 @@
 import {t_decimal, t_float64} from "../../aa/atype/a_define_server";
 import {ValueOf} from "../../aa/atype/a_define_complex";
 import {a_decimal, divideBigint} from "../../aa/atype/t_decimal";
-import {DecimalMultiplicand} from "../../aa/atype/const";
+import {DecimalMultiplicand} from "../../aa/atype/const_server";
 import {Percent} from "./percent";
 
 export class Decimal implements ValueOf<t_decimal> {
