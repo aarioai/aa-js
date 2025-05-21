@@ -15,11 +15,8 @@ export type ParamsType = MapObject | URLSearchParams | AnyMap
  * usersAPI: URLPattern = '/api/v1/groups/{group}/users/page/{page:uint}
  */
 export type URLPattern = string
-export type PathParamValue = {
-    type: t_path_param,
-    required: boolean,
-}
-export type PathParamMap = Map<string, PathParamValue>
+ 
+export type PathParamMap = Map<string, t_path_param>
 
 
 export class URLPathError extends Error {

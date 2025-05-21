@@ -21,7 +21,8 @@ import {
 } from "./a_define_server";
 
 export const PathParams: t_path_param[] = pathParams
-export const PathParamsTypedRegex = new RegExp(`\/?{([_a-zA-Z]\\w*)(${pathParams.join('|')})?}`, 'ig')   // {<key>} or {<key><type>}
+export const PathParamTestRegexp = new RegExp(`^{([_a-z]\\w*)(${pathParams.join('|')})?}$`, 'i')
+export const PathParamsMatchesRegex = new RegExp(`{([_a-z]\\w*)(${pathParams.join('|')})?}`, 'ig')   // {<key>} or {<key><type>}
 
 export const MinInt32: t_int32 = -2147483648
 export const MaxInt32: t_int32 = 2147483647

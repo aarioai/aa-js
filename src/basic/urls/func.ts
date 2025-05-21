@@ -1,16 +1,8 @@
 import {joinPath, parseBaseName, splitPath} from "../strings/path_func";
 import {HttpMethods, t_httpmethod} from "../../aa/atype/a_define";
 import {a_string} from '../../aa/atype/t_basic'
-import {
-    ParamsType,
-    PathParamMap,
-    PathParamValue,
-    safePathParamValue,
-    SearchParamsType,
-    URLPathError,
-    URLPattern
-} from './base'
-import {PathParamsTypedRegex} from '../../aa/atype/const_server'
+import {ParamsType, PathParamMap, safePathParamValue, SearchParamsType, URLPathError, URLPattern} from './base'
+import {PathParamsMatchesRegex, PathParamTestRegexp} from '../../aa/atype/const_server'
 import {t_path_param} from '../../aa/atype/a_define_server'
 
 
@@ -336,8 +328,8 @@ export function splitURLSearch(urlPattern: string): { base: string, hash: string
  * Reverts iris-like path parameters to its value in a URL string
  *
  * @example
- *  revertURLPathParams('/api/{version}/users/{uid:uint64}', {version:'v1', uid:100n, age:10})
- *  // Returns {url:"/api/v1/users/100", search:{age:"10"}}
+ *  revertURLPathParams('/api/{version}/users/{uid:uint64}?name=Aario&from={from}#top', {version:'v1', uid:100n, age:10})
+ *  // Returns {base:"/api/v1/users/100", hash:"top", search:{name:"Aario", age:"10", from:"{from}"}}
  *
  * @example
  * // Params in path are required
@@ -346,60 +338,76 @@ export function splitURLSearch(urlPattern: string): { base: string, hash: string
  *
  * @example
  * revertURLPathParams('/api/{version}/users/{uid:uint64}#{hash}', {version:'v1', uid:100n, age:10, hash:'home'})
- * // Returns {url:"/api/v1/users/100#home", search:{age:"10"}}
+ * // Returns {base:"/api/v1/users/100", hash:'#home' search:{age:"10"}}
  *
  * @example
  * // Params in hash or query string are optional
  * revertURLPathParams('/api/{version}/users/{uid:uint64}#{hash}?work={work}', {version:'v1', uid:100n, age:10,})
- * // Returns {url:"/api/v1/users/100#", search:{age:"10", work=""}}
+ * // Returns {base:"/api/v1/users/100", hash:'', search:{age:"10", work="{work}"}}
  */
 export function revertURLPathParams(urlPattern: URLPattern, params: ParamsType): {
-    url: string,
+    base: string,
+    hash: string,
     search: SearchParamsType
 } {
     if (!urlPattern) {
         throw new URLPathError(`url is empty`)
     }
-    // const {base, hash, search} = splitURLSearch(urlPattern)
-    const search = normalizeSearchParams(params)
+    let {base, hash, search} = splitURLSearch(urlPattern)
+    spreadSearchParams(search, params)
 
-    if (!urlPattern.includes('{')) {
-        return {url: urlPattern, search: search}
+    // Handle hash parameter {<key>} or {<key><type>}
+    let isHashPattern = false
+    let hashParam: { name: string, type: t_path_param } = {name: '', type: ''}
+    if (hash && hash.startsWith('#{')) {
+        const match = hash.slice(1).match(PathParamTestRegexp)
+        if (match) {
+            isHashPattern = true
+            const [_, name, paramType] = match
+            hashParam.name = name
+            hashParam.type = paramType ? paramType : ':string'
+        }
     }
-    const pathParams: PathParamMap = new Map<string, PathParamValue>()
 
+    // Handle no parameter
+    if (!base.includes('{') && !isHashPattern) {
+        return {base: base, hash, search}
+    }
+    const pathParams: PathParamMap = new Map<string, t_path_param>()
 
-    // Handle {<key>} or {<key><type>}
-    const matches = urlPattern.matchAll(PathParamsTypedRegex)
+    // Handle base parameter {<key>} or {<key><type>}
+    const matches = base.matchAll(PathParamsMatchesRegex)
     for (const match of matches) {
         const [pattern, name, paramType] = match
-        const required = pattern.startsWith('/')
-        const replaceTo = required ? `/{${name}}` : `{${name}}`
         let type: t_path_param = ':string'
         if (paramType) {
             type = paramType
-            urlPattern = urlPattern.replace(pattern, replaceTo)     // format to {<key>}
+            base = base.replace(pattern, `{${name}}`)     // format to {<key>}
         }
-        const pathParam: PathParamValue = {type: type, required: required}
-        pathParams.set(name, pathParam)
+        pathParams.set(name, type)
     }
 
-    if (pathParams.size === 0) {
-        if (!urlPattern) {
-            return {url: urlPattern, search: search}
-        }
-    }
+    // Set path param values and checks all required path parameters are all exists in  the specific parameters
+    for (const [name, type] of pathParams) {
+        const value = safePathParamValue(searchParam(search, name), type)
 
-    // Sets path param values and checks all required path parameters are all exists in  the specific parameters
-    for (const [name, param] of pathParams) {
-        const value = safePathParamValue(searchParam(search, name), param.type)
-        if (param.required) {
-            if (!a_string(value)) {
-                throw new URLPathError(`missing required path parameter ${name}`)
-            }
+        if (!value) {
+            throw new URLPathError(`missing required path parameter ${name}`)
         }
-        urlPattern = urlPattern.replaceAll(`{${name}}`, value)
+
+        base = base.replaceAll(`{${name}}`, value)
         delete search[name]
     }
-    return {url: urlPattern, search: search}
+    if (!isHashPattern) {
+        return {base, hash, search}
+    }
+
+    // Handle hash parameter
+    const hashValue = safePathParamValue(searchParam(search, hashParam.name), hashParam.type)
+    if (hashValue) {
+        hash = '#' + hashValue
+        delete search[hashParam.name]
+    }
+
+    return {base, hash, search}
 }

@@ -122,97 +122,131 @@ describe('url func with mock location', () => {
 })
 
 describe('revertURLPathParams', () => {
-    const urlPatternNoParams = 'https://luexu.com/m'
+    const urlPatternNoParams = 'https://luexu.com/m?&mark=true&from=me&&&hello=&uid=1#top'
     const urlPatternSimple = 'https://luexu.com/api/v1/users/{uid}'
-    const urlPatternTyped = 'https://luexu.com/api/v1/users/{uid:uint64}'
-    const urlPatternMixed = 'https://luexu.com/api/v1/users/{uid:uint64}/records/page/{page}'
-    const urlPatternComplex = '/api/v1/users/{uid:uint64}/records/page/{page:int}#{hash:string}?redirect={redirect}'
+    const urlPatternTyped = 'https://luexu.com/api/v1/users/{uid:uint64}#tag?&name=Aario&&age=30&age=18#middle'
+    const urlPatternMixed = 'https://luexu.com/api/v1/users/{uid:uint64}/records/page/{page}#middle'
+    const urlPatternComplex = '/api/v1/users/{uid:uint64}/records/page/{page:int}?redirect={redirect}#{hash:string}'
 
     test('revertURLPathParams MapObject', () => {
         expect(revertURLPathParams(urlPatternNoParams, {uid: 1000n})).toEqual({
-            url: urlPatternNoParams,
-            search: {uid: "1000"},
+            base: 'https://luexu.com/m',
+            hash: '#top',
+            search: {mark: "true", from: "me", hello: "", uid: "1000"},
         })
 
         expect(() => revertURLPathParams(urlPatternSimple, {})).toThrow(URLPathError)
         expect(() => revertURLPathParams(urlPatternSimple, {uid: ''})).toThrow(URLPathError)
         expect(revertURLPathParams(urlPatternSimple, {uid: 0n})).toEqual({
-            url: 'https://luexu.com/api/v1/users/0',
+            base: 'https://luexu.com/api/v1/users/0',
+            hash: '',
             search: {},
         })
         expect(revertURLPathParams(urlPatternSimple, {uid: 1000n, hash: 'end'})).toEqual({
-            url: 'https://luexu.com/api/v1/users/1000',
+            base: 'https://luexu.com/api/v1/users/1000',
+            hash: '',
             search: {hash: 'end'},
         })
 
         expect(() => revertURLPathParams(urlPatternTyped, {uid: 'uid', hash: 'end'})).toThrow()
+        expect(revertURLPathParams(urlPatternTyped, {uid: 0n, page: 1, hash: 'end'})).toEqual({
+            base: 'https://luexu.com/api/v1/users/0',
+            hash: '#middle',
+            search: {page: '1', hash: 'end', name: 'Aario', age: '18'},
+        })
+
         expect(revertURLPathParams(urlPatternMixed, {uid: 0n, page: 1, hash: 'end'})).toEqual({
-            url: 'https://luexu.com/api/v1/users/0/records/page/1',
+            base: 'https://luexu.com/api/v1/users/0/records/page/1',
+            hash: '#middle',
             search: {hash: 'end'},
         })
         expect(revertURLPathParams(urlPatternComplex, {uid: 1000n, page: 1, hash: 'end'})).toEqual({
-            url: '/api/v1/users/1000/records/page/1#end?redirect=',
-            search: {},
+            base: '/api/v1/users/1000/records/page/1',
+            hash: '#end',
+            search: {redirect: '{redirect}'},
         })
     })
 
     test('revertURLPathParams Map', () => {
 
         expect(revertURLPathParams(urlPatternNoParams, new Map([['uid', 1000n]]))).toEqual({
-            url: urlPatternNoParams,
-            search: {uid: "1000"},
+            base: 'https://luexu.com/m',
+            hash: '#top',
+            search: {mark: "true", from: "me", hello: "", uid: "1000"},
         })
 
         expect(() => revertURLPathParams(urlPatternSimple, new Map())).toThrow(URLPathError)
         expect(() => revertURLPathParams(urlPatternSimple, new Map([['uid', '']]))).toThrow(URLPathError)
         expect(revertURLPathParams(urlPatternSimple, new Map([['uid', 0n]]))).toEqual({
-            url: 'https://luexu.com/api/v1/users/0',
+            base: 'https://luexu.com/api/v1/users/0',
+            hash: '',
             search: {},
         })
         expect(revertURLPathParams(urlPatternSimple, new Map<string, unknown>([['uid', 1000n], ['hash', 'end']]))).toEqual({
-            url: 'https://luexu.com/api/v1/users/1000',
+            base: 'https://luexu.com/api/v1/users/1000',
+            hash: '',
             search: {hash: 'end'},
         })
 
         expect(() => revertURLPathParams(urlPatternTyped, new Map<string, unknown>([['uid', 'uid'], ['hash', 'end']]))).toThrow()
+
+
+        expect(revertURLPathParams(urlPatternTyped, new Map<string, unknown>([['uid', 0n], ['hash', 'end'], ['page', 1]]))).toEqual({
+            base: 'https://luexu.com/api/v1/users/0',
+            hash: '#middle',
+            search: {page: '1', hash: 'end', name: 'Aario', age: '18'},
+        })
+
         expect(revertURLPathParams(urlPatternMixed, new Map<string, unknown>([['uid', 0n], ['page', 1], ['hash', 'end']]))).toEqual({
-            url: 'https://luexu.com/api/v1/users/0/records/page/1',
+            base: 'https://luexu.com/api/v1/users/0/records/page/1',
+            hash: '#middle',
             search: {hash: 'end'},
         })
         expect(revertURLPathParams(urlPatternComplex, new Map<string, unknown>([['uid', 1000n], ['page', 1], ['hash', 'end']]))).toEqual({
-            url: '/api/v1/users/1000/records/page/1#end?redirect=',
-            search: {},
+            base: '/api/v1/users/1000/records/page/1',
+            hash: '#end',
+            search: {redirect: '{redirect}'},
         })
     })
 
     test('revertURLPathParams URLSearchParams', () => {
         expect(revertURLPathParams(urlPatternNoParams, new URLSearchParams('uid=1000'))).toEqual({
-            url: urlPatternNoParams,
-            search: {uid: "1000"},
+            base: 'https://luexu.com/m',
+            hash: '#top',
+            search: {mark: "true", from: "me", hello: "", uid: "1000"},
         })
 
         expect(() => revertURLPathParams(urlPatternSimple, new URLSearchParams(''))).toThrow(URLPathError)
         expect(() => revertURLPathParams(urlPatternSimple, new URLSearchParams('uid=&page=2'))).toThrow(URLPathError)
         expect(revertURLPathParams(urlPatternSimple, new URLSearchParams('uid=0'))).toEqual({
-            url: 'https://luexu.com/api/v1/users/0',
+            base: 'https://luexu.com/api/v1/users/0',
+            hash: '',
             search: {},
         })
         expect(revertURLPathParams(urlPatternSimple, new URLSearchParams('uid=1000&hash=end'))).toEqual({
-            url: 'https://luexu.com/api/v1/users/1000',
+            base: 'https://luexu.com/api/v1/users/1000',
+            hash: '',
             search: {hash: 'end'},
         })
 
-        expect(() => revertURLPathParams(urlPatternTyped, new URLSearchParams('uid=uid&hash=end'))).toThrow()
 
+        expect(() => revertURLPathParams(urlPatternTyped, new URLSearchParams('uid=uid&hash=end'))).toThrow()
+        expect(revertURLPathParams(urlPatternTyped, new URLSearchParams('uid=0&page=1&hash=end'))).toEqual({
+            base: 'https://luexu.com/api/v1/users/0',
+            hash: '#middle',
+            search: {page: '1', hash: 'end', name: 'Aario', age: '18'},
+        })
 
         expect(revertURLPathParams(urlPatternMixed, new URLSearchParams('uid=0&page=1&hash=end'))).toEqual({
-            url: 'https://luexu.com/api/v1/users/0/records/page/1',
+            base: 'https://luexu.com/api/v1/users/0/records/page/1',
+            hash: '#middle',
             search: {hash: 'end'},
         })
 
         expect(revertURLPathParams(urlPatternComplex, new URLSearchParams('uid=1000&page=1&hash=end'))).toEqual({
-            url: '/api/v1/users/1000/records/page/1#end?redirect=',
-            search: {},
+            base: '/api/v1/users/1000/records/page/1',
+            hash: '#end',
+            search: {redirect: '{redirect}'},
         })
     })
 
