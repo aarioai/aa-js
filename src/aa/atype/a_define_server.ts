@@ -3,7 +3,7 @@
 import {t_safeint} from './a_define'
 
 export type t_booln = 0 | 1
-export type t_byte = string  // single character in ASCII characters [32, 126]
+export type t_char = string  // single character in ASCII characters [32, 126]
 export type t_float64 = number
 export type t_float32 = number
 export type t_int8 = number

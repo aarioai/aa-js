@@ -1,8 +1,8 @@
 import {MapObject} from "../../aa/atype/a_define_complex";
-import {normalizeSearchParams, normalizeURLWithMethod} from "./func";
+import {normalizeSearchParams, normalizeURLWithMethod, revertURLPathParams} from "./func";
 import {
     t_booln,
-    t_byte,
+    t_char,
     t_float64,
     t_int16,
     t_int24,
@@ -15,12 +15,13 @@ import {
     t_uint24,
     t_uint32,
     t_uint64b,
-    t_uint8
+    t_uint8,
+    t_weekday
 } from "../../aa/atype/a_define_server";
 import {
     a_bool,
     a_booln,
-    a_byte,
+    a_char,
     a_string,
     float32,
     float64,
@@ -36,24 +37,22 @@ import {
     uint64b,
     uint8
 } from "../../aa/atype/t_basic";
-import {sortObjectMap} from '../maps/func'
 import {t_httpmethod, t_safeint} from '../../aa/atype/a_define'
 import {ParamsType, SearchParamsType} from './base'
+import {a_weekday} from '../../aa/atype/t_basic_server'
 
 
 class AaURL {
     name = 'aa-url'
     method: t_httpmethod | ''
     searchParams: SearchParamsType = {}  // use Maps to enable set object values, URLSearchParams only supports string values
-    pathParams: Map<string, string> = new Map()
-    autoSort: boolean = false
     sortCompareFunc?: (a: string, b: string) => number
 
-    hash: string = ''  // #<hash>, e.g. #head
-    hostname: string   // e.g. test.luexu.com
-    pathname: string   // e.g. /a/chat/x
-    port: string       // e.g. :8080
     protocol: string   // e.g. https:
+    hostname: string   // e.g. test.luexu.com
+    port: string       // e.g. :8080
+    pathname: string   // e.g. /a/chat/x
+    hash: string = ''  // #<hash>, e.g. #head
     username: string = ''
     password: string = ''
 
@@ -82,11 +81,9 @@ class AaURL {
         this.setParams(params)
     }
 
-    get url(): string {
-        if (this.autoSort) {
-            this.sortParams()
-        }
-        return ``
+    // Converts url path {key}, {key:type} to %00!key!%00 to avoid new URL() escape
+    convertPathPatterns(s: string): string {
+        return s.replaceAll('{', '%00!').replaceAll('}', '!%00')
     }
 
     // Reverts url path %00!key!%00 to {key}
@@ -97,29 +94,6 @@ class AaURL {
         return s.replaceAll('%00!', '{').replaceAll('!%00', '}')
     }
 
-    // Converts url path {key}, {key:type} to %00!key!%00 to avoid new URL() escape
-    convertPathPatterns(url: string): string {
-        // Handle path parameters with format  {<key>}, e.g. {page}
-        const matches = url.matchAll(/{([\w-]+)}/ig)
-        for (const match of matches) {
-            const pattern = match[0]
-            const paramName = match[1]
-            url = url.replace(pattern, `%00!${paramName}!%00`)
-            this.pathParams.set(paramName, '')
-        }
-
-        // Handle path parameters with format {<key>:<type>} , e.g. {uid:uint64}
-        const withTypeMatches = url.matchAll(/{([\w-]+):([\w-]+)}/ig)
-        for (const match of withTypeMatches) {
-            const pattern = match[0]
-            const paramName = match[1]
-            const paramType = match[2]
-            url = url.replace(pattern, `%00!${paramName}!%00`)
-            this.pathParams.set(paramName, paramType)
-        }
-
-        return url
-    }
 
     withSortCompareFunc(compareFn: (a: string, b: string) => number): AaURL {
         this.sortCompareFunc = compareFn
@@ -151,11 +125,6 @@ class AaURL {
         return this.searchParams.hasOwnProperty(key) && this[key] !== undefined
     }
 
-    sortParams(): AaURL {
-        sortObjectMap(this.searchParams, this.sortCompareFunc)
-        return this
-    }
-
     clearParams(): AaURL {
         this.searchParams = {}
         return this
@@ -172,8 +141,8 @@ class AaURL {
         return cast(value)
     }
 
-    searchByte(key: string): t_byte | undefined {
-        const value = this.search(key, a_byte)
+    searchByte(key: string): t_char | undefined {
+        const value = this.search(key, a_char)
         return value != '\0' ? value : undefined
     }
 
@@ -250,7 +219,17 @@ class AaURL {
         return this.search(key, safeInt)
     }
 
+    searchWeekday(key: string): t_weekday {
+        return this.search(key, a_weekday)
+    }
+
     toString() {
+        const urlPattern = this.protocol + '//' + this.hostname + this.port + this.pathname + this.hash
+        const {url, search} = revertURLPathParams(urlPattern, this.searchParams)
+
+        if (typeof this.sortCompareFunc == "function") {
+
+        }
 
     }
 }

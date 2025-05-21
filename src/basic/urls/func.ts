@@ -209,19 +209,18 @@ export function searchParam(params: ParamsType, name: string): unknown {
     return params.hasOwnProperty(name) ? params[name] : undefined
 }
 
-export function normalizeSearchParams<T extends ParamsType>(params: T): SearchParamsType {
+export function normalizeSearchParams<T extends ParamsType>(source: T): SearchParamsType {
     const result: SearchParamsType = {}
-
-    if (params instanceof Map || params instanceof URLSearchParams) {
-        for (const [key, value] of params) {
+    if (source instanceof Map || source instanceof URLSearchParams) {
+        for (const [key, value] of source) {
             result[key] = a_string(value)
         }
         return result
     }
 
-    for (const key in params) {
-        if (Object.prototype.hasOwnProperty.call(params, key)) {
-            result[key] = a_string(params[key])
+    for (const key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+            result[key] = a_string(source[key])
         }
     }
 
@@ -229,11 +228,99 @@ export function normalizeSearchParams<T extends ParamsType>(params: T): SearchPa
 }
 
 /**
+ * Checks a search pattern string is valid
+ *
+ * @example
+ *  isURLSearchPattern('')  // {valid:true, search:{}}
+ *   isURLSearchPattern('a=') // {valid:true, search:{}}
+ *  isURLSearchPattern('a=100&b=20') // {valid:true, search:{a:'100', b:'20'}}
+ *  isURLSearchPattern('a=100&&b=20') // {valid:true, search:{a:'100', b:'20'}}
+ *  isURLSearchPattern('a') // {valid:false, search:{}}
+ *  isURLSearchPattern('a=100&b') // {valid:false, search:{}}
+ *  isURLSearchPattern('a={a}') // {valid: true, search: {a: '{a}'}
+ *  isURLSearchPattern('a={a:uint}') // {valid: true, search: {a: '{a:uint}'}}
+ * isURLSearchPattern('a={a:uint}&&&key={key_value}') // {valid: true, search: {a: '{a:uint}', key:'{key_value}'}}
+ */
+export function parseURLSearch(s: string): {
+    valid: boolean,
+    search: SearchParamsType
+} {
+    if (!s) {
+        return {valid: true, search: {}}
+    }
+    let search: SearchParamsType = {}
+    const pairs = s.split('&')
+
+    for (let pair of pairs) {
+        pair = pair.trim()
+        if (!pair) {
+            continue // Empty pair (like "a=1&&b=2")
+        }
+        const segs = pair.split('=')
+        if (segs.length != 2) {
+            return {valid: false, search: {}}
+        }
+
+        const [keyName, value] = segs
+        if (!/^[_a-zA-Z]\w*$/.test(keyName)) {
+            return {valid: false, search: {}}
+        }
+        search[keyName] = value
+    }
+    return {valid: true, search: search}
+}
+
+/**
+ * Splits a URL string or a URL pattern string into a new URL string without search parameters and its parameters as an object
+ *
+ * @example
+ *  splitURLSearch('https://luexu.com/m?name={name}&age=30')  // {base:'https://luexu.com/m', hash:'', search:{name:'{name}', age:'30'}}
+ *  splitURLSearch('/api/v1/users/{user:uint64}/favorites/page/{page}#{hash}#{hash2}?name=Aario&age=30?age=18&sex=male')
+ *  // Returns  {base:'/api/v1/users/{user:uint64}/favorites/page/{page}', hash: '#{hash2}',search:{name:'Aario', age:'18', sex:'male'}}
+ */
+export function splitURLSearch(urlPattern: string): { base: string, hash: string, search: SearchParamsType } {
+
+    if (!urlPattern) {
+        return {base: '', hash: '', search: {}}
+    }
+    let search: SearchParamsType = {}
+    const parts = urlPattern.split('?')
+    if (parts.length > 1) {
+        urlPattern = parts[0]
+        for (let i = parts.length - 1; i > 0; i--) {
+            const part = parts[i]
+            if (!part) {
+                continue
+            }
+            const ps = parseURLSearch(part)
+            if (!ps.valid) {
+                urlPattern += '?' + parts.slice(1, i + 1).join('?')
+                break
+            }
+            const segSearch = ps.search
+            for (const [key, value] of Object.entries(segSearch)) {
+                if (!search.hasOwnProperty(key)) {
+                    search[key] = value
+                }
+            }
+        }
+    }
+    let hash = ''
+    const hashParts = urlPattern.split('#')
+    if (hashParts.length > 1) {
+        urlPattern = hashParts[0]
+        hash = '#' + hashParts[hashParts.length - 1]  // last hash
+    }
+
+    return {base: urlPattern, hash, search}
+}
+
+/**
  * Reverts iris-like path parameters to its value in a URL string
  *
  * @example
  *  revertURLPathParams('/api/{version}/users/{uid:uint64}', {version:'v1', uid:100n, age:10})
- *  // Returns {url:"/api/v1/users/100", search:{age:"10"}, ok:true}
+ *  // Returns {url:"/api/v1/users/100", search:{age:"10"}}
  *
  * @example
  * // Params in path are required
@@ -242,25 +329,29 @@ export function normalizeSearchParams<T extends ParamsType>(params: T): SearchPa
  *
  * @example
  * revertURLPathParams('/api/{version}/users/{uid:uint64}#{hash}', {version:'v1', uid:100n, age:10, hash:'home'})
- * // Returns {url:"/api/v1/users/100#home", search:{age:"10"}, ok:true}
+ * // Returns {url:"/api/v1/users/100#home", search:{age:"10"}}
  *
  * @example
  * // Params in hash or query string are optional
  * revertURLPathParams('/api/{version}/users/{uid:uint64}#{hash}?work={work}', {version:'v1', uid:100n, age:10,})
- * // Returns {url:"/api/v1/users/100#?work=", search:{age:"10"}, ok:true}
+ * // Returns {url:"/api/v1/users/100#", search:{age:"10", work=""}}
  */
 export function revertURLPathParams(urlPattern: URLPattern, params: ParamsType): {
     url: string,
-    search: SearchParamsType,
-    ok: boolean
+    search: SearchParamsType
 } {
+    if (!urlPattern) {
+        throw new URLPathError(`url is empty`)
+    }
+
+    const parts = urlPattern.split('?')
+    if (parts.length > 1) {
+
+    }
     const search = normalizeSearchParams(params)
 
-    if (!urlPattern) {
-        return {url: '', search: search, ok: false}
-    }
     if (!urlPattern.includes('{')) {
-        return {url: urlPattern, search: search, ok: true}
+        return {url: urlPattern, search: search}
     }
     const pathParams: PathParamMap = new Map<string, PathParamValue>()
 
@@ -282,7 +373,7 @@ export function revertURLPathParams(urlPattern: URLPattern, params: ParamsType):
 
     if (pathParams.size === 0) {
         if (!urlPattern) {
-            return {url: urlPattern, search: search, ok: true}
+            return {url: urlPattern, search: search}
         }
     }
 
@@ -297,5 +388,5 @@ export function revertURLPathParams(urlPattern: URLPattern, params: ParamsType):
         urlPattern = urlPattern.replaceAll(`{${name}}`, value)
         delete search[name]
     }
-    return {url: urlPattern, search: search, ok: true}
+    return {url: urlPattern, search: search}
 }

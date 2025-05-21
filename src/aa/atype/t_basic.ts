@@ -21,7 +21,7 @@ import {MapObject} from './a_define_complex'
 import {typeArray} from './func'
 import {
     t_booln,
-    t_byte,
+    t_char,
     t_int16,
     t_int24,
     t_int32,
@@ -165,7 +165,7 @@ export function a_string(value: unknown): string {
  * Converts a visible ASCII byte character
  * @returns Single ASCII character or null character (\0) if conversion fails
  */
-export function a_byte(value: string | number | undefined | null): t_byte {
+export function a_char(value: string | number | undefined | null): t_char {
     if (!value) {
         return '\0' // String.fromCharCode(0)
     }
