@@ -209,37 +209,41 @@ export function searchParam(params: ParamsType, name: string): unknown {
     return params.hasOwnProperty(name) ? params[name] : undefined
 }
 
-export function normalizeSearchParams<T extends ParamsType>(source: T): SearchParamsType {
-    const result: SearchParamsType = {}
+
+export function spreadSearchParams(target: SearchParamsType, source: ParamsType) {
     if (source instanceof Map || source instanceof URLSearchParams) {
         for (const [key, value] of source) {
-            result[key] = a_string(value)
+            target[key] = a_string(value)
         }
-        return result
+        return
     }
 
     for (const key in source) {
         if (Object.prototype.hasOwnProperty.call(source, key)) {
-            result[key] = a_string(source[key])
+            target[key] = a_string(source[key])
         }
     }
+}
 
+export function normalizeSearchParams<T extends ParamsType>(source: T): SearchParamsType {
+    const result: SearchParamsType = {}
+    spreadSearchParams(result, source)
     return result
 }
 
 /**
- * Checks a search pattern string is valid
+ * Parse a URL search pattern string to check its validation, and returns its object type
  *
  * @example
- *  isURLSearchPattern('')  // {valid:true, search:{}}
- *   isURLSearchPattern('a=') // {valid:true, search:{}}
- *  isURLSearchPattern('a=100&b=20') // {valid:true, search:{a:'100', b:'20'}}
- *  isURLSearchPattern('a=100&&b=20') // {valid:true, search:{a:'100', b:'20'}}
- *  isURLSearchPattern('a') // {valid:false, search:{}}
- *  isURLSearchPattern('a=100&b') // {valid:false, search:{}}
- *  isURLSearchPattern('a={a}') // {valid: true, search: {a: '{a}'}
- *  isURLSearchPattern('a={a:uint}') // {valid: true, search: {a: '{a:uint}'}}
- * isURLSearchPattern('a={a:uint}&&&key={key_value}') // {valid: true, search: {a: '{a:uint}', key:'{key_value}'}}
+ *  parseURLSearch('')  // {valid:true, search:{}}
+ *  parseURLSearch('a=') // {valid:true, search:{}}
+ *  parseURLSearch('a=100&b=20') // {valid:true, search:{a:'100', b:'20'}}
+ *  parseURLSearch('a=100&&b=20') // {valid:true, search:{a:'100', b:'20'}}
+ *  parseURLSearch('a') // {valid:false, search:{}}
+ *  parseURLSearch('a=100&b') // {valid:false, search:{}}
+ *  parseURLSearch('a={a}') // {valid: true, search: {a: '{a}'}
+ *  parseURLSearch('a={a:uint}') // {valid: true, search: {a: '{a:uint}'}}
+ *  parseURLSearch('a={a:uint}&&&key={key_value}') // {valid: true, search: {a: '{a:uint}', key:'{key_value}'}}
  */
 export function parseURLSearch(s: string): {
     valid: boolean,
@@ -275,22 +279,32 @@ export function parseURLSearch(s: string): {
  *
  * @example
  *  splitURLSearch('https://luexu.com/m?name={name}&age=30')  // {base:'https://luexu.com/m', hash:'', search:{name:'{name}', age:'30'}}
- *  splitURLSearch('/api/v1/users/{user:uint64}/favorites/page/{page}#{hash}#{hash2}?name=Aario&age=30?age=18&sex=male')
+ *  splitURLSearch('/api/v1/users/{user:uint64}/favorites/page/{page}#hash0#{hash1:string}?name=Aario#hash2#{hash2}&age=30?age=18&sex=male#{hash3}#{hash3:string}')
  *  // Returns  {base:'/api/v1/users/{user:uint64}/favorites/page/{page}', hash: '#{hash2}',search:{name:'Aario', age:'18', sex:'male'}}
  */
 export function splitURLSearch(urlPattern: string): { base: string, hash: string, search: SearchParamsType } {
-
     if (!urlPattern) {
         return {base: '', hash: '', search: {}}
     }
+    let hash = ''
     let search: SearchParamsType = {}
+
+
     const parts = urlPattern.split('?')
     if (parts.length > 1) {
         urlPattern = parts[0]
         for (let i = parts.length - 1; i > 0; i--) {
-            const part = parts[i]
+            let part = parts[i]
             if (!part) {
                 continue
+            }
+            const hashParts = part.split('#')
+            if (hashParts.length > 1) {
+                part = hashParts[0]   // trim end hashes
+                const lastHashPart = hashParts[hashParts.length - 1] // last hash
+                if (hash === '' && lastHashPart) {
+                    hash = '#' + lastHashPart
+                }
             }
             const ps = parseURLSearch(part)
             if (!ps.valid) {
@@ -305,11 +319,14 @@ export function splitURLSearch(urlPattern: string): { base: string, hash: string
             }
         }
     }
-    let hash = ''
+
     const hashParts = urlPattern.split('#')
     if (hashParts.length > 1) {
         urlPattern = hashParts[0]
-        hash = '#' + hashParts[hashParts.length - 1]  // last hash
+        const lastHashPart = hashParts[hashParts.length - 1] // last hash
+        if (hash === '' && lastHashPart) {
+            hash = '#' + lastHashPart
+        }
     }
 
     return {base: urlPattern, hash, search}
@@ -343,11 +360,7 @@ export function revertURLPathParams(urlPattern: URLPattern, params: ParamsType):
     if (!urlPattern) {
         throw new URLPathError(`url is empty`)
     }
-
-    const parts = urlPattern.split('?')
-    if (parts.length > 1) {
-
-    }
+    // const {base, hash, search} = splitURLSearch(urlPattern)
     const search = normalizeSearchParams(params)
 
     if (!urlPattern.includes('{')) {

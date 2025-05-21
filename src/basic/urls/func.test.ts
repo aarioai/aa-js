@@ -61,9 +61,9 @@ describe('url func', () => {
             hash: '',
             search: {name: '{name}', age: '30'}
         })
-        expect(splitURLSearch('/api/v1/users/{user:uint64}/favorites/page/{page}#{hash}#{hash2}?name=Aario&age=30?age=18&sex=male')).toEqual({
+        expect(splitURLSearch('/api/v1/users/{user:uint64}/favorites/page/{page}#hash0#{hash1:string}?name=Aario#hash2#{hash2}&age=30?age=18&sex=male#{hash3}#{hash3:string}')).toEqual({
             base: '/api/v1/users/{user:uint64}/favorites/page/{page}',
-            hash: '#{hash2}',
+            hash: '#{hash3:string}',
             search: {name: 'Aario', age: '18', sex: 'male'}
         })
     })
