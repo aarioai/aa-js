@@ -1,7 +1,8 @@
 export type t_safeint = number  // [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER] [-9007199254740991, 9007199254740991]
 export type t_numeric = number | bigint | string
-export type SortStringFunc = boolean | ((a: string, b: string) => number)   // true is alias to (a: string, b: string) => a.localeCompare(b), sort asc
-export type SortNumberFunc = boolean | ((a: t_numeric, b: t_numeric) => number) // true is alias to sort asc
+export type SortFunc = null | ((a: unknown, b: unknown) => number)
+
+export type LoopSignal = string | undefined
 
 export type t_httpmethod =
     'HEAD'

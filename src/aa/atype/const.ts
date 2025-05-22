@@ -1,5 +1,5 @@
 import {t_alphabetical, t_alphadigits, t_digits, t_lowers, t_uppers} from './a_define_server'
-import {SortNumberFunc, SortStringFunc} from './a_define'
+import {LoopSignal, SortFunc} from './a_define'
 
 export const Nif = () => undefined
 // a nil promise
@@ -12,7 +12,45 @@ export const Digits: t_digits = '0123456789'
 export const AlphaDigits: t_alphadigits = Alphabetical + Digits
 
 
-export const AscStringFunc: SortStringFunc = (a: string, b: string): number => a.localeCompare(b)
-export const DescStringFunc: SortStringFunc = (a: string, b: string): number => b.localeCompare(a)
-export const AscNumberFunc: SortNumberFunc = (a: number, b: number): number => a - b
-export const DescNumberFunc: SortNumberFunc = (a: number, b: number): number => b - a
+export const Ascend: SortFunc = (a: unknown, b: unknown): number => {
+    let aa = a
+    let bb = b
+    if (Array.isArray(a)) {
+        aa = a[0]
+        bb = b[0]
+    }
+
+    if (typeof aa === 'number' && typeof bb === 'number') {
+        return aa - bb
+    }
+    return String(aa).localeCompare(String(bb))
+}
+
+export const Descend: SortFunc = (a: unknown, b: unknown): number => {
+    let aa = a
+    let bb = b
+    if (Array.isArray(a)) {
+        aa = a[0]
+        bb = b[0]
+    }
+    if (typeof aa === 'number' && typeof bb === 'number') {
+        return bb - aa
+    }
+    return String(bb).localeCompare(String(aa))
+}
+
+
+// a signal from callback function to break forEach((value,key)) iterator
+export const Break: LoopSignal = '-.../.-././.-/-.-'
+
+// return Continue in a loop is not important, but better for people to read
+export const Continue: LoopSignal = undefined
+
+export const LF = '\n'
+
+export const Max = 'Max'
+export const Min = 'Min'
+export const Optional = false
+export const Required = !Optional
+export const Incr = 'INCR'
+export const Decr = 'DECR'

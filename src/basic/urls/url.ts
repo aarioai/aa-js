@@ -1,5 +1,4 @@
-import {MapObject} from "../../aa/atype/a_define_complex";
-import {buildURL, normalizeSearchParams, normalizeURLWithMethod, revertURLPathParams} from "./func";
+import {buildURL, normalizeURLWithMethod, revertURLPathParams} from "./func";
 import {
     t_booln,
     t_char,
@@ -37,25 +36,32 @@ import {
     uint64b,
     uint8
 } from "../../aa/atype/t_basic";
-import {SortStringFunc, t_httpmethod, t_safeint} from '../../aa/atype/a_define'
-import {ParamsType, SearchParamsType} from './base'
+import {SortFunc, t_httpmethod, t_safeint} from '../../aa/atype/a_define'
+import {ParamPattern} from './base'
 import {a_weekday} from '../../aa/atype/t_basic_server'
+import {Ascend} from '../../aa/atype/const'
+import {ParamsType, SearchParams} from './search_params'
 
 
 class AaURL {
     name = 'aa-url'
     method: t_httpmethod | ''
-    searchParams: SearchParamsType = {}  // use Maps to enable set object values, URLSearchParams only supports string values
-    keepEmptyParams: boolean = false
-    sort: SortStringFunc = false
+    searchParams: URLSearchParams  // as URL interface
+    tidy: boolean = true  // remove empty string value parameter, e.g. a=&b=10
+    sortFunc: SortFunc = Ascend
 
-    protocol: string   // e.g. https:
-    hostname: string   // e.g. test.luexu.com
-    port: string       // e.g. :8080
-    pathname: string   // e.g. /a/chat/x
-    hash: string = ''  // #<hash>, e.g. #head
     username: string = ''
     password: string = ''
+
+    // https://developer.mozilla.org/en-US/docs/Web/API/URL/host
+    #protocol: string   // e.g. https:, or blob:https:
+    #hostname: string   // e.g. test.luexu.com
+    #port: t_uint16       // e.g. 8080
+
+    #hashPattern: ParamPattern = ''  // #<hash>, e.g. #head, #{hash}
+
+    #pathnamePattern: ParamPattern   // e.g. /a/chat/x
+
 
     /**
      * Creates an AaURL instance
@@ -66,48 +72,171 @@ class AaURL {
      * @param params
      * @param hash
      */
-    constructor(routingURL: string, params?: MapObject | URLSearchParams, hash?: string) {
+    constructor(routingURL: string, params?: ParamsType, hash?: string) {
+
         const {method, url} = normalizeURLWithMethod(routingURL)
-        let escapedURL = this.convertPathPatterns(url)
-        const u = new URL(escapedURL)
+        const u = new URL(url)
         this.method = method
-        this.hash = this.revertPathPatterns(hash ? hash : u.hash)
-        this.hostname = this.revertPathPatterns(u.hostname)
-        this.pathname = this.revertPathPatterns(u.pathname)
-        this.port = this.revertPathPatterns(u.port)
-        this.protocol = this.revertPathPatterns(u.protocol)
-        this.username = this.revertPathPatterns(u.username)
-        this.password = this.revertPathPatterns(u.password)
-        this.setParams(u.searchParams)
+        this.#protocol = u.protocol
+        this.#hostname = u.hostname
+        this.#port = u.port ? uint16(u.port) : 0
+        this.#hashPattern = u.hash
+        this.#pathnamePattern = u.pathname
+        this.username = u.username
+        this.password = u.password
+        this.searchParams = u.searchParams
         this.setParams(params)
-    }
-
-    // Converts url path {key}, {key:type} to %00!key!%00 to avoid new URL() escape
-    convertPathPatterns(s: string): string {
-        return s.replaceAll('{', '%00!').replaceAll('}', '!%00')
-    }
-
-    // Reverts url path %00!key!%00 to {key}
-    revertPathPatterns(s: string): string {
-        if (!s) {
-            return ''
+        if (typeof this.hash === 'string') {
+            this.hash = hash
         }
-        return s.replaceAll('%00!', '{').replaceAll('!%00', '}')
+    }
+
+    get hash(): string {
+        return this.#hashPattern
+    }
+
+    set hash(hash: string) {
+        if (!hash) {
+            this.#hashPattern = ''
+            return
+        }
+        this.#hashPattern = hash.startsWith('#') ? hash : `#${hash}`
+    }
+
+    get host(): string {
+        return this.#hostname + this.#port
+    }
+
+    /**
+     * Sets hostname or host (host name with point)
+     *
+     * @note If the given value for the host setter lacks a port, the URL's port will not change.
+     * This can be unexpected as the host getter does return a URL-port string, so one might have assumed the setter to always "reset" both.
+     *
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/URL/host
+     */
+    set host(value: string) {
+        if (!value) {
+            return   // act as URL interface
+        }
+        const [hostname, port] = value.toLowerCase().trim().split(':')
+        if (!hostname) {
+            return // act as URL interface
+        }
+
+        this.#hostname = hostname
+        if (!port || !/^\d+$/.test(port)) {
+            return  // act as URL interface
+        }
+        const p = Number(port)
+        if (!p) {
+            return
+        }
+        this.port = p
+    }
+
+    get hostname(): string {
+        return this.#hostname
+    }
+
+    set hostname(vale: string) {
+        if (!vale) {
+            return  // act as URL interface
+        }
+        this.#hostname = vale
+    }
+
+    get href(): string {
+        return this.toString()
+    }
+
+    get origin(): string {
+        return this.#protocol + '//' + this.#hostname + this.#port
+    }
+
+    get pathname(): string {
+        return this.#pathnamePattern
+    }
+
+    set pathname(value: string) {
+        if (!value || value === '/') {
+            this.#pathnamePattern = '/'
+            return
+        }
+        value = value.replace(/\/+/g, '/').replace(/[?#].*$/g, '')  // trim search and hash
+        this.#pathnamePattern = value.startsWith('/') ? value : `/${value}`
+    }
+
+    get port(): string {
+        return this.#port ? String(this.#port) : ''
+    }
+
+    set port(value: string | number) {
+        if (!value) {
+            this.#port = 0
+            return
+        }
+        let port: number = 0
+        if (typeof value === 'number') {
+            port = value
+        } else {
+            port = uint16(value.startsWith(':') ? value.slice(1) : value)
+        }
+        if (!port) {
+            return // act as URL interface
+        }
+        this.tidyPort(this.#protocol, port)
+    }
+
+    get protocol(): string {
+        return this.#protocol
+    }
+
+    set protocol(value: string) {
+        if (!value) {
+            return
+        }
+        this.#protocol = value.toLowerCase().replace(/\/+$/g, '')
+        this.tidyPort(this.#protocol, this.#port)
+    }
+
+    get search(): string {
+        return this.searchParams.toString()
+    }
+
+    set search(value: string) {
+        this.searchParams = new URLSearchParams(value)
     }
 
 
-    withSort(sort: SortStringFunc): AaURL {
-        this.sort = sort
-        return this
+    tidyPort(protocol: string, port: t_uint16) {
+        switch (port) {
+            case 80:
+                // blob:http://http://luexu.com
+                if (protocol === 'http' || protocol.endsWith(':http')) {
+                    this.#port = 0
+                    return // act as URL interface
+                }
+                break
+            case 443:
+                // blob:https://http://luexu.com
+                if (protocol === 'https' || protocol.endsWith(':https')) {
+                    this.#port = 0
+                    return // act as URL interface
+                }
+                break
+        }
+        this.#port = port
     }
 
-    withKeepEmptyParams(keep: boolean): AaURL {
-        this.keepEmptyParams = keep
+
+    sort(sort?: SortFunc): AaURL {
+        this.sortFunc = sort ? sort : Ascend
         return this
     }
 
     setParam(key: string, value: unknown): AaURL {
-        this.searchParams[key] = a_string(value)
+        this.searchParams.set(key, a_string(value))
         return this
     }
 
@@ -115,28 +244,25 @@ class AaURL {
         if (!params) {
             return this
         }
-        const searchParams = normalizeSearchParams(params)
-        for (const [key, value] of Object.entries(searchParams)) {
+        if (!(params instanceof SearchParams)) {
+            params = new SearchParams(params)
+        }
+        for (const [key, value] of params.entries()) {
             this.setParam(key, value)
         }
         return this
     }
 
     deleteParam(key: string): AaURL {
-        delete this.searchParams[key]
+        this.searchParams.delete(key)
         return this
     }
 
     hasParam(key: string): boolean {
-        return this.searchParams.hasOwnProperty(key) && this[key] !== undefined
+        return this.searchParams.has(key)
     }
 
-    clearParams(): AaURL {
-        this.searchParams = {}
-        return this
-    }
-
-    search<T = unknown>(key: string, cast?: (value: unknown) => T): T | undefined {
+    query<T = unknown>(key: string, cast?: (value: unknown) => T): T | undefined {
         if (!this.hasParam(key)) {
             return undefined
         }
@@ -147,91 +273,105 @@ class AaURL {
         return cast(value)
     }
 
-    searchByte(key: string): t_char | undefined {
-        const value = this.search(key, a_char)
+    queryByte(key: string): t_char | undefined {
+        const value = this.query(key, a_char)
         return value != '\0' ? value : undefined
     }
 
-
-    searchString(key: string): string {
-        return this.search(key, a_string)
+    queryString(key: string): string {
+        return this.query(key, a_string)
     }
 
-    searchInt64b(key: string): t_int64b | undefined {
-        return this.search(key, int64b)
+    queryInt64b(key: string): t_int64b | undefined {
+        return this.query(key, int64b)
     }
 
-    searchSafeInt(key: string): t_safeint | undefined {
-        return this.search(key, safeInt)
+    querySafeInt(key: string): t_safeint | undefined {
+        return this.query(key, safeInt)
     }
 
-    searchInt32(key: string): t_int32 | undefined {
-        return this.search(key, int32)
+    queryInt32(key: string): t_int32 | undefined {
+        return this.query(key, int32)
     }
 
-    searchInt24(key: string): t_int24 | undefined {
-        return this.search(key, int24)
+    queryInt24(key: string): t_int24 | undefined {
+        return this.query(key, int24)
     }
 
-    searchInt16(key: string): t_int16 | undefined {
-        return this.search(key, int16)
+    queryInt16(key: string): t_int16 | undefined {
+        return this.query(key, int16)
     }
 
-    searchInt8(key: string): t_int8 | undefined {
-        return this.search(key, int8)
+    queryInt8(key: string): t_int8 | undefined {
+        return this.query(key, int8)
     }
 
-    searchUint64b(key: string): t_uint64b | undefined {
-        return this.search(key, uint64b)
+    queryUint64b(key: string): t_uint64b | undefined {
+        return this.query(key, uint64b)
     }
 
-    searchUint32(key: string): t_uint32 | undefined {
-        return this.search(key, uint32)
+    queryUint32(key: string): t_uint32 | undefined {
+        return this.query(key, uint32)
     }
 
-    searchUint24(key: string): t_uint24 | undefined {
-        return this.search(key, uint24)
+    queryUint24(key: string): t_uint24 | undefined {
+        return this.query(key, uint24)
     }
 
-    searchUint16(key: string): t_uint16 | undefined {
-        return this.search(key, uint16)
+    queryUint16(key: string): t_uint16 | undefined {
+        return this.query(key, uint16)
     }
 
-    searchUint8(key: string): t_uint8 | undefined {
-        return this.search(key, uint8)
+    queryUint8(key: string): t_uint8 | undefined {
+        return this.query(key, uint8)
     }
 
-    searchFloat64(key: string): t_float64 | undefined {
-        return this.search(key, float64)
+    queryFloat64(key: string): t_float64 | undefined {
+        return this.query(key, float64)
     }
 
-    searchFloat32(key: string): t_float64 | undefined {
-        return this.search(key, float32)
+    queryFloat32(key: string): t_float64 | undefined {
+        return this.query(key, float32)
     }
 
-    searchBool(key: string): boolean | undefined {
-        return this.search(key, a_bool)
+    queryBool(key: string): boolean | undefined {
+        return this.query(key, a_bool)
     }
 
-    searchBooln(key: string): t_booln | undefined {
-        return this.search(key, a_booln)
+    queryBooln(key: string): t_booln | undefined {
+        return this.query(key, a_booln)
     }
 
-    searchMillisecond(key: string): t_millisecond | undefined {
-        return this.search(key, safeInt)
+    queryMillisecond(key: string): t_millisecond | undefined {
+        return this.query(key, safeInt)
     }
 
-    searchSecond(key: string): t_second | undefined {
-        return this.search(key, safeInt)
+    querySecond(key: string): t_second | undefined {
+        return this.query(key, safeInt)
     }
 
-    searchWeekday(key: string): t_weekday {
-        return this.search(key, a_weekday)
+    queryWeekday(key: string): t_weekday {
+        return this.query(key, a_weekday)
+    }
+
+    toJSON() {
+        return this.toString()
     }
 
     toString() {
-        const urlPattern = this.protocol + '//' + this.hostname + this.port + this.pathname + this.hash
-        const {base, hash, search} = revertURLPathParams(urlPattern, this.searchParams)
-        return buildURL(base, hash, search, this.sort, this.keepEmptyParams)
+        const path = this.#pathnamePattern + this.#hashPattern
+        const {base, hash, search} = revertURLPathParams(path, this.searchParams)
+        let baseURL = this.#hostname + this.#port + base
+        if (this.username) {
+            baseURL = this.#protocol + '//' + this.username + ':' + this.password + '@' + baseURL
+        } else {
+            baseURL = this.#protocol + '//' + baseURL
+        }
+        if (this.sortFunc) {
+            search.sort(this.sortFunc)
+        }
+        search.tidy = this.tidy
+
+        return buildURL(baseURL, hash, search)
     }
 }

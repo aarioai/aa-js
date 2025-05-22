@@ -1,5 +1,5 @@
 import {typeArray} from "../../aa/atype/func";
-import {Break} from "../../aa/env/const";
+import {Break} from "../../aa/atype/const";
 import {floatToInt} from "../../aa/atype/t_basic";
 
 

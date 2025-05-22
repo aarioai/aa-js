@@ -1,9 +1,11 @@
 import {joinPath, parseBaseName, splitPath} from "../strings/path_func";
-import {HttpMethods, SortStringFunc, t_httpmethod} from "../../aa/atype/a_define";
-import {a_string, sortStringFunc} from '../../aa/atype/t_basic'
-import {ParamsType, PathParamMap, safePathParamValue, SearchParamsType, URLPathError, URLPattern} from './base'
+import {HttpMethods, t_httpmethod} from "../../aa/atype/a_define";
+import {a_string} from '../../aa/atype/t_basic'
+import {ParamPattern, PathParamMap, safePathParamValue, URLBase, URLPathError} from './base'
 import {PathParamsMatchesRegex, PathParamString, PathParamTestRegexp} from '../../aa/atype/const_server'
 import {t_path_param} from '../../aa/atype/a_define_server'
+import {MapObject} from '../../aa/atype/a_define_complex'
+import {ParamsType, SearchParams} from './search_params'
 
 
 /**
@@ -195,53 +197,39 @@ export function searchParam(params: ParamsType, name: string): unknown {
     if (!name || !params) {
         return undefined
     }
-    if (params instanceof URLSearchParams || params instanceof Map) {
+    if (params instanceof URLSearchParams || params instanceof Map || params instanceof SearchParams) {
         return params.get(name)
     }
     return params.hasOwnProperty(name) ? params[name] : undefined
 }
 
 
-export function spreadSearchParams(target: SearchParamsType, source: ParamsType) {
+export function spreadSearchParams(target: SearchParams, source: ParamsType) {
     const alias = []
     // Handle parameter alias, e.g. winner={max_score}&best={winner:string}
-    for (const [key, value] of Object.entries(target)) {
-        if (!value || !value.startsWith('{')) {
+
+    for (const [key, value] of target.entries()) {
+        if (!value) {
             continue
         }
         const match = value.match(PathParamTestRegexp)
         if (!match) {
             continue
         }
-        const [_, name, paramType] = match
-        target[key] = safePathParamValue(searchParam(source, name), paramType)
+        const [, , name, paramType,] = match
+        target.set(key, safePathParamValue(searchParam(source, name), paramType))
         alias.push(key)
     }
-
-
-    if (source instanceof Map || source instanceof URLSearchParams) {
-        for (const [key, value] of source) {
-            if (!alias.includes(key)) {
-                target[key] = a_string(value)
-            }
-        }
-        return
+    if (!(source instanceof SearchParams)) {
+        source = new SearchParams(source)
     }
-
-    for (const key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-            if (!alias.includes(key)) {
-                target[key] = a_string(source[key])
-            }
+    for (const [key, value] of source.entries()) {
+        if (!alias.includes(key)) {
+            target.set(key, a_string(value))
         }
     }
 }
 
-export function normalizeSearchParams<T extends ParamsType>(source: T): SearchParamsType {
-    const result: SearchParamsType = {}
-    spreadSearchParams(result, source)
-    return result
-}
 
 /**
  * Parse a URL search pattern string to check its validation, and returns its object type
@@ -259,14 +247,13 @@ export function normalizeSearchParams<T extends ParamsType>(source: T): SearchPa
  */
 export function parseURLSearch(s: string): {
     valid: boolean,
-    search: SearchParamsType
+    search: MapObject<string>
 } {
     if (!s) {
         return {valid: true, search: {}}
     }
-    let search: SearchParamsType = {}
+    let search: MapObject<string> = {}
     const pairs = s.split('&')
-
     for (let pair of pairs) {
         pair = pair.trim()
         if (!pair) {
@@ -294,13 +281,12 @@ export function parseURLSearch(s: string): {
  *  splitURLSearch('/api/v1/users/{user:uint64}/favorites/page/{page}#hash0#{hash1:string}?name=Aario#hash2#{hash2}&age=30?age=18&sex=male#{hash3}#{hash3:string}')
  *  // Returns  {base:'/api/v1/users/{user:uint64}/favorites/page/{page}', hash: '#{hash2}',search:{name:'Aario', age:'18', sex:'male'}}
  */
-export function splitURLSearch(urlPattern: string): { base: string, hash: string, search: SearchParamsType } {
+export function splitURLSearch(urlPattern: string): URLBase {
     if (!urlPattern) {
-        return {base: '', hash: '', search: {}}
+        return {base: '', hash: '', search: new SearchParams()}
     }
     let hash = ''
-    let search: SearchParamsType = {}
-
+    let search = new SearchParams()
 
     const parts = urlPattern.split('?')
     if (parts.length > 1) {
@@ -323,14 +309,14 @@ export function splitURLSearch(urlPattern: string): { base: string, hash: string
                 urlPattern += '?' + parts.slice(1, i + 1).join('?')
                 break
             }
-            const segSearch = ps.search
-            for (const [key, value] of Object.entries(segSearch)) {
-                if (!search.hasOwnProperty(key)) {
-                    search[key] = value
+            for (const [key, value] of Object.entries(ps.search)) {
+                if (!(search.has(key))) {
+                    search.set(key, value)
                 }
             }
         }
     }
+
 
     const hashParts = urlPattern.split('#')
     if (hashParts.length > 1) {
@@ -365,88 +351,66 @@ export function splitURLSearch(urlPattern: string): { base: string, hash: string
  * revertURLPathParams('/api/{version}/users/{uid:uint64}#{hash}?work={work}', {version:'v1', uid:100n, age:10,})
  * // Returns {base:"/api/v1/users/100", hash:'', search:{age:"10", work=""}}
  */
-export function revertURLPathParams(urlPattern: URLPattern, params: ParamsType): {
-    base: string,
-    hash: string,
-    search: SearchParamsType
-} {
+export function revertURLPathParams(urlPattern: ParamPattern, params: ParamsType): URLBase {
     if (!urlPattern) {
         throw new URLPathError(`url is empty`)
     }
+
+
     let {base, hash, search} = splitURLSearch(urlPattern)
     spreadSearchParams(search, params)
-
     // Handle hash parameter {<key>} or {<key><type>}
-    if (hash && hash.startsWith('#{')) {
+    if (hash) {
         const match = hash.slice(1).match(PathParamTestRegexp)
         if (match) {
-            const [_, name, paramType] = match
-            hash = safePathParamValue(searchParam(search, name), paramType)
+            const [, , name, paramType,] = match
+            hash = safePathParamValue(search.get(name), paramType)
             if (hash) {
                 hash = '#' + hash
             }
-            delete search[name]
+            search.delete(name)
         }
     }
 
     // Handle no parameter
-    if (!base.includes('{')) {
-        return {base: base, hash, search}
-    }
     const pathParams: PathParamMap = new Map<string, t_path_param>()
 
     // Handle base parameter {<key>} or {<key><type>}
     const matches = base.matchAll(PathParamsMatchesRegex)
     for (const match of matches) {
-        const [pattern, name, paramType] = match
-        let type: t_path_param = PathParamString
-        if (paramType) {
-            type = paramType
-            base = base.replace(pattern, `{${name}}`)     // format to {<key>}
+        const [pattern, , name, paramType,] = match
+        let type = paramType ? paramType : PathParamString
+        const simple = '{' + name + '}'
+        if (pattern !== simple) {
+            base = base.replace(pattern, simple)     // format to {<key>}
         }
         pathParams.set(name, type)
     }
 
     // Set path param values and checks all required path parameters are all exists in  the specific parameters
     for (const [name, type] of pathParams) {
-        const value = safePathParamValue(searchParam(search, name), type)
+        const value = safePathParamValue(search.get(name), type)
 
         if (!value) {
             throw new URLPathError(`missing required path parameter ${name}`)
         }
 
         base = base.replaceAll(`{${name}}`, value)
-        delete search[name]
+        search.delete(name)
     }
 
     return {base, hash, search}
 }
 
-export function buildSearchString(search: SearchParamsType, keySortFunc?: SortStringFunc, keepEmpty: boolean = false): string {
-    let keys = search ? Object.keys(search) : []
-    if (keys.length === 0) {
-        return ''
-    }
-    if (keySortFunc) {
-        keys = keys.sort(sortStringFunc(keySortFunc))
-    }
-
-    const p = new URLSearchParams()
-    keys.forEach(key => {
-        const value = search[key]
-        if (value === '' && !keepEmpty) {
-            return
-        }
-        p.append(key, value)
-    })
-    const s = p.toString()
-    return s ? '?' + s : ''
-}
 
 /**
  * Builds a URL string with result from revertURLPathParams
  */
-export function buildURL(base: string, hash: string, search: SearchParamsType, keySortFunc?: SortStringFunc, keepEmpty: boolean = false): string {
-    const searchString = buildSearchString(search, keySortFunc, keepEmpty)
-    return base + searchString + hash
+export function buildURL(base: string, hash: string, search: SearchParams): string {
+    const searchString = search.toString()
+    let url = base
+    if (searchString) {
+        url += '?' + searchString
+    }
+    return url + hash
 }

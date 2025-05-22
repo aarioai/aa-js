@@ -1,21 +1,26 @@
 import {a_booln, a_string, int16, int32, int64b, int8, uint16, uint32, uint64b, uint8} from '../../aa/atype/t_basic'
 import {t_path_param} from '../../aa/atype/a_define_server'
-import {AnyMap, MapObject} from '../../aa/atype/a_define_complex'
+import {SearchParams} from './search_params'
 
-export type SearchParamsType = MapObject<string>
-export type ParamsType = MapObject | URLSearchParams | AnyMap
+
+export type URLBase = {
+    base: string,
+    hash: string,
+    search: SearchParams
+}
+
 /**
  * A URL string with iris-like routing path pattern {<key>} or {<key>:<type>}
  * <key> must starts with a _ or alphabet, and only contains _, alphabets or numbers
  * <type> must starts with a small-case alphabet, and only contains small-case alphabets and numbers
  *
  * @example
- * userAPI: URLPattern = 'https://luexu.com/api/v1/users/{uid:uint64}'
- * userAPI: URLPattern = 'https://luexu.com/api/v1/users/{uid}'
- * usersAPI: URLPattern = '/api/v1/groups/{group}/users/page/{page:uint}
+ * userAPI: ParamPattern = 'https://luexu.com/api/v1/users/{uid:uint64}'
+ * userAPI: ParamPattern = 'https://luexu.com/api/v1/users/{uid}'
+ * usersAPI: ParamPattern = '/api/v1/groups/{group}/users/page/{page:uint}
  */
-export type URLPattern = string
- 
+export type ParamPattern = string
+
 export type PathParamMap = Map<string, t_path_param>
 
 
