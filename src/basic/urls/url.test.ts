@@ -1,7 +1,7 @@
 import {describe, test} from '@jest/globals'
 import {AaURL} from './url'
 import {URLPathError} from './base'
-import {searchParamReferenceErrorMessage} from './search_params'
+import {searchParamReferenceError} from './search_params'
 
 // describe('AaURL with absolute URL', () => {
 //
@@ -61,50 +61,34 @@ describe('AaURL with relative URL', () => {
         url.setParam('uid', 10000n)
         expect(() => url.toString()).toThrow(URLPathError)
 
-        // url.setParams({
-        //     group_tag: 'classmates',
-        // })
-        // expect(url.host).toBe('luexu.com')
-        // expect(url.pathname).toBe('/api/v1/users/%7Buid:uint64%7D/groups/%7Bgroup_tag%7D')
-        // expect(url.toString()).toBe('https://luexu.com/api/v1/users/10000/groups/classmates?x-stringify=1')
-        //
-        // url.setParam('name', 'Aario')
-        // expect(url.href).toBe('https://luexu.com/api/v1/users/10000/groups/classmates?name=Aario&x-stringify=1')
-        // url.setParams({
-        //     nation: 'China',
-        //     age: '80',
-        // })
-        // expect(url.href).toBe('https://luexu.com/api/v1/users/10000/groups/classmates?age=80&name=Aario&nation=China&x-stringify=1')
-        // url.deleteParam('age')
-        // expect(url.href).toBe('https://luexu.com/api/v1/users/10000/groups/classmates?name=Aario&nation=China&x-stringify=1')
-        //
-        // url.tidy = false
-        // expect(url.href).toBe('https://luexu.com/api/v1/users/10000/groups/classmates?name=Aario&nation=China&redirect=&x-stringify=1')
-        // url.resetParams({
-        //     uid: 1,
-        //     group_tag: 'friends',
-        //     nation: 'Singapore',
-        //     redirect: 'R1',
-        // })
-        // expect(url.href).toBe('https://luexu.com/api/v1/users/1/groups/friends?nation=Singapore&redirect=R1&x-stringify=1')
-
-
-        // url.resetParams({
-        //     uid: 1,
-        //     group_tag: 'friends',
-        //     nation: 'Singapore',
-        //     redirect: 'R1',   // redirect is alias to refer
-        //     refer: 'R2',
-        // })
-        //
-        // expect(url.toString()).toBe('https://luexu.com/api/v1/users/1/groups/friends?nation=Singapore&redirect=R2&refer=R2&x-stringify=1')
-    })
-
-    test(`AaURL handle console.error`, () => {
-        const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {
+        url.setParams({
+            group_tag: 'classmates',
         })
-        const base = '/api/v1/users/{uid:uint64}/groups/{group_tag}?redirect={refer}'
-        const url = new AaURL(base)
+        expect(url.host).toBe('luexu.com')
+        expect(url.pathname).toBe('/api/v1/users/%7Buid:uint64%7D/groups/%7Bgroup_tag%7D')
+        expect(url.toString()).toBe('https://luexu.com/api/v1/users/10000/groups/classmates?x-stringify=1')
+
+        url.setParam('name', 'Aario')
+        expect(url.href).toBe('https://luexu.com/api/v1/users/10000/groups/classmates?name=Aario&x-stringify=1')
+        url.setParams({
+            nation: 'China',
+            age: '80',
+        })
+        expect(url.href).toBe('https://luexu.com/api/v1/users/10000/groups/classmates?age=80&name=Aario&nation=China&x-stringify=1')
+        url.deleteParam('age')
+        expect(url.href).toBe('https://luexu.com/api/v1/users/10000/groups/classmates?name=Aario&nation=China&x-stringify=1')
+
+        url.tidy = false
+        expect(url.href).toBe('https://luexu.com/api/v1/users/10000/groups/classmates?name=Aario&nation=China&redirect=&x-stringify=1')
+        expect(url.resetParams({
+            uid: 1,
+            group_tag: 'friends',
+            nation: 'Singapore',
+            redirect: 'R1',
+        })).toThrow(searchParamReferenceError('redirect', 'refer'))
+        expect(url.href).toBe('https://luexu.com/api/v1/users/1/groups/friends?nation=Singapore&redirect=R1&x-stringify=1')
+
+
         url.resetParams({
             uid: 1,
             group_tag: 'friends',
@@ -112,9 +96,8 @@ describe('AaURL with relative URL', () => {
             redirect: 'R1',   // redirect is alias to refer
             refer: 'R2',
         })
-        expect(errorSpy).toHaveBeenCalledWith(searchParamReferenceErrorMessage('redirect', 'refer'))
 
-
-        errorSpy.mockRestore()  // clear mock
+        expect(url.toString()).toBe('https://luexu.com/api/v1/users/1/groups/friends?nation=Singapore&redirect=R2&refer=R2&x-stringify=1')
     })
+
 })

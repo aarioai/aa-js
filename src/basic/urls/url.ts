@@ -9,6 +9,7 @@ import {
     t_int64b,
     t_int8,
     t_millisecond,
+    t_path_param,
     t_second,
     t_uint16,
     t_uint24,
@@ -36,7 +37,7 @@ import {
     uint64b,
     uint8
 } from "../../aa/atype/t_basic";
-import {SortFunc, t_bool, t_httpmethod, t_safeint} from '../../aa/atype/a_define'
+import {LoopSignal, SortFunc, t_bool, t_httpmethod, t_safeint} from '../../aa/atype/a_define'
 import {ParamPattern} from './base'
 import {a_weekday} from '../../aa/atype/t_basic_server'
 import {Ascend} from '../../aa/atype/const'
@@ -246,11 +247,35 @@ export class AaURL {
         this.#port = port
     }
 
+    clearReference() {
+        this.searchParams.references.clear()
+    }
+
+    hasReference(name: string): boolean {
+        return this.searchParams.references.has(name)
+    }
+
+    setReference(name: string, ref: string, type: t_path_param) {
+        this.searchParams.references.set(name, ref, type)
+    }
+
+    deleteReference(name: string) {
+        this.searchParams.references.delete(name)
+    }
+
+    getReference(name: string): [string, t_path_param] {
+        return this.searchParams.references.get(name)
+    }
+
+    forEachReference(callback: (ref: string, type: t_path_param, key: string) => LoopSignal, thisArg?: any) {
+        this.searchParams.references.forEach(callback, thisArg)
+    }
 
     sort(sort?: SortFunc): AaURL {
         this.sortFunc = sort ? sort : Ascend
         return this
     }
+
 
     resetParams(params?: SearchParamsAcceptType): AaURL {
         this.searchParams.reset(params)

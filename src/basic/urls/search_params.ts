@@ -11,8 +11,8 @@ import {SearchReference} from './search_reference'
 export type SearchParamsAcceptType = string | URLSearchParams | MapObject | AnyMap
 export type ParamsType = SearchParamsAcceptType | SearchParams
 
-export function searchParamReferenceErrorMessage(referer: string, reference: string): string {
-    return `Parameter '${referer}' references to '${reference}'. Modify the source parameter instead.`
+export function searchParamReferenceError(referer: string, reference: string): Error {
+    return new Error(`Parameter '${referer}' references to '${reference}'. Modify the source parameter instead.`)
 }
 
 /**
@@ -126,8 +126,7 @@ export class SearchParams {
         }
 
         if (this.references.has(name)) {
-            console.error(searchParamReferenceErrorMessage(name, this.references.getReference(name)))
-            return
+            throw searchParamReferenceError(name, this.references.getReference(name))
         }
 
         this.params[name] = v
