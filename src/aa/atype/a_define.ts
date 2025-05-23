@@ -1,5 +1,8 @@
+import {t_booln} from './a_define_server'
+
 export type t_safeint = number  // [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER] [-9007199254740991, 9007199254740991]
 export type t_numeric = number | bigint | string
+export type t_bool = boolean | t_booln | '0' | '1'
 export type SortFunc = null | ((a: unknown, b: unknown) => number)
 
 export type LoopSignal = string | undefined

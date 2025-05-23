@@ -69,6 +69,12 @@ export function a_func(value: Function | undefined | null) {
     return typeof value === "function" ? value : Nif
 }
 
+export function record<T = unknown>(key: string, value: T): MapObject<T> {
+    const result: MapObject<T> = {}
+    result[key] = value
+    return result
+}
+
 export function a_maps(value: MapObject | unknown[] | undefined | null): MapObject {
     if (!value) {
         return {}
@@ -79,6 +85,7 @@ export function a_maps(value: MapObject | unknown[] | undefined | null): MapObje
     }
     return typeof value === "object" ? value : {}
 }
+
 
 /**
  * Converts number except NaN, bigint into a number, NaN into 0, and boolean into a t_bool

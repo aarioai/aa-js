@@ -2,12 +2,12 @@ import {a_booln, a_string, int16, int32, int64b, int8, uint16, uint32, uint64b, 
 import {t_path_param} from '../../aa/atype/a_define_server'
 import {SearchParams} from './search_params'
 
-
 export type URLBase = {
     base: string,
     hash: string,
-    search: SearchParams
+    search: SearchParams,
 }
+
 
 /**
  * A URL string with iris-like routing path pattern {<key>} or {<key>:<type>}
@@ -22,13 +22,13 @@ export type URLBase = {
 export type ParamPattern = string
 
 export type PathParamMap = Map<string, t_path_param>
-
+export const HashAliasName = '#HASH'
 
 export class URLPathError extends Error {
 
 }
 
-export function safePathParamValue(value: unknown, type: t_path_param): string {
+export function safePathParamValue(value: unknown, type?: t_path_param): string {
     if (value === undefined || value === null || value === '') {
         return ''
     }

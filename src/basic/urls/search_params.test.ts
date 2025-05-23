@@ -1,5 +1,6 @@
 import {describe, test} from '@jest/globals'
 import {SearchParams} from './search_params'
+import {P_Stringify} from '../../aa/env/const_param'
 
 describe('SearchParams', () => {
 
@@ -11,7 +12,7 @@ describe('SearchParams', () => {
         expect(p.has('b')).toBe(true)
         expect(p.get('a')).toBe('300')
         expect(p.get('b')).toBe('{b:uint}')
-        expect(p.sort().toString()).toBe('a=300&b=%7Bb%3Auint%7D')
+        expect(p.sort().toString()).toBe('a=300&b=%7Bb%3Auint%7D&x-stringify=1')
 
         p.delete('b', 'NO')
         expect(p.get('b')).toBe('{b:uint}')
@@ -21,10 +22,20 @@ describe('SearchParams', () => {
 
         p.setFromSearch('c=1')
         expect(p.get('c')).toBe('1')
-        expect(p.sort().toString()).toBe('a=300&c=1')
+        expect(p.sort().toString()).toBe('a=300&c=1&x-stringify=1')
 
+        p.xStringify = false
         p.setMany('c=2&d=3')
         expect(p.sort().toString()).toBe('a=300&c=2&d=3')
+
+        p.setMany({
+                'x-stringify': true,
+                a: 1
+            }
+        )
+        expect(p.sort().toString()).toBe('a=1&c=2&d=3&x-stringify=1')
+        p.set(P_Stringify, false)
+        expect(p.sort().toString()).toBe('a=1&c=2&d=3')
     }
 
     test(`SearchParams from search string`, () => {

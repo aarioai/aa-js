@@ -1,4 +1,4 @@
-import {buildURL, normalizeURLWithMethod, revertURLPathParams} from "./func";
+import {buildURL, normalizeURLWithMethod, revertURLPathParams, spreadSearchParams} from "./func";
 import {
     t_booln,
     t_char,
@@ -36,19 +36,19 @@ import {
     uint64b,
     uint8
 } from "../../aa/atype/t_basic";
-import {SortFunc, t_httpmethod, t_safeint} from '../../aa/atype/a_define'
+import {SortFunc, t_bool, t_httpmethod, t_safeint} from '../../aa/atype/a_define'
 import {ParamPattern} from './base'
 import {a_weekday} from '../../aa/atype/t_basic_server'
 import {Ascend} from '../../aa/atype/const'
-import {ParamsType, SearchParams} from './search_params'
+import {ParamsType, SearchParams, SearchParamsAcceptType} from './search_params'
 
 
-class AaURL {
+export class AaURL {
     name = 'aa-url'
     method: t_httpmethod | ''
-    searchParams: URLSearchParams  // as URL interface
-    tidy: boolean = true  // remove empty string value parameter, e.g. a=&b=10
+    searchParams: SearchParams   // as URL interface
     sortFunc: SortFunc = Ascend
+    tidy: boolean = true  // remove empty string value parameter, e.g. a=&b=10
 
     username: string = ''
     password: string = ''
@@ -62,7 +62,6 @@ class AaURL {
 
     #pathnamePattern: ParamPattern   // e.g. /a/chat/x
 
-
     /**
      * Creates an AaURL instance
      *
@@ -73,22 +72,27 @@ class AaURL {
      * @param hash
      */
     constructor(routingURL: string, params?: ParamsType, hash?: string) {
-
         const {method, url} = normalizeURLWithMethod(routingURL)
         const u = new URL(url)
         this.method = method
         this.#protocol = u.protocol
         this.#hostname = u.hostname
         this.#port = u.port ? uint16(u.port) : 0
-        this.#hashPattern = u.hash
         this.#pathnamePattern = u.pathname
         this.username = u.username
         this.password = u.password
-        this.searchParams = u.searchParams
-        this.setParams(params)
-        if (typeof this.hash === 'string') {
-            this.hash = hash
-        }
+        this.hash = typeof hash === 'string' ? hash : u.hash
+
+        this.searchParams = new SearchParams(u.searchParams)
+        spreadSearchParams(this.searchParams, params)
+    }
+
+    get xStringify(): boolean {
+        return this.searchParams.xStringify
+    }
+
+    set xStringify(value: t_bool) {
+        this.searchParams.xStringify = value
     }
 
     get hash(): string {
@@ -96,6 +100,9 @@ class AaURL {
     }
 
     set hash(hash: string) {
+        if (typeof hash !== 'string') {
+            return
+        }
         if (!hash) {
             this.#hashPattern = ''
             return
@@ -104,7 +111,10 @@ class AaURL {
     }
 
     get host(): string {
-        return this.#hostname + this.#port
+        if (!this.port) {
+            return this.#hostname
+        }
+        return this.#hostname + ':' + this.#port
     }
 
     /**
@@ -205,9 +215,16 @@ class AaURL {
     }
 
     set search(value: string) {
-        this.searchParams = new URLSearchParams(value)
+        this.resetParams(value)
     }
 
+    userinfo(): string {
+        if (!this.username && !this.password) {
+            return ''
+        }
+        const username = this.username ? this.username : 'root'
+        return `${username}:${this.password}`
+    }
 
     tidyPort(protocol: string, port: t_uint16) {
         switch (port) {
@@ -235,6 +252,11 @@ class AaURL {
         return this
     }
 
+    resetParams(params?: SearchParamsAcceptType): AaURL {
+        this.searchParams.reset(params)
+        return this
+    }
+
     setParam(key: string, value: unknown): AaURL {
         this.searchParams.set(key, a_string(value))
         return this
@@ -253,13 +275,13 @@ class AaURL {
         return this
     }
 
-    deleteParam(key: string): AaURL {
-        this.searchParams.delete(key)
+    deleteParam(key: string, value?: unknown): AaURL {
+        this.searchParams.delete(key, value)
         return this
     }
 
-    hasParam(key: string): boolean {
-        return this.searchParams.has(key)
+    hasParam(key: string, value?: unknown): boolean {
+        return this.searchParams.has(key, value)
     }
 
     query<T = unknown>(key: string, cast?: (value: unknown) => T): T | undefined {
@@ -361,17 +383,15 @@ class AaURL {
     toString() {
         const path = this.#pathnamePattern + this.#hashPattern
         const {base, hash, search} = revertURLPathParams(path, this.searchParams)
-        let baseURL = this.#hostname + this.#port + base
-        if (this.username) {
-            baseURL = this.#protocol + '//' + this.username + ':' + this.password + '@' + baseURL
+        let baseURL = this.host + base
+        const userinfo = this.userinfo()
+        if (userinfo) {
+            baseURL = this.#protocol + '//' + userinfo + '@' + baseURL
         } else {
             baseURL = this.#protocol + '//' + baseURL
         }
-        if (this.sortFunc) {
-            search.sort(this.sortFunc)
-        }
+        search.sortFunc = this.sortFunc
         search.tidy = this.tidy
-
         return buildURL(baseURL, hash, search)
     }
 }

@@ -3,6 +3,9 @@ export const P_ClientDebug = "_debug"
 export const P_ClientAuthAt = "_auth_at"
 
 // server parameters
+export const P_Stringify = 'x-stringify'
+export const P_StringifyHeader = 'X-Stringify'
+
 export const P_Debug = "x_debug"
 export const P_DebugUrl = "x_debug_url"
 export const P_Mock = "x_mock"

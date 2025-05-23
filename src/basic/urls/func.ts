@@ -1,7 +1,7 @@
 import {joinPath, parseBaseName, splitPath} from "../strings/path_func";
 import {HttpMethods, t_httpmethod} from "../../aa/atype/a_define";
 import {a_string} from '../../aa/atype/t_basic'
-import {ParamPattern, PathParamMap, safePathParamValue, URLBase, URLPathError} from './base'
+import {HashAliasName, ParamPattern, PathParamMap, safePathParamValue, URLBase, URLPathError} from './base'
 import {PathParamsMatchesRegex, PathParamString, PathParamTestRegexp} from '../../aa/atype/const_server'
 import {t_path_param} from '../../aa/atype/a_define_server'
 import {MapObject} from '../../aa/atype/a_define_complex'
@@ -205,26 +205,39 @@ export function searchParam(params: ParamsType, name: string): unknown {
 
 
 export function spreadSearchParams(target: SearchParams, source: ParamsType) {
-    const alias = []
-    // Handle parameter alias, e.g. winner={max_score}&best={winner:string}
 
+    // merge SearchParams alias
+    if (source instanceof SearchParams) {
+        target.references.spread(source.references)
+    }
+    const set: string[] = []
+    // Handle parameter alias, e.g. winner={max_score}&best={winner:string}
     for (const [key, value] of target.entries()) {
-        if (!value) {
-            continue
+        if (!value || value.length < 3) {
+            continue   // pattern requires at least 3 chars (e.g. {x})
         }
         const match = value.match(PathParamTestRegexp)
         if (!match) {
             continue
         }
         const [, , name, paramType,] = match
+        set.push(key)
         target.set(key, safePathParamValue(searchParam(source, name), paramType))
-        alias.push(key)
+        if (key !== name) {
+            target.references.set(key, name, paramType)
+        }
     }
     if (!(source instanceof SearchParams)) {
         source = new SearchParams(source)
     }
     for (const [key, value] of source.entries()) {
-        if (!alias.includes(key)) {
+        if (set.includes(key)) {
+            continue
+        }
+        if (target.references.has(key)) {
+            const name = target.references.get(key)
+            target.set(key, a_string(name))
+        } else {
             target.set(key, a_string(value))
         }
     }
@@ -355,10 +368,9 @@ export function revertURLPathParams(urlPattern: ParamPattern, params: ParamsType
     if (!urlPattern) {
         throw new URLPathError(`url is empty`)
     }
-
-
     let {base, hash, search} = splitURLSearch(urlPattern)
     spreadSearchParams(search, params)
+    let hashAlias = ''
     // Handle hash parameter {<key>} or {<key><type>}
     if (hash) {
         const match = hash.slice(1).match(PathParamTestRegexp)
@@ -368,7 +380,8 @@ export function revertURLPathParams(urlPattern: ParamPattern, params: ParamsType
             if (hash) {
                 hash = '#' + hash
             }
-            search.delete(name)
+            search.references.set(HashAliasName, name, paramType)
+            hashAlias = name
         }
     }
 
@@ -399,6 +412,10 @@ export function revertURLPathParams(urlPattern: ParamPattern, params: ParamsType
         search.delete(name)
     }
 
+    if (hashAlias) {
+        search.delete(hashAlias)
+    }
+
     return {base, hash, search}
 }
 
@@ -407,6 +424,12 @@ export function revertURLPathParams(urlPattern: ParamPattern, params: ParamsType
  * Builds a URL string with result from revertURLPathParams
  */
 export function buildURL(base: string, hash: string, search: SearchParams): string {
+    if (!hash) {
+        const searchHash = search.getHash()
+        if (searchHash) {
+            hash = searchHash
+        }
+    }
     const searchString = search.toString()
     let url = base
     if (searchString) {
