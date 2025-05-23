@@ -222,9 +222,13 @@ export function spreadSearchParams(target: SearchParams, source: ParamsType) {
         }
         const [, , name, paramType,] = match
         set.push(key)
-        target.set(key, safePathParamValue(searchParam(source, name), paramType))
+        const v = safePathParamValue(searchParam(source, name), paramType)
         if (key !== name) {
             target.references.set(key, name, paramType)
+            set.push(name)
+            target.set(name, v)  // set reference will sync to all its referrers
+        } else {
+            target.set(key, v)
         }
     }
     if (!(source instanceof SearchParams)) {
@@ -234,10 +238,7 @@ export function spreadSearchParams(target: SearchParams, source: ParamsType) {
         if (set.includes(key)) {
             continue
         }
-        if (target.references.has(key)) {
-            const name = target.references.get(key)
-            target.set(key, a_string(name))
-        } else {
+        if (!target.references.has(key)) {
             target.set(key, a_string(value))
         }
     }

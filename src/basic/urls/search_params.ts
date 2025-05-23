@@ -11,9 +11,11 @@ import {SearchReference} from './search_reference'
 export type SearchParamsAcceptType = string | URLSearchParams | MapObject | AnyMap
 export type ParamsType = SearchParamsAcceptType | SearchParams
 
-export function searchParamReferenceError(referer: string, reference: string): Error {
+
+export function NewChangeReferrerError(referer: string, reference: string): Error {
     return new Error(`Parameter '${referer}' references to '${reference}'. Modify the source parameter instead.`)
 }
+
 
 /**
  * Pros for Web API URLSearchParams
@@ -126,7 +128,7 @@ export class SearchParams {
         }
 
         if (this.references.has(name)) {
-            throw searchParamReferenceError(name, this.references.getReference(name))
+            throw NewChangeReferrerError(name, this.references.getReference(name))
         }
 
         this.params[name] = v

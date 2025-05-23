@@ -276,7 +276,6 @@ export class AaURL {
         return this
     }
 
-
     resetParams(params?: SearchParamsAcceptType): AaURL {
         this.searchParams.reset(params)
         return this

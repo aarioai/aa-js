@@ -1,7 +1,7 @@
 import {describe, test} from '@jest/globals'
 import {AaURL} from './url'
 import {URLPathError} from './base'
-import {searchParamReferenceError} from './search_params'
+import {NewChangeReferrerError} from './search_params'
 
 // describe('AaURL with absolute URL', () => {
 //
@@ -79,24 +79,22 @@ describe('AaURL with relative URL', () => {
         expect(url.href).toBe('https://luexu.com/api/v1/users/10000/groups/classmates?name=Aario&nation=China&x-stringify=1')
 
         url.tidy = false
-        expect(url.href).toBe('https://luexu.com/api/v1/users/10000/groups/classmates?name=Aario&nation=China&redirect=&x-stringify=1')
-        expect(url.resetParams({
+        expect(url.href).toBe('https://luexu.com/api/v1/users/10000/groups/classmates?name=Aario&nation=China&redirect=&refer=&x-stringify=1')
+
+        expect(() => url.resetParams({
             uid: 1,
             group_tag: 'friends',
             nation: 'Singapore',
-            redirect: 'R1',
-        })).toThrow(searchParamReferenceError('redirect', 'refer'))
-        expect(url.href).toBe('https://luexu.com/api/v1/users/1/groups/friends?nation=Singapore&redirect=R1&x-stringify=1')
+            redirect: 'R1',  // redirect is alias to 'refer', so this setting is useless
+        })).toThrow(NewChangeReferrerError('redirect', 'refer'))
 
 
         url.resetParams({
             uid: 1,
             group_tag: 'friends',
             nation: 'Singapore',
-            redirect: 'R1',   // redirect is alias to refer
             refer: 'R2',
         })
-
         expect(url.toString()).toBe('https://luexu.com/api/v1/users/1/groups/friends?nation=Singapore&redirect=R2&refer=R2&x-stringify=1')
     })
 

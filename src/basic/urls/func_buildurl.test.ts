@@ -12,7 +12,7 @@ describe('buildURL', () => {
         const {base, hash, search} = revertURLPathParams(urlPattern, params)
         expect(buildURL(base, hash, search)).toBe('https://luexu.com/api/v1/users/123/records/page/100?x-stringify=1')
         search.tidy = false
-        expect(buildURL(base, hash, search)).toBe('https://luexu.com/api/v1/users/123/records/page/100?redirect=&x-stringify=1')
+        expect(buildURL(base, hash, search)).toBe('https://luexu.com/api/v1/users/123/records/page/100?redirect=&refer=&x-stringify=1')
 
         search.xStringify = false
         search.tidy = true
@@ -33,12 +33,12 @@ describe('buildURL', () => {
         const {base, hash, search} = revertURLPathParams(urlPattern, params)
         expect(buildURL(base, hash, search)).toBe('https://luexu.com/api/v1/users/123/records/page/100?age=18&name=Aario&x-stringify=1&zig=zag')
         search.tidy = false
-        expect(buildURL(base, hash, search)).toBe('https://luexu.com/api/v1/users/123/records/page/100?age=18&name=Aario&redirect=&x-stringify=1&zig=zag')
+        expect(buildURL(base, hash, search)).toBe('https://luexu.com/api/v1/users/123/records/page/100?age=18&name=Aario&redirect=&refer=&x-stringify=1&zig=zag')
         search.tidy = true
         search.sort(Descend)
         expect(buildURL(base, hash, search)).toBe('https://luexu.com/api/v1/users/123/records/page/100?zig=zag&x-stringify=1&name=Aario&age=18')
         search.tidy = false
-        expect(buildURL(base, hash, search)).toBe('https://luexu.com/api/v1/users/123/records/page/100?zig=zag&x-stringify=1&redirect=&name=Aario&age=18')
+        expect(buildURL(base, hash, search)).toBe('https://luexu.com/api/v1/users/123/records/page/100?zig=zag&x-stringify=1&refer=&redirect=&name=Aario&age=18')
         search.tidy = true
         search.xStringify = false
         expect(buildURL(base, hash, search)).toBe('https://luexu.com/api/v1/users/123/records/page/100?zig=zag&name=Aario&age=18')
