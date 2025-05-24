@@ -2,7 +2,8 @@ import {t_httpmethod} from '../../aa/atype/a_define_enums'
 import {t_api_pattern} from '../../basic/urls/base'
 import {NormalizedRequestOptions, RequestOptions} from './define_interfaces'
 import AaURL from '../../basic/urls/url'
-import {cloneObjectMap} from '../../aa/atype/clone'
+import {fillObjects} from '../../basic/maps/merge_func'
+import defaults from './defaults'
 
 function fileChecksum(file: File): string {
     const {size, type, lastModified, name, webkitRelativePath} = file
@@ -74,12 +75,11 @@ export function normalizeRequestOptions(apiPattern: t_api_pattern, opts: Request
         baseURL: getBaseURL(opts),
         params: opts?.params,
     })
-    const headers = cloneObjectMap(defaults.headers.common)
-
+    const headers = fillObjects<string>(opts?.headers, defaults.headers[url.method], defaults.headers.common)
 
     return {
         url: url,
-        headers: opts?.headers ?? null,
+        headers: headers,
         data: opts?.data ?? null,
         body: opts?.body ?? null,
         timeout: opts?.timeout ?? 0,

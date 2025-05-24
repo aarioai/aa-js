@@ -6,61 +6,96 @@ import {isMeaningfulValue} from './base_func'
 import {getKV, setKV} from './kv'
 import {coerceType, zeroize} from '../../aa/atype/t_basic'
 
-/**
- * Safely assigns from a source KV object to a target map object.
- *
- * @example
- *  assign({}, {name:'Aario'}           // {name:'Aario'}
- *  assign({age:18}, undefined)         // {age:18}
- *  assign({age:18}, {name:'Aario'})    // {name:'Aario', age:18}
- *  assign(null, {name:'Aario'}         // {name:'Aario'}
- */
-export function assign<T = MapObject>(target: T | undefined, source: KV | undefined): T {
-    if (!target) {
-        target = {} as T
-    }
-    if (!source) {
-        return target
-    }
-    forEach(source, (value, key) => {
-        if (isMeaningfulValue(value)) {
-            target[key] = value
-        }
-    })
-    return target
-}
 
 /**
- * Merges from a source KV object to a target KV object
+ * Assigns from a source KV object to a target KV object
  *
  * @example
- *  merge({age:18}, undefined)                      // {name:'Aario'}
- *  merge({age:18}, {name:'Aario'})                 // {name:'Aario', age:18}
- *  merge(new Map([['age', 18]]), {name:'Aario'})   // {name:'Aario', age:18}
+ *  assign({age:18}, undefined)                      // {name:'Aario'}
+ *  assign({age:18}, {name:'Aario'})                 // {name:'Aario', age:18}
+ *  assign(new Map([['age', 18]]), {name:'Aario'})   // {name:'Aario', age:18}
  */
-export function merge<T extends KV = KV>(target: T | undefined, source: KV | undefined): T {
+export function assign<T extends KV = KV>(target: T, ...sources: (KV | undefined)[]): T {
     if (!target) {
         throw E_MissingArgument
     }
-    if (!source) {
+    const n = sources.length
+    if (n === 0) {
         return target
     }
-    forEach(source, (value, key) => {
-        if (isMeaningfulValue(value)) {
-            setKV(target, key, value)
-        }
-    })
+    for (let i = 0; i < n; i++) {
+        forEach(sources[i], (value, key) => {
+            if (isMeaningfulValue(value)) {
+                setKV(target, key, value)
+            }
+        })
+    }
     return target
 }
 
 /**
- * Fills existing properties in a target KV object with values from a source KV object
+ * Safely assigns from one or many source KV objects to a target map object.
  *
  * @example
- *  fill({a:1,b:2}, {a:100,c:200})       //  {a:100, b:2}
- *  fill(new SearchParams({a:1,b:2}), {a:100,c:200})       //  SearchParams({a:100, b:2})
+ *  assignObjects({}, {name:'Aario', sex: 'male'}, {name:'Tom'})           // {name:'Tom', sex:'male'}
+ *  assignObjects({age:18}, undefined)         // {age:18}
+ *  assignObjects({age:18}, {name:'Aario'})    // {name:'Aario', age:18}
+ *  assignObjects(null, {name:'Aario'}         // {name:'Aario'}
  */
-export function fill<T extends KV = KV>(defaults: T, source: KV | undefined): T {
+export function assignObjects<T = MapObject>(target: T | undefined, ...sources: (KV | undefined)[]): T {
+    if (!target) {
+        target = {} as T
+    }
+    return assign(target as any, ...sources)
+}
+
+
+/**
+ *  Fills non-existing properties in a target KV object with default values
+ *
+ * @example
+ *  fillObjects({}, defaults.headers.POST, defaults.headers.common)
+ */
+export function fill<T extends KV = KV>(target: T, ...defaults: (KV | undefined)[]): T {
+    if (!target) {
+        throw E_MissingArgument
+    }
+    const n = defaults.length
+    if (n === 0) {
+        return target
+    }
+    for (let i = 0; i < n; i++) {
+        forEach(defaults[i], (defaultValue, key) => {
+            const value = getKV(target, key)
+            if (!isMeaningfulValue(value)) {
+                setKV(target, key, defaultValue)
+            }
+        })
+    }
+    return target
+}
+
+/**
+ * Fills non-existing properties in a target KV object with default values
+ *
+ * @example
+ *  fillObjects({}, defaults.headers.POST, defaults.headers.common)
+ */
+export function fillObjects<V = unknown, T = MapObject<V>>(target: T | undefined, ...defaults: (KV | undefined)[]): T {
+    if (!target) {
+        target = {} as T
+    }
+    return fill(target as any, ...defaults)
+}
+
+/**
+ * Fills existing properties in a default KV object with values from a source KV object
+ *
+ * @example
+ *  fillIn({a:1,b:2}, {a:100,c:200})       //  {a:100, b:2}
+ *  fillIn(new SearchParams({a:1,b:2}), {a:100,c:200})       //  SearchParams({a:100, b:2})
+ */
+export function fillIn<T extends KV = KV>(defaults: T, source: KV | undefined): T {
     if (!defaults) {
         throw E_MissingArgument
     }
@@ -77,13 +112,13 @@ export function fill<T extends KV = KV>(defaults: T, source: KV | undefined): T 
 }
 
 /**
- * Fills existing properties in a target KV object with values from a source KV object and non-existing properties to its zero value
+ * Fills existing properties in a default KV object with values from a source KV object and non-existing properties to its zero value
  *
  * @example
- *  refill({a:1,b:2n}, {a:100,c:200})       //  {a:100, b:0n}
- *  refill(new SearchParams({a:1,b:'2'}), {a:100,c:200})       //  SearchParams({a:100, b:''})
+ *  refillIn({a:1,b:2n}, {a:100,c:200})       //  {a:100, b:0n}
+ *  refillIn(new SearchParams({a:1,b:'2'}), {a:100,c:200})       //  SearchParams({a:100, b:''})
  */
-export function refill<T extends KV = KV>(defaults: T, source: KV | undefined): T {
+export function refillIn<T extends KV = KV>(defaults: T, source: KV | undefined): T {
     if (!defaults) {
         throw E_MissingArgument
     }

@@ -12,7 +12,24 @@ export function getKV(target: KV, key: string): unknown {
         return target.get(key)
     }
     // Fallback to plain object access
-    return target[key]
+    return target.hasOwnProperty(key) ? target[key] : undefined
+}
+
+export function hasKV(target: KV, key: string, value?: unknown): boolean {
+    if (!target) {
+        return false
+    }
+    if (typeof value === 'undefined') {
+        // Handle Map-like objects (those with a .get() method), e.g. AaMap, AnyMap
+        if (typeof target.has === 'function') {
+            return target.has(target)
+        }
+        // Fallback to plain object access
+        return target.hasOwnProperty(key)
+    }
+
+    const v = getKV(target, key)
+    return v === value
 }
 
 export function setKV(target: KV, key: string, value: unknown) {
@@ -26,6 +43,27 @@ export function setKV(target: KV, key: string, value: unknown) {
     }
     // Fallback to plain object
     target[key] = value
+}
+
+/**
+ *
+ * @return true if an element existed and has been removed, or false if the element does not exist or value does not match
+ */
+export function deleteKV(target: KV, key: string, value?: unknown): boolean {
+    if (!target || !hasKV(target, key, value)) {
+        return false
+    }
+
+    // Handle Map-like objects (those with a .delete() method), e.g. AaMap, AnyMap
+    if (typeof target.delete === 'function') {
+        const result = target.delete(key)
+        if (typeof result === 'function') {
+            return result
+        }
+    }
+    // Fallback to plain object
+    delete target[key]
+    return !hasKV(target, key)
 }
 
 /**
