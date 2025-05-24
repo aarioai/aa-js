@@ -1,4 +1,3 @@
-import {AaURL} from '../../basic/urls/url'
 import {ParamsType} from '../../basic/urls/search_params'
 import {t_httpmethod} from '../../aa/atype/a_define_enums'
 import {MapObject} from '../../aa/atype/a_define_interfaces'
@@ -17,7 +16,7 @@ export interface RequestOptions {
 
 
 export interface RequestInterface {
-    Request(api: ApiPattern | AaURL, options?: RequestOptions): Promise<unknown>
+    Request(api: ApiPattern, options?: RequestOptions): Promise<unknown>
 }
 
 export interface AdapterInterface {
