@@ -34,8 +34,6 @@ export const unmarshalReviver = (key: string, value: unknown, ctx?: JsonReviverC
 }
 
 export default class json {
-
-
     /**
      * Safely converts a value to JSON string with BigInt support.
      * Returns 'null' is safer than returns empty string ''

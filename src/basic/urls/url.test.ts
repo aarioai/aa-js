@@ -1,42 +1,41 @@
 import {describe, test} from '@jest/globals'
-import {AaURL} from './url'
-import {URLPathError} from './base'
-import {NewChangeReferrerError} from './search_params'
+import AaURL from './url'
+import {NewChangeReferrerError, URLPathError} from './base'
 
-// describe('AaURL with absolute URL', () => {
-//
-//     test(`AaURL simple`, () => {
-//         const base = 'https://luexu.com/api/v1/users/{uid:uint64}'
-//         const url = new AaURL(base)
-//         expect(() => url.href).toThrow(URLPathError)
-//
-//         url.setParam('uid', 10000n)
-//         expect(url.host).toBe('luexu.com')
-//         expect(url.pathname).toBe('/api/v1/users/%7Buid:uint64%7D')
-//         expect(url.href).toBe('https://luexu.com/api/v1/users/10000?x-stringify=1')
-//
-//         url.setParam('name', 'Aario')
-//         expect(url.href).toBe('https://luexu.com/api/v1/users/10000?name=Aario&x-stringify=1')
-//         url.setParams({
-//             nation: 'China',
-//             age: '80',
-//         })
-//         expect(url.href).toBe('https://luexu.com/api/v1/users/10000?age=80&name=Aario&nation=China&x-stringify=1')
-//         url.deleteParam('age')
-//         expect(url.href).toBe('https://luexu.com/api/v1/users/10000?name=Aario&nation=China&x-stringify=1')
-//
-//         url.resetParams({
-//             uid: 1,
-//             nation: 'Singapore',
-//             redirect: '',
-//         })
-//         expect(url.href).toBe('https://luexu.com/api/v1/users/1?nation=Singapore&x-stringify=1')
-//         url.tidy = false
-//         expect(url.href).toBe('https://luexu.com/api/v1/users/1?nation=Singapore&redirect=&x-stringify=1')
-//     })
-//
-//
-// })
+describe('AaURL with absolute URL', () => {
+
+    test(`AaURL simple`, () => {
+        const base = 'https://luexu.com/api/v1/users/{uid:uint64}'
+        const url = new AaURL(base)
+        expect(() => url.href).toThrow(URLPathError)
+
+        url.setParam('uid', 10000n)
+        expect(url.host).toBe('luexu.com')
+        expect(url.pathname).toBe('/api/v1/users/%7Buid:uint64%7D')
+        expect(url.href).toBe('https://luexu.com/api/v1/users/10000?x-stringify=1')
+
+        url.setParam('name', 'Aario')
+        expect(url.href).toBe('https://luexu.com/api/v1/users/10000?name=Aario&x-stringify=1')
+        url.setParams({
+            nation: 'China',
+            age: '80',
+        })
+        expect(url.href).toBe('https://luexu.com/api/v1/users/10000?age=80&name=Aario&nation=China&x-stringify=1')
+        url.deleteParam('age')
+        expect(url.href).toBe('https://luexu.com/api/v1/users/10000?name=Aario&nation=China&x-stringify=1')
+
+        url.resetParams({
+            uid: 1,
+            nation: 'Singapore',
+            redirect: '',
+        })
+        expect(url.href).toBe('https://luexu.com/api/v1/users/1?nation=Singapore&x-stringify=1')
+        url.tidy = false
+        expect(url.href).toBe('https://luexu.com/api/v1/users/1?nation=Singapore&redirect=&x-stringify=1')
+    })
+
+
+})
 
 
 describe('AaURL with relative URL', () => {

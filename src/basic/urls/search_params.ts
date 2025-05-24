@@ -1,21 +1,13 @@
 import {deepEncodeURI, parseURLSearch} from './func'
-import {AnyMap, Callback, MapObject} from '../../aa/atype/a_define_interfaces'
+import {Callback, MapObject} from '../../aa/atype/a_define_interfaces'
 import {a_bool, a_string} from '../../aa/atype/t_basic'
 import {FALSE, TRUE} from '../../aa/atype/a_server_consts'
-import {HashAliasName, safePathParamValue} from './base'
+import {HASH_REF_NAME, NewChangeReferrerError, ParamsType, safePathParamValue, SearchParamsAcceptType} from './base'
 import SearchReference from './search_reference'
 import {P_Stringify} from '../../aa/aconfig/const_param'
 import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
 import {t_bool} from '../../aa/atype/a_define'
 import {BREAK} from '../../aa/atype/a_define_enums'
-
-export type SearchParamsAcceptType = string | URLSearchParams | MapObject | AnyMap
-export type ParamsType = SearchParamsAcceptType | SearchParams
-
-
-export function NewChangeReferrerError(referer: string, reference: string): Error {
-    return new Error(`Parameter '${referer}' references to '${reference}'. Modify the source parameter instead.`)
-}
 
 
 /**
@@ -84,8 +76,8 @@ export default class SearchParams {
     }
 
     getHashName(): string | null {
-        if (this.references && this.references.has(HashAliasName)) {
-            return this.references.get(HashAliasName)[0]
+        if (this.references && this.references.has(HASH_REF_NAME)) {
+            return this.references.get(HASH_REF_NAME)[0]
         }
         return null
     }

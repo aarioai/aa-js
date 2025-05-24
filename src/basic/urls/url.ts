@@ -1,4 +1,4 @@
-import {buildURL, normalizeURLWithMethod, revertURLPathParams, spreadSearchParams} from "./func";
+import {buildURL, normalizeSearchParams, normalizeURLWithMethod, revertURLPathParams} from "./func";
 import {
     t_bool,
     t_booln,
@@ -39,14 +39,14 @@ import {
     uint64b,
     uint8
 } from "../../aa/atype/t_basic";
-import {ApiPattern} from './base'
+import {ParamsType, SearchParamsAcceptType, t_api_pattern, URLOptions} from './base'
 import {a_weekday} from '../../aa/atype/t_basic_server'
-import SearchParams, {ParamsType, SearchParamsAcceptType} from './search_params'
+import SearchParams from './search_params'
 import {t_httpmethod, t_loopsignal} from '../../aa/atype/a_define_enums'
 import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
 
 
-export class AaURL {
+export default class AaURL {
     name = 'aa-url'
     method: t_httpmethod | ''
     searchParams: SearchParams   // as URL interface
@@ -61,21 +61,19 @@ export class AaURL {
     #hostname: string   // e.g. test.luexu.com
     #port: t_uint16       // e.g. 8080
 
-    #hashPattern: ApiPattern = ''  // #<hash>, e.g. #head, #{hash}
+    #hashPattern: t_api_pattern = ''  // #<hash>, e.g. #head, #{hash}
 
-    #pathnamePattern: ApiPattern   // e.g. /a/chat/x
+    #pathnamePattern: t_api_pattern   // e.g. /a/chat/x
 
     /**
      * Creates an AaURL instance
      *
-     * @param routingURL iris path parameter routing URL,   path parameters with format {<key>:<type>} or {<key>}
+     * iris path parameter routing URL,   path parameters with format {<key>:<type>} or {<key>}
      *          e.g. /api/v1/users/{uid:uint64}/logs/page/{page}?param=value       // <url>
      *          e.g. GET https://luexu.com/api/v1/users/{uid:uint64}   // <http_method> <url>
-     * @param params
-     * @param hash
      */
-    constructor(routingURL: string, params?: ParamsType, hash?: string) {
-        const {method, url} = normalizeURLWithMethod(routingURL)
+    constructor(urlPattern: t_api_pattern, options?: URLOptions) {
+        const {method, url} = normalizeURLWithMethod(urlPattern, options?.baseURL)
         const u = new URL(url)
         this.method = method
         this.#protocol = u.protocol
@@ -84,10 +82,8 @@ export class AaURL {
         this.#pathnamePattern = u.pathname
         this.username = u.username
         this.password = u.password
-        this.hash = typeof hash === 'string' ? hash : u.hash
-
-        this.searchParams = new SearchParams(u.searchParams)
-        spreadSearchParams(this.searchParams, params)
+        this.hash = typeof options?.hash === 'string' ? options.hash : u.hash  // options.hash can be ''
+        this.searchParams = normalizeSearchParams(new SearchParams(u.searchParams), options?.params)
     }
 
     get xStringify(): boolean {

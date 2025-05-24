@@ -1,10 +1,10 @@
 import {RequestInterface} from '../base/define_interfaces'
-import {AaBasicRequest} from '../base/basic_request'
+import {AaDefaultRequest} from '../base/request'
 
 class Auth {
     readonly request: RequestInterface
 
-    constructor(r: RequestInterface = new AaBasicRequest()) {
+    constructor(r: RequestInterface = new AaDefaultRequest()) {
         this.request = r
     }
 }

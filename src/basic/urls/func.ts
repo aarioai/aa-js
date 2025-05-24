@@ -7,10 +7,10 @@ import {
     t_httpmethod
 } from "../../aa/atype/a_define_enums"
 import {a_string} from '../../aa/atype/t_basic'
-import {ApiPattern, HashAliasName, PathParamMap, safePathParamValue, URLBase, URLPathError} from './base'
+import {HASH_REF_NAME, ParamsType, PathParamMap, safePathParamValue, t_api_pattern, URLBase, URLPathError} from './base'
 import {t_path_param} from '../../aa/atype/a_define'
 import {MapObject} from '../../aa/atype/a_define_interfaces'
-import SearchParams, {ParamsType} from './search_params'
+import SearchParams from './search_params'
 
 
 /**
@@ -103,6 +103,21 @@ export function splitURLHost(url: string): { host: string, path: string } {
 }
 
 /**
+ * Normalizes a base URL string by removing trailing slash
+ *
+ * @example
+ * normalizeBaseURL('https://luexu.com/api/v1/')  // 'https://luexu.com/api/v1'
+ * normalizeBaseURL('https://luexu.com/api/v1')  // 'https://luexu.com/api/v1'
+ */
+export function normalizeBaseURL(s?: string, defaultBaseURL: string = location.origin): string {
+    if (!s) {
+        return defaultBaseURL
+    }
+    const last = s.length - 1
+    return s[last] === '/' ? s.substring(0, last) : s
+}
+
+/**
  * Normalizes a URL string by converting relative paths to absolute URLs
  * based on the current browser location. Handles various URL formats.
  *
@@ -115,10 +130,11 @@ export function splitURLHost(url: string): { host: string, path: string } {
  *  normalizeURL('./user_privacy')    // https://luexu.com/about/rule/user_privacy
  *  normalizeURL('../../us')    // https://luexu.com/about/us
  */
-export function normalizeURL(rawURL: string, keepMethod: boolean = false): string {
+export function normalizeURL(rawURL: string, keepMethod: boolean = false, baseURL?: string): string {
     rawURL = rawURL ? rawURL.trim() : ''
+    baseURL = normalizeBaseURL(baseURL, location.origin)
     if (!rawURL) {
-        return location.origin
+        return baseURL
     }
 
     let {method, url} = splitURLMethod(rawURL)
@@ -127,12 +143,16 @@ export function normalizeURL(rawURL: string, keepMethod: boolean = false): strin
         return m + location.protocol + url
     }
     if (url.startsWith('/')) {
-        return m + location.origin + url
+        return m + baseURL + url
     }
     if (url.indexOf('://') > -1) {
         return m + url
     }
 
+    if (baseURL !== location.origin) {
+        return baseURL + url   // different base url, no need to relative path
+    }
+    // handle relative path
     let path = location.href.replace(location.origin, '')
     // move to current directory
     if (path.charAt(path.length - 1) !== '/') {
@@ -140,7 +160,7 @@ export function normalizeURL(rawURL: string, keepMethod: boolean = false): strin
         path = dirname
     }
     const newPath = joinPath(path, url)
-    return m + location.origin + newPath
+    return m + baseURL + newPath
 }
 
 /**
@@ -155,8 +175,11 @@ export function normalizeURL(rawURL: string, keepMethod: boolean = false): strin
  *  normalizeURLWithMethod('Get ./user_privacy')    // {method:'GET', url:'https://luexu.com/about/rule/user_privacy'}
  *  normalizeURLWithMethod('Delete ../../us')    // {method:'DELETE', url:'https://luexu.com/about/us'}
  */
-export function normalizeURLWithMethod(url: string): { method: t_httpmethod | '', url: string } {
-    url = normalizeURL(url, true)
+export function normalizeURLWithMethod(url: string, baseURL?: string): {
+    method: t_httpmethod | '',
+    url: string
+} {
+    url = normalizeURL(url, true, baseURL)
 
     if (url.indexOf(' ') <= 0) {
         return {
@@ -175,26 +198,28 @@ export function normalizeURLWithMethod(url: string): { method: t_httpmethod | ''
  *
  * @example
  * // On https://luexu.com/about/rule/user
- * joinURI('https://luexu.com', 'api', 'v1/users')    // returns 'https://luexu.com/api/v1/users'
- * joinURI('/api/', '/users/', '/1/')                   // returns 'https://luexu.com/api/users/1/'
- * joinURI('/api/v1', '../.', 'v2', 'test')                   // returns 'https://luexu.com/api/v2/test'
+ * joinURI('https://luexu.com', 'api', 'v1/users')      // returns 'https://luexu.com/api/v1/users'
+ * joinURI('/api/', '/users/', '/1/')                   // returns '/api/users/1/'
+ * joinURI('api/v1', '../.', 'v2', 'test')              // returns 'api/v2/test'
  */
-export function joinURL(base: string, ...parts: (number | string)[]): string {
-    if (!base) {
+export function joinURL(start: string, ...parts: (number | string)[]): string {
+    if (!start) {
         return ''
     }
-    const {host, path} = splitURLHost(base)
+    const {host, path} = splitURLHost(start)
     let newPath = splitPath(path, ...parts).join('/')
 
+    // Preserve heading slash if start path had one
+    if (host || path.startsWith('/')) {
+        newPath = '/' + newPath
+    }
     // Preserve trailing slash if last segment had one
     const lastSeg = parts[parts.length - 1];
     if (typeof lastSeg === 'string' && lastSeg.endsWith('/')) {
         newPath += '/'
     }
-    if (newPath) {
-        newPath = '/' + newPath
-    }
-    return normalizeURL(host + newPath)
+
+    return host + newPath
 }
 
 
@@ -209,11 +234,12 @@ export function searchParam(params: ParamsType, name: string): unknown {
 }
 
 
-export function spreadSearchParams(target: SearchParams, source: ParamsType) {
-
+export function normalizeSearchParams<T extends SearchParams = SearchParams>(target: T, source?: ParamsType): T {
     // merge SearchParams alias
     if (source instanceof SearchParams) {
         target.references.spread(source.references)
+    } else {
+        source = new SearchParams(source)
     }
     const set: string[] = []
     // Handle parameter alias, e.g. winner={max_score}&best={winner:string}
@@ -236,9 +262,7 @@ export function spreadSearchParams(target: SearchParams, source: ParamsType) {
             target.set(key, v)
         }
     }
-    if (!(source instanceof SearchParams)) {
-        source = new SearchParams(source)
-    }
+
     for (const [key, value] of source.entries()) {
         if (set.includes(key)) {
             continue
@@ -247,6 +271,7 @@ export function spreadSearchParams(target: SearchParams, source: ParamsType) {
             target.set(key, a_string(value))
         }
     }
+    return target
 }
 
 
@@ -370,12 +395,12 @@ export function splitURLSearch(urlPattern: string): URLBase {
  * revertURLPathParams('/api/{version}/users/{uid:uint64}#{hash}?work={work}', {version:'v1', uid:100n, age:10,})
  * // Returns {base:"/api/v1/users/100", hash:'', search:{age:"10", work=""}}
  */
-export function revertURLPathParams(urlPattern: ApiPattern, params: ParamsType): URLBase {
+export function revertURLPathParams(urlPattern: t_api_pattern, params: ParamsType): URLBase {
     if (!urlPattern) {
         throw new URLPathError(`url is empty`)
     }
     let {base, hash, search} = splitURLSearch(urlPattern)
-    spreadSearchParams(search, params)
+    search = normalizeSearchParams(search, params)
     let hashAlias = ''
     // Handle hash parameter {<key>} or {<key><type>}
     if (hash) {
@@ -386,7 +411,7 @@ export function revertURLPathParams(urlPattern: ApiPattern, params: ParamsType):
             if (hash) {
                 hash = '#' + hash
             }
-            search.references.set(HashAliasName, name, paramType)
+            search.references.set(HASH_REF_NAME, name, paramType)
             hashAlias = name
         }
     }

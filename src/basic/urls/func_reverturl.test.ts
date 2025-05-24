@@ -1,4 +1,4 @@
-import {HashAliasName, URLBase, URLPathError} from './base'
+import {HASH_REF_NAME, URLBase, URLPathError} from './base'
 import {describe, expect, test} from '@jest/globals'
 import {revertURLPathParams} from './func'
 import SearchParams from './search_params'
@@ -22,7 +22,7 @@ describe('revertURLPathParams', () => {
             'page': 100,
         }
         let search = new SearchParams({redirect: ''})
-        search.references = new SearchReference([[HashAliasName, ['hash', ':string']], ['redirect', ['refer', ':string']], ['win', ['top', ':bool']]])
+        search.references = new SearchReference([[HASH_REF_NAME, ['hash', ':string']], ['redirect', ['refer', ':string']], ['win', ['top', ':bool']]])
         testURLBaseAlias(revertURLPathParams(urlPattern, params), {
             base: 'https://luexu.com/api/v1/users/123/records/page/100',
             hash: '',
@@ -32,7 +32,7 @@ describe('revertURLPathParams', () => {
 
         const urlPatternWithAlias = '/api/v1/users/{uid:uint64}/records/page/{page:int}?sex={gender:uint8}&name={name}#{hash:string}'
         search = new SearchParams({name: 'Aario', sex: 1, gender: 1})
-        search.references = new SearchReference([[HashAliasName, ['hash', ':string']], ['sex', ['gender', ':uint8']]])
+        search.references = new SearchReference([[HASH_REF_NAME, ['hash', ':string']], ['sex', ['gender', ':uint8']]])
 
         testURLBaseAlias(revertURLPathParams(urlPatternWithAlias, {
             uid: 1000n,
@@ -95,14 +95,14 @@ describe('revertURLPathParams', () => {
             search: search,
         })
         search = new SearchParams({redirect: ''})
-        search.references = new SearchReference([[HashAliasName, ['hash', ':string']]])
+        search.references = new SearchReference([[HASH_REF_NAME, ['hash', ':string']]])
         testURLBaseAlias(revertURLPathParams(urlPatternComplex, {uid: 1000n, page: 1, hash: 'end'}), {
             base: '/api/v1/users/1000/records/page/1',
             hash: '#end',
             search: search,
         })
         search = new SearchParams({redirect: ''})
-        search.references = new SearchReference([[HashAliasName, ['hash', ':string']]])
+        search.references = new SearchReference([[HASH_REF_NAME, ['hash', ':string']]])
         testURLBaseAlias(revertURLPathParams(urlPatternComplex, {uid: 1000n, page: 1, hash: 'end'}), {
             base: '/api/v1/users/1000/records/page/1',
             hash: '#end',
@@ -153,7 +153,7 @@ describe('revertURLPathParams', () => {
         })
 
         search = new SearchParams({redirect: ''})
-        search.references = new SearchReference([[HashAliasName, ['hash', ':string']]])
+        search.references = new SearchReference([[HASH_REF_NAME, ['hash', ':string']]])
         testURLBaseAlias(revertURLPathParams(urlPatternComplex, new Map<string, unknown>([['uid', 1000n], ['page', 1], ['hash', 'end']])), {
             base: '/api/v1/users/1000/records/page/1',
             hash: '#end',
@@ -207,7 +207,7 @@ describe('revertURLPathParams', () => {
 
 
         search = new SearchParams({redirect: ''})
-        search.references = new SearchReference([[HashAliasName, ['hash', ':string']]])
+        search.references = new SearchReference([[HASH_REF_NAME, ['hash', ':string']]])
         testURLBaseAlias(revertURLPathParams(urlPatternComplex, new URLSearchParams('uid=1000&page=1&hash=end')), {
             base: '/api/v1/users/1000/records/page/1',
             hash: '#end',

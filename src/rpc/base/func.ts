@@ -51,3 +51,22 @@ export function generateRequestChecksum(method: t_httpmethod, url: string, body?
     }
     return `${method} ${url} {${content}}`
 }
+
+// export interface RequestOptions {
+//     method?: t_httpmethod
+//     baseURL?: string
+//      url
+//     headers?: MapObject<string>
+//     params?: ParamsType
+//     data?: MapObject | FormData
+//     body?: string
+//     timeout?: number
+//     withCredentials?: boolean
+// }
+
+
+// export function normalizeRequestOptions(apiPattern: t_api_pattern, opts: RequestOptions): NormalizedRequestOptions {
+//
+//     return {}
+//
+// }

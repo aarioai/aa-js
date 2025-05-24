@@ -125,8 +125,8 @@ describe('url func with mock location', () => {
 
     test('joinURL', () => {
         expect(joinURL('https://luexu.com', 'api', 'v1/users')).toBe('https://luexu.com/api/v1/users')
-        expect(joinURL('/api/', '/users/', '/1/')).toBe('https://luexu.com/api/users/1/')
-        expect(joinURL('/api/v1', '../.', 'v2', 'test')).toBe('https://luexu.com/api/v2/test')
+        expect(joinURL('/api/', '/users/', '/1/')).toBe('/api/users/1/')
+        expect(joinURL('api/v1', '../.', 'v2', 'test')).toBe('api/v2/test')
     })
 })
 

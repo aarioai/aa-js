@@ -1,0 +1,1 @@
+export type t_credentials = 'omit' | 'same-origin' | 'include'// omit 不发送cookie；same-origin 仅同源发送cookie；include 发送cookie
