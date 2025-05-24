@@ -2,6 +2,7 @@ import {a_booln, a_string, int16, int32, int64b, int8, uint16, uint32, uint64b, 
 import {t_path_param} from '../../aa/atype/a_define'
 import SearchParams from './search_params'
 import {AnyMap, MapObject} from '../../aa/atype/a_define_interfaces'
+import {t_httpmethod} from '../../aa/atype/a_define_enums'
 
 export type URLBase = {
     base: string,
@@ -40,6 +41,7 @@ export function NewChangeReferrerError(referer: string, reference: string): Erro
 
 
 export interface URLOptions {
+    method?: t_httpmethod,
     baseURL?: string
     params?: ParamsType,
     hash?: string

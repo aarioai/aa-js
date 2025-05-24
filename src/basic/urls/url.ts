@@ -48,7 +48,7 @@ import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
 
 export default class AaURL {
     name = 'aa-url'
-    method: t_httpmethod | ''
+    method: t_httpmethod   // can be null
     searchParams: SearchParams   // as URL interface
     sortFunc: SortFunc = ASCEND
     tidy: boolean = true  // remove empty string value parameter, e.g. a=&b=10
@@ -71,11 +71,13 @@ export default class AaURL {
      * iris path parameter routing URL,   path parameters with format {<key>:<type>} or {<key>}
      *          e.g. /api/v1/users/{uid:uint64}/logs/page/{page}?param=value       // <url>
      *          e.g. GET https://luexu.com/api/v1/users/{uid:uint64}   // <http_method> <url>
+     *
+     * method priority: url pattern > options
      */
     constructor(urlPattern: t_api_pattern, options?: URLOptions) {
         const {method, url} = normalizeURLWithMethod(urlPattern, options?.baseURL)
         const u = new URL(url)
-        this.method = method
+        this.method = method ? method : (options?.method ? options.method : null)
         this.#protocol = u.protocol
         this.#hostname = u.hostname
         this.#port = u.port ? uint16(u.port) : 0

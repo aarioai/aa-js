@@ -1,4 +1,7 @@
 import {t_httpmethod} from '../../aa/atype/a_define_enums'
+import {t_api_pattern} from '../../basic/urls/base'
+import {NormalizedRequestOptions, RequestOptions} from './define_interfaces'
+import AaURL from '../../basic/urls/url'
 
 function fileChecksum(file: File): string {
     const {size, type, lastModified, name, webkitRelativePath} = file
@@ -52,21 +55,32 @@ export function generateRequestChecksum(method: t_httpmethod, url: string, body?
     return `${method} ${url} {${content}}`
 }
 
-// export interface RequestOptions {
-//     method?: t_httpmethod
-//     baseURL?: string
-//      url
-//     headers?: MapObject<string>
-//     params?: ParamsType
-//     data?: MapObject | FormData
-//     body?: string
-//     timeout?: number
-//     withCredentials?: boolean
-// }
 
+// Determines the base URL for API requests based on priority: options > defaults > location.origin
+export function getBaseURL(opts: RequestOptions): string {
+    if (opts?.baseURL) {
+        return opts.baseURL
+    }
+    if (defaults.baseURL) {
+        return defaults.baseURL
+    }
+    return location.origin
+}
 
-// export function normalizeRequestOptions(apiPattern: t_api_pattern, opts: RequestOptions): NormalizedRequestOptions {
-//
-//     return {}
-//
-// }
+export function normalizeRequestOptions(apiPattern: t_api_pattern, opts: RequestOptions): NormalizedRequestOptions {
+    const url = new AaURL(apiPattern, {
+        method: opts?.method,
+        baseURL: getBaseURL(opts),
+        params: opts?.params,
+    })
+    return {
+        method: url.method,
+        url: url.toString(),
+        headers: opts?.headers ?? null,
+        params: url.searchParams,
+        data: opts?.data ?? null,
+        body: opts?.body ?? null,
+        timeout: opts?.timeout ?? 0,
+        credentials: opts?.credentials ?? null,
+    }
+}
