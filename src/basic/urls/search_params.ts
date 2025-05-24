@@ -1,12 +1,13 @@
 import {deepEncodeURI, parseURLSearch} from './func'
-import {AnyMap, Callback, MapObject} from '../../aa/atype/a_define_complex'
+import {AnyMap, Callback, MapObject} from '../../aa/atype/a_define_interfaces'
 import {a_bool, a_string} from '../../aa/atype/t_basic'
-import {Ascend, Break} from '../../aa/atype/const'
-import {SortFunc, t_bool} from '../../aa/atype/a_define'
-import {P_Stringify} from '../../aa/env/const_param'
-import {False, True} from '../../aa/atype/const_server'
+import {FALSE, TRUE} from '../../aa/atype/a_server_consts'
 import {HashAliasName, safePathParamValue} from './base'
 import {SearchReference} from './search_reference'
+import {P_Stringify} from '../../aa/aconfig/const_param'
+import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
+import {t_bool} from '../../aa/atype/a_define'
+import {BREAK} from '../../aa/atype/a_define_enums'
 
 export type SearchParamsAcceptType = string | URLSearchParams | MapObject | AnyMap
 export type ParamsType = SearchParamsAcceptType | SearchParams
@@ -25,12 +26,12 @@ export function NewChangeReferrerError(referer: string, reference: string): Erro
 export class SearchParams {
     params: MapObject<string> = {}   // Disable arrays, e.g.  a[]=100&a[]=200 is not allowed
     references: SearchReference = new SearchReference()
-    sortFunc: SortFunc = Ascend
+    sortFunc: SortFunc = ASCEND
     tidy: boolean = true
     encode: (s: string) => string = deepEncodeURI
 
     constructor(searchString?: SearchParamsAcceptType) {
-        this.params[P_Stringify] = String(True)
+        this.params[P_Stringify] = String(TRUE)
         if (searchString) {
             this.setMany(searchString)
         }
@@ -47,7 +48,7 @@ export class SearchParams {
     set xStringify(value: t_bool) {
         const v = a_bool(value)
         if (v) {
-            this.set(P_Stringify, String(True))
+            this.set(P_Stringify, String(TRUE))
         } else {
             this.delete(P_Stringify)
         }
@@ -69,7 +70,7 @@ export class SearchParams {
             callback = callback.bind(thisArg)
         }
         for (const [key, value] of this.entries()) {
-            if (callback(value, key) === Break) {
+            if (callback(value, key) === BREAK) {
                 break
             }
         }
@@ -122,7 +123,7 @@ export class SearchParams {
 
     set(name: string, value: unknown) {
         const v = a_string(value)
-        if (name == P_Stringify && v === String(False)) {
+        if (name == P_Stringify && v === String(FALSE)) {
             this.delete(name)
             return
         }
@@ -199,7 +200,7 @@ export class SearchParams {
      *  sort(Descend)  // Descend sort
      */
     sort(sortFunc?: SortFunc): SearchParams {
-        this.sortFunc = sortFunc || sortFunc === null ? sortFunc : Ascend
+        this.sortFunc = sortFunc || sortFunc === null ? sortFunc : ASCEND
         return this
     }
 

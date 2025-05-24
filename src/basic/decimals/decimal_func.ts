@@ -1,5 +1,5 @@
 import {Decimal} from "./decimal";
-import {DecimalMultiplicand} from "../../aa/atype/const_server";
+import {X_DECIMAL} from "../../aa/atype/a_server_consts";
 
 
 /**
@@ -10,7 +10,7 @@ export function addX(addend: number, ...adders: number[]): Decimal {
     for (const adder of adders) {
         v += adder
     }
-    return new Decimal(BigInt(v) * DecimalMultiplicand)
+    return new Decimal(BigInt(v) * X_DECIMAL)
 }
 
 export function minusX(minuend: number, ...subtrahends: number[]): Decimal {
@@ -18,11 +18,11 @@ export function minusX(minuend: number, ...subtrahends: number[]): Decimal {
     for (const sub of subtrahends) {
         v -= sub
     }
-    return new Decimal(BigInt(v) * DecimalMultiplicand)
+    return new Decimal(BigInt(v) * X_DECIMAL)
 }
 
 export function multiplyX(multiplicand: number, ...multipliers: number[]): Decimal {
-    let v = BigInt(multiplicand) * DecimalMultiplicand
+    let v = BigInt(multiplicand) * X_DECIMAL
     for (const m of multipliers) {
         v *= BigInt(m)
     }
@@ -33,7 +33,7 @@ export function multiplyX(multiplicand: number, ...multipliers: number[]): Decim
  * New a Decimal by performing precise division of real numbers
  */
 export function divideX(dividend: number, ...divisors: number[]): Decimal {
-    let v = BigInt(dividend) * DecimalMultiplicand
+    let v = BigInt(dividend) * X_DECIMAL
     for (const divisor of divisors) {
         v /= BigInt(divisor)
     }

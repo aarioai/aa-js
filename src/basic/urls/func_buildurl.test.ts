@@ -1,6 +1,6 @@
 import {describe} from '@jest/globals'
 import {buildURL, revertURLPathParams} from './func'
-import {Descend} from '../../aa/atype/const'
+import {DESCEND} from '../../aa/atype/a_define_funcs'
 
 describe('buildURL', () => {
     test('buildURL simple', () => {
@@ -35,7 +35,7 @@ describe('buildURL', () => {
         search.tidy = false
         expect(buildURL(base, hash, search)).toBe('https://luexu.com/api/v1/users/123/records/page/100?age=18&name=Aario&redirect=&refer=&x-stringify=1&zig=zag')
         search.tidy = true
-        search.sort(Descend)
+        search.sort(DESCEND)
         expect(buildURL(base, hash, search)).toBe('https://luexu.com/api/v1/users/123/records/page/100?zig=zag&x-stringify=1&name=Aario&age=18')
         search.tidy = false
         expect(buildURL(base, hash, search)).toBe('https://luexu.com/api/v1/users/123/records/page/100?zig=zag&x-stringify=1&refer=&redirect=&name=Aario&age=18')

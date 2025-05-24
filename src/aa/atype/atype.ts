@@ -38,7 +38,7 @@ export type Atype =
     | ':regexp'
     | ':undefined'
 
-export const TypeAlias = {
+export const TYPES_ALIAS = {
     ':array': 'a',
     ':bigint': 'i',
     ':boolean': 'b',
@@ -60,7 +60,7 @@ export const TypeAlias = {
 
 
 export function atypeAlias(value: unknown): string | unknown {
-    return TypeAlias[atype(value)]
+    return TYPES_ALIAS[atype(value)]
 }
 
 export function objectAtype(v: object): Atype {

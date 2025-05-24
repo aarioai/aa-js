@@ -1,7 +1,5 @@
-import {t_path_param} from '../../aa/atype/a_define_server'
-import {PathParamString} from '../../aa/atype/const_server'
-import {LoopSignal} from '../../aa/atype/a_define'
-import {Break} from '../../aa/atype/const'
+import {t_path_param} from '../../aa/atype/a_define'
+import {BREAK, PathParamString, t_loopsignal} from '../../aa/atype/a_define_enums'
 
 export class SearchReference {
     data: Map<string, [string, t_path_param]>
@@ -55,7 +53,7 @@ export class SearchReference {
     }
 
 
-    forEach(callback: (ref: string, type: t_path_param, key: string) => LoopSignal, thisArg?: any) {
+    forEach(callback: (ref: string, type: t_path_param, key: string) => t_loopsignal, thisArg?: any) {
         const forEach = this.data.forEach
         if (thisArg) {
             forEach.bind(thisArg)
@@ -65,7 +63,7 @@ export class SearchReference {
             if (stop) {
                 return
             }
-            if (callback(value[0], value[1], key) === Break) {
+            if (callback(value[0], value[1], key) === BREAK) {
                 stop = true
             }
         })

@@ -1,5 +1,5 @@
 import {Percent} from "./percent";
-import {PercentMultiplicand} from "../../aa/atype/const_server";
+import {PERCENT_X} from "../../aa/atype/a_server_consts";
 
 /**
  * Instances Percent by performing precise add of real numbers
@@ -9,7 +9,7 @@ export function percentAddX(addend: number, ...adders: number[]): Percent {
     for (const adder of adders) {
         v += adder
     }
-    return new Percent(v * PercentMultiplicand)
+    return new Percent(v * PERCENT_X)
 }
 
 export function percentMinusX(minuend: number, ...subtrahends: number[]): Percent {
@@ -17,11 +17,11 @@ export function percentMinusX(minuend: number, ...subtrahends: number[]): Percen
     for (const sub of subtrahends) {
         v -= sub
     }
-    return new Percent(v * PercentMultiplicand)
+    return new Percent(v * PERCENT_X)
 }
 
 export function percentMultiplyX(multiplicand: number, ...multipliers: number[]): Percent {
-    let v = multiplicand * PercentMultiplicand
+    let v = multiplicand * PERCENT_X
     for (const m of multipliers) {
         v *= m
     }
@@ -32,7 +32,7 @@ export function percentMultiplyX(multiplicand: number, ...multipliers: number[])
  * Instances Percent by performing precise division of real numbers
  */
 export function percentDivideX(dividend: number, ...divisors: number[]): Percent {
-    let v = dividend * PercentMultiplicand
+    let v = dividend * PERCENT_X
     for (const divisor of divisors) {
         v /= divisor
     }

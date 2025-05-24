@@ -1,4 +1,4 @@
-import {KB} from "../aa/atype/const_unit";
+import {KB} from "../aa/atype/a_define_units";
 
 /**
  * Format bytes to B/KB/MB/GB/TB/PB/EB/ZB/YB

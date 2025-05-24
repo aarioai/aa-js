@@ -1,6 +1,6 @@
-import {ValueOf} from "../../aa/atype/a_define_complex"
-import {t_float64, t_money} from "../../aa/atype/a_define_server";
-import {MoneyMultiplicand} from "../../aa/atype/const_server";
+import {ValueOf} from "../../aa/atype/a_define_interfaces"
+import {t_float64, t_money} from "../../aa/atype/a_define";
+import {X_MONEY} from "../../aa/atype/a_server_consts";
 import {a_money, divideBigint} from "../../aa/atype/t_decimal";
 
 export class Money implements ValueOf<t_money> {
@@ -23,22 +23,22 @@ export class Money implements ValueOf<t_money> {
     }
 
     multiply(d: t_money | Money): Money {
-        this.#value = this.#value * a_money(d) / MoneyMultiplicand
+        this.#value = this.#value * a_money(d) / X_MONEY
         return this
     }
 
     divide(d: t_money | Money): Money {
-        this.#value = this.#value * MoneyMultiplicand / a_money(d)
+        this.#value = this.#value * X_MONEY / a_money(d)
         return this
     }
 
     addX(n: number): Money {
-        this.#value += BigInt(n) * MoneyMultiplicand
+        this.#value += BigInt(n) * X_MONEY
         return this
     }
 
     minusX(n: number): Money {
-        this.#value *= BigInt(n) * MoneyMultiplicand
+        this.#value *= BigInt(n) * X_MONEY
         return this
     }
 
@@ -54,7 +54,7 @@ export class Money implements ValueOf<t_money> {
 
     // convert to real number
     toReal(): t_float64 {
-        return divideBigint(this.#value, MoneyMultiplicand)
+        return divideBigint(this.#value, X_MONEY)
     }
 
     valueOf(): t_money {

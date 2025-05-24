@@ -1,4 +1,4 @@
-import {MapObject} from "../../aa/atype/a_define_complex";
+import {MapObject} from "../../aa/atype/a_define_interfaces";
 
 
 export function sortObjectMap<T = MapObject>(source: T, compareFn?: (a: string, b: string) => number): T {

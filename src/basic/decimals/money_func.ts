@@ -1,5 +1,5 @@
 import {Money} from "./money";
-import {MoneyMultiplicand} from "../../aa/atype/const_server";
+import {X_MONEY} from "../../aa/atype/a_server_consts";
 
 /**
  * Instances by performing precise add of real numbers
@@ -9,7 +9,7 @@ export function moneyAddX(addend: number, ...adders: number[]): Money {
     for (const adder of adders) {
         v += adder
     }
-    return new Money(BigInt(v) * MoneyMultiplicand)
+    return new Money(BigInt(v) * X_MONEY)
 }
 
 export function moneyMinusX(minuend: number, ...subtrahends: number[]): Money {
@@ -17,11 +17,11 @@ export function moneyMinusX(minuend: number, ...subtrahends: number[]): Money {
     for (const sub of subtrahends) {
         v -= sub
     }
-    return new Money(BigInt(v) * MoneyMultiplicand)
+    return new Money(BigInt(v) * X_MONEY)
 }
 
 export function moneyMultiplyX(multiplicand: number, ...multipliers: number[]): Money {
-    let v = BigInt(multiplicand) * MoneyMultiplicand
+    let v = BigInt(multiplicand) * X_MONEY
     for (const m of multipliers) {
         v *= BigInt(m)
     }
@@ -32,7 +32,7 @@ export function moneyMultiplyX(multiplicand: number, ...multipliers: number[]): 
  * Instances Money by performing precise division of real numbers
  */
 export function moneyDivideX(dividend: number, ...divisors: number[]): Money {
-    let v = BigInt(dividend) * MoneyMultiplicand
+    let v = BigInt(dividend) * X_MONEY
     for (const divisor of divisors) {
         v /= BigInt(divisor)
     }

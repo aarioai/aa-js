@@ -1,4 +1,5 @@
-import {t_millisecond} from './a_define_server'
+import {t_millisecond} from './a_define'
+
 
 export const Millisecond: t_millisecond = 1
 export const Second: t_millisecond = 1000
@@ -35,6 +36,5 @@ export const MYuan = MDollar
 export const YiiYuan = 10000 * WanYuan
 
 
-export const PercentMultiplicand = 10000
 export const Percent = 100.0  // %
 export const Thousandth = 10.0 // ‰

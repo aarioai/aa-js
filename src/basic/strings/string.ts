@@ -1,5 +1,5 @@
 import {shuffle} from "../arrays/array";
-import {AlphaDigits} from '../../aa/atype/const'
+import {ALPHA_DIGITS} from '../../aa/atype/a_define_consts'
 
 export function shuffleString(s: string): string {
     return shuffle(s.split('')).join('')
@@ -12,7 +12,7 @@ export function shuffleString(s: string): string {
  * randomString(8) // "xY7pQ2aK"
  * randomString(16, "abc123") // "2a1b3c2a1b3c2a1b"
  */
-export function randomString(length: number, base: string = AlphaDigits): string {
+export function randomString(length: number, base: string = ALPHA_DIGITS): string {
     base = shuffleString(base)
     const baseLen = base.length
     const rand = new Uint32Array(length)

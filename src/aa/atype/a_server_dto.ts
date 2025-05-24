@@ -1,4 +1,4 @@
-import {t_float64, t_uint, t_uint16, t_uint8, t_versiontag} from './a_define_server'
+import {t_float64, t_uint, t_uint16, t_uint8, t_versiontag} from './a_define'
 
 export type ResponseBody = {
     code: number,

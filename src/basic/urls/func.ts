@@ -1,10 +1,15 @@
-import {joinPath, parseBaseName, splitPath} from "../strings/path_func";
-import {HttpMethods, t_httpmethod} from "../../aa/atype/a_define";
+import {joinPath, parseBaseName, splitPath} from "../strings/path_func"
+import {
+    HTTP_METHODS,
+    PATH_PARAM_TEST_REGEXP,
+    PATH_PARAMS_REGEXP,
+    PathParamString,
+    t_httpmethod
+} from "../../aa/atype/a_define_enums"
 import {a_string} from '../../aa/atype/t_basic'
 import {HashAliasName, ParamPattern, PathParamMap, safePathParamValue, URLBase, URLPathError} from './base'
-import {PathParamsMatchesRegex, PathParamString, PathParamTestRegexp} from '../../aa/atype/const_server'
-import {t_path_param} from '../../aa/atype/a_define_server'
-import {MapObject} from '../../aa/atype/a_define_complex'
+import {t_path_param} from '../../aa/atype/a_define'
+import {MapObject} from '../../aa/atype/a_define_interfaces'
 import {ParamsType, SearchParams} from './search_params'
 
 
@@ -56,7 +61,7 @@ export function splitURLMethod(url: string): { method: t_httpmethod | '', url: s
         return {method: '', url: url}
     }
     const uppercaseMethod = url.slice(0, spaceIndex).toUpperCase() as t_httpmethod
-    if (!HttpMethods.includes(uppercaseMethod)) {
+    if (!HTTP_METHODS.includes(uppercaseMethod)) {
         return {method: '', url: url}
     }
     return {
@@ -216,7 +221,7 @@ export function spreadSearchParams(target: SearchParams, source: ParamsType) {
         if (!value || value.length < 3) {
             continue   // pattern requires at least 3 chars (e.g. {x})
         }
-        const match = value.match(PathParamTestRegexp)
+        const match = value.match(PATH_PARAM_TEST_REGEXP)
         if (!match) {
             continue
         }
@@ -374,7 +379,7 @@ export function revertURLPathParams(urlPattern: ParamPattern, params: ParamsType
     let hashAlias = ''
     // Handle hash parameter {<key>} or {<key><type>}
     if (hash) {
-        const match = hash.slice(1).match(PathParamTestRegexp)
+        const match = hash.slice(1).match(PATH_PARAM_TEST_REGEXP)
         if (match) {
             const [, , name, paramType,] = match
             hash = safePathParamValue(search.get(name), paramType)
@@ -390,7 +395,7 @@ export function revertURLPathParams(urlPattern: ParamPattern, params: ParamsType
     const pathParams: PathParamMap = new Map<string, t_path_param>()
 
     // Handle base parameter {<key>} or {<key><type>}
-    const matches = base.matchAll(PathParamsMatchesRegex)
+    const matches = base.matchAll(PATH_PARAMS_REGEXP)
     for (const match of matches) {
         const [pattern, , name, paramType,] = match
         let type = paramType ? paramType : PathParamString

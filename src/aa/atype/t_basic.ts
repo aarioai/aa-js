@@ -1,24 +1,20 @@
 import {
-    False,
-    MaxInt16,
-    MaxInt24,
-    MaxInt32,
-    MaxInt8,
-    MaxUint16,
-    MaxUint24,
-    MaxUint32,
-    MaxUint8,
-    MinInt16,
-    MinInt24,
-    MinInt32,
-    MinInt8,
-    True
-} from "./const_server";
-import {jsonify} from "../base/base";
+    FALSE,
+    MAX_INT16,
+    MAX_INT24,
+    MAX_INT32,
+    MAX_INT8,
+    MAX_UINT16,
+    MAX_UINT24,
+    MAX_UINT32,
+    MAX_UINT8,
+    MIN_INT16,
+    MIN_INT24,
+    MIN_INT32,
+    MIN_INT8,
+    TRUE
+} from "./a_server_consts";
 import {Panic} from "./panic";
-import {t_numeric, t_safeint,} from "./a_define";
-import {MapObject} from './a_define_complex'
-import {typeArray} from './func'
 import {
     t_booln,
     t_char,
@@ -27,13 +23,19 @@ import {
     t_int32,
     t_int64b,
     t_int8,
+    t_numeric,
+    t_safeint,
     t_uint16,
     t_uint24,
     t_uint32,
     t_uint64b,
-    t_uint8
-} from './a_define_server'
-import {Nif} from './const'
+    t_uint8,
+} from "./a_define";
+import {MapObject} from './a_define_interfaces'
+import {typeArray} from './func'
+
+import json from './json'
+import {NIF} from './a_define_funcs'
 
 function inRange(value: number, min: number, max: number, name: string): number {
     if ((typeof min !== 'undefined' && value < min) || (typeof max !== 'undefined' && value > max)) {
@@ -66,7 +68,7 @@ export function a_array<T = unknown>(value: object | unknown[] | null | undefine
 }
 
 export function a_func(value: Function | undefined | null) {
-    return typeof value === "function" ? value : Nif
+    return typeof value === "function" ? value : NIF
 }
 
 export function record<T = unknown>(key: string, value: T): MapObject<T> {
@@ -98,7 +100,7 @@ export function a_number(v?: t_numeric | boolean): number {
         case 'number':
             return isNaN(v) ? 0 : v
         case 'boolean':
-            return v ? True : False
+            return v ? TRUE : FALSE
         default:
             const num = Number(v)
             return isNaN(num) ? 0 : num
@@ -125,7 +127,7 @@ export function a_number(v?: t_numeric | boolean): number {
 export function a_string(value: unknown): string {
     switch (typeof value) {
         case 'boolean':
-            return value ? String(True) : String(False)
+            return value ? String(TRUE) : String(FALSE)
         case 'string':
             return value
         case 'number':
@@ -163,7 +165,7 @@ export function a_string(value: unknown): string {
         }
     }
 
-    const j = typeof value === 'object' ? jsonify(value) : ''
+    const j = typeof value === 'object' ? json.Marshal(value) : ''
     return j ? j : String(value)
 }
 
@@ -208,7 +210,7 @@ export function a_bool(value: boolean | number | bigint | string | undefined | n
 }
 
 export function a_booln(value: boolean | number | bigint | string | undefined | null): t_booln {
-    return a_bool(value) ? True : False
+    return a_bool(value) ? TRUE : FALSE
 }
 
 
@@ -234,19 +236,19 @@ export function safeInt(v?: t_numeric): t_safeint {
 }
 
 export function int32(v?: t_numeric): t_int32 {
-    return inRange(safeInt(v), MinInt32, MaxInt32, 'int32')
+    return inRange(safeInt(v), MIN_INT32, MAX_INT32, 'int32')
 }
 
 export function int24(v?: t_numeric): t_int24 {
-    return inRange(safeInt(v), MinInt24, MaxInt24, 'int24')
+    return inRange(safeInt(v), MIN_INT24, MAX_INT24, 'int24')
 }
 
 export function int16(v?: t_numeric): t_int16 {
-    return inRange(safeInt(v), MinInt16, MaxInt16, 'int16')
+    return inRange(safeInt(v), MIN_INT16, MAX_INT16, 'int16')
 }
 
 export function int8(v?: t_numeric): t_int8 {
-    return inRange(safeInt(v), MinInt8, MaxInt8, 'int8')
+    return inRange(safeInt(v), MIN_INT8, MAX_INT8, 'int8')
 }
 
 export function uint64b(v?: t_numeric): t_uint64b {
@@ -254,17 +256,17 @@ export function uint64b(v?: t_numeric): t_uint64b {
 }
 
 export function uint32(v?: t_numeric): t_uint32 {
-    return inRange(safeInt(v), 0, MaxUint32, 'uint32')
+    return inRange(safeInt(v), 0, MAX_UINT32, 'uint32')
 }
 
 export function uint24(v?: t_numeric): t_uint24 {
-    return inRange(safeInt(v), 0, MaxUint24, 'uint24')
+    return inRange(safeInt(v), 0, MAX_UINT24, 'uint24')
 }
 
 export function uint16(v?: t_numeric): t_uint16 {
-    return inRange(safeInt(v), 0, MaxUint16, 'uint16')
+    return inRange(safeInt(v), 0, MAX_UINT16, 'uint16')
 }
 
 export function uint8(v?: number): t_uint8 {
-    return inRange(safeInt(v), 0, MaxUint8, 'uint8')
+    return inRange(safeInt(v), 0, MAX_UINT8, 'uint8')
 }

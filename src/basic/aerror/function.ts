@@ -1,7 +1,7 @@
 import {AError} from "./error";
 import {E_ClientThrow} from "./code";
 import {MissingResponseBody, ParseResponseBodyFailed} from "./error_standard";
-import {ResponseBody} from '../../aa/atype/a_define_server_dto'
+import {ResponseBody} from '../../aa/atype/a_server_dto'
 
 export function aerror(e: number | string | Error | AError, msg?: string): AError {
     if (e instanceof AError) {

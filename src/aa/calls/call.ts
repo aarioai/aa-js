@@ -1,5 +1,5 @@
-import {Second} from "../atype/const_unit";
-import {Break} from "../atype/const";
+import {Second} from "../atype/a_define_units";
+import {BREAK} from '../atype/a_define_enums'
 import {formatArguments} from "../format/format";
 
 /**
@@ -32,7 +32,7 @@ export function once(ready: () => boolean, run: () => void, interval: number, re
  * Run forever
  */
 function forever(run: (i: number) => unknown, interval: number, i: number = 0) {
-    if (run(i) === Break) {
+    if (run(i) === BREAK) {
         return
     }
     setTimeout(() => {

@@ -1,4 +1,35 @@
 import {mapobject_t, node_t, nodelist_t, objectAtype} from './atype'
+import {APX_MAX_SAFE_INT_LEN} from './a_define_consts'
+
+
+/**
+ * Checks if a string represents an integer within the conservative safe range
+ * [-9000999999999999, 9000999999999999], which is slightly smaller than
+ * JavaScript's MAX_SAFE_INTEGER for additional safety margin.
+ */
+export function isSafeInt(source: string): boolean {
+    let length = source.length
+    // Fast path for most common cases
+    if (length < APX_MAX_SAFE_INT_LEN) {
+        return true
+    }
+    let i = 0
+    // Remove negative sign
+    if (source.startsWith('-')) {
+        length--
+        i++
+    }
+    if (length < APX_MAX_SAFE_INT_LEN) {
+        return true
+    }
+    if (length > APX_MAX_SAFE_INT_LEN) {
+        return false
+    }
+    if (source[i] < '9') {
+        return true
+    }
+    return source[i + 1] === '0' && source[i + 2] === '0' && source[i + 3] === '0'  // 9000xxxxxxxxxxxx
+}
 
 export function isIterable<T>(value: unknown): value is Iterable<T> {
     if (!value) {

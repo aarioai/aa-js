@@ -1,4 +1,4 @@
-import {ZeroValues} from "../../aa/atype/const_server";
+import {ZERO_VALUES} from "../../aa/atype/a_server_consts";
 
 /**
  * Sets a property on an object if the property doesn't exist or matches an excluded value.
@@ -43,6 +43,6 @@ export function setNX<T extends object, K extends keyof unknown>(target: T, key:
 
 
 export function setNotZero<T extends object, K extends keyof unknown>(target: T, key: K, value: unknown): T {
-    return setNX(target, key, value, ZeroValues)
+    return setNX(target, key, value, ZERO_VALUES)
 }
 

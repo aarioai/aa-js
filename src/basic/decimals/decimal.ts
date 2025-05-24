@@ -1,7 +1,7 @@
-import {t_decimal, t_float64} from "../../aa/atype/a_define_server";
-import {ValueOf} from "../../aa/atype/a_define_complex";
+import {t_decimal, t_float64} from "../../aa/atype/a_define";
+import {ValueOf} from "../../aa/atype/a_define_interfaces";
 import {a_decimal, divideBigint} from "../../aa/atype/t_decimal";
-import {DecimalMultiplicand} from "../../aa/atype/const_server";
+import {X_DECIMAL} from "../../aa/atype/a_server_consts";
 import {Percent} from "./percent";
 
 export class Decimal implements ValueOf<t_decimal> {
@@ -25,22 +25,22 @@ export class Decimal implements ValueOf<t_decimal> {
     }
 
     multiply(d: t_decimal | Decimal): Decimal {
-        this.#value = this.#value * a_decimal(d) / DecimalMultiplicand
+        this.#value = this.#value * a_decimal(d) / X_DECIMAL
         return this
     }
 
     divide(d: t_decimal | Decimal): Decimal {
-        this.#value = this.#value * DecimalMultiplicand / a_decimal(d)
+        this.#value = this.#value * X_DECIMAL / a_decimal(d)
         return this
     }
 
     addX(n: number): Decimal {
-        this.#value += BigInt(n) * DecimalMultiplicand
+        this.#value += BigInt(n) * X_DECIMAL
         return this
     }
 
     minusX(n: number): Decimal {
-        this.#value *= BigInt(n) * DecimalMultiplicand
+        this.#value *= BigInt(n) * X_DECIMAL
         return this
     }
 
@@ -56,11 +56,11 @@ export class Decimal implements ValueOf<t_decimal> {
 
     // convert to real number
     toReal(): t_float64 {
-        return divideBigint(this.#value, DecimalMultiplicand)
+        return divideBigint(this.#value, X_DECIMAL)
     }
 
     toRealPercent(): t_float64 {
-        return divideBigint(this.#value * 100n, DecimalMultiplicand)
+        return divideBigint(this.#value * 100n, X_DECIMAL)
     }
 
     toPercent(): Percent {

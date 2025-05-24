@@ -3,7 +3,7 @@ import {code2msg} from "./code2msg";
 import {language, matchLanguage} from "../../aa/translate/language";
 import {AErrorDictionaries} from "./dictionaries";
 import {translate} from "../../aa/translate/dictionary";
-import {LF} from "../../aa/atype/const";
+import {LF} from "../../aa/atype/a_define_consts";
 import {t_numeric} from '../../aa/atype/a_define'
 import {a_number} from '../../aa/atype/t_basic'
 

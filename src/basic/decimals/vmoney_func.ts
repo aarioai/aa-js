@@ -1,5 +1,5 @@
 import {VMoney} from "./vmoney";
-import {VMoneyMultiplicand} from "../../aa/atype/const_server";
+import {X_VMONEY} from "../../aa/atype/a_server_consts";
 
 /**
  * Instances VMoney by performing precise add of real numbers
@@ -9,7 +9,7 @@ export function vmoneyAddX(addend: number, ...adders: number[]): VMoney {
     for (const adder of adders) {
         v += adder
     }
-    return new VMoney(BigInt(v) * VMoneyMultiplicand)
+    return new VMoney(BigInt(v) * X_VMONEY)
 }
 
 export function vmoneyMinusX(minuend: number, ...subtrahends: number[]): VMoney {
@@ -17,11 +17,11 @@ export function vmoneyMinusX(minuend: number, ...subtrahends: number[]): VMoney 
     for (const sub of subtrahends) {
         v -= sub
     }
-    return new VMoney(BigInt(v) * VMoneyMultiplicand)
+    return new VMoney(BigInt(v) * X_VMONEY)
 }
 
 export function vmoneyMultiplyX(multiplicand: number, ...multipliers: number[]): VMoney {
-    let v = BigInt(multiplicand) * VMoneyMultiplicand
+    let v = BigInt(multiplicand) * X_VMONEY
     for (const m of multipliers) {
         v *= BigInt(m)
     }
@@ -32,7 +32,7 @@ export function vmoneyMultiplyX(multiplicand: number, ...multipliers: number[]):
  * Instances VMoney by performing precise division of real numbers
  */
 export function vmoneyDivideX(dividend: number, ...divisors: number[]): VMoney {
-    let v = BigInt(dividend) * VMoneyMultiplicand
+    let v = BigInt(dividend) * X_VMONEY
     for (const divisor of divisors) {
         v /= BigInt(divisor)
     }

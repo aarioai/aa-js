@@ -1,6 +1,8 @@
 import {Debugger} from "./debugger";
 
-export const AConfig = {
+const AConfig = {
     timezone: 'Asia/Shanghai',
     debugger: new Debugger(),
 }
+
+export default AConfig

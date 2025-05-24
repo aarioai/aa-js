@@ -1,6 +1,6 @@
 import {describe, expect, test} from '@jest/globals';
 import {a_array, a_bool, a_func, a_maps, a_number, a_string, floatToInt, uint16, uint8} from "./t_basic";
-import {False} from './const_server'
+import {FALSE} from './a_server_consts'
 
 describe('a_array', () => {
     test('a_array null', () => {
@@ -103,7 +103,7 @@ describe('a_string', () => {
         expect(a_string(undefined)).toBe('')
     })
     test('a_string false', () => {
-        expect(a_string(false)).toBe(String(False))
+        expect(a_string(false)).toBe(String(FALSE))
     })
     test('a_string 1n', () => {
         expect(a_string(1n)).toBe('1')

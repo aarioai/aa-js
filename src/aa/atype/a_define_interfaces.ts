@@ -1,10 +1,10 @@
-import {LoopSignal} from './a_define'
+import {t_loopsignal} from './a_define_enums'
 
 export type MapObject<T = unknown> = Record<string, T>  // same as {[key:string]:T
 export type StringMap = Map<string, string>
 export type AnyMap = Map<string, unknown>
 
-export type Callback<V = unknown, K = unknown> = (value: V, key: K) => void | LoopSignal
+export type Callback<V = unknown, K = unknown> = (value: V, key: K) => void | t_loopsignal
 
 export interface ValueOf<T = number> {
     valueOf(): T

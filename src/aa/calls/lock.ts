@@ -1,4 +1,4 @@
-import {Second} from "../atype/const_unit";
+import {Second} from "../atype/a_define_units";
 
 let _aaLockIncr_ = 0
 const defaultAaLockTimeout = 5 * Second

@@ -1,5 +1,5 @@
 import {a_booln, a_string, int16, int32, int64b, int8, uint16, uint32, uint64b, uint8} from '../../aa/atype/t_basic'
-import {t_path_param} from '../../aa/atype/a_define_server'
+import {t_path_param} from '../../aa/atype/a_define'
 import {SearchParams} from './search_params'
 
 export type URLBase = {

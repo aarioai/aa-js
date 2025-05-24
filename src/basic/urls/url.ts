@@ -1,5 +1,6 @@
 import {buildURL, normalizeURLWithMethod, revertURLPathParams, spreadSearchParams} from "./func";
 import {
+    t_bool,
     t_booln,
     t_char,
     t_float64,
@@ -10,6 +11,7 @@ import {
     t_int8,
     t_millisecond,
     t_path_param,
+    t_safeint,
     t_second,
     t_uint16,
     t_uint24,
@@ -17,7 +19,7 @@ import {
     t_uint64b,
     t_uint8,
     t_weekday
-} from "../../aa/atype/a_define_server";
+} from "../../aa/atype/a_define";
 import {
     a_bool,
     a_booln,
@@ -37,18 +39,18 @@ import {
     uint64b,
     uint8
 } from "../../aa/atype/t_basic";
-import {LoopSignal, SortFunc, t_bool, t_httpmethod, t_safeint} from '../../aa/atype/a_define'
 import {ParamPattern} from './base'
 import {a_weekday} from '../../aa/atype/t_basic_server'
-import {Ascend} from '../../aa/atype/const'
 import {ParamsType, SearchParams, SearchParamsAcceptType} from './search_params'
+import {t_httpmethod, t_loopsignal} from '../../aa/atype/a_define_enums'
+import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
 
 
 export class AaURL {
     name = 'aa-url'
     method: t_httpmethod | ''
     searchParams: SearchParams   // as URL interface
-    sortFunc: SortFunc = Ascend
+    sortFunc: SortFunc = ASCEND
     tidy: boolean = true  // remove empty string value parameter, e.g. a=&b=10
 
     username: string = ''
@@ -267,12 +269,12 @@ export class AaURL {
         return this.searchParams.references.get(name)
     }
 
-    forEachReference(callback: (ref: string, type: t_path_param, key: string) => LoopSignal, thisArg?: any) {
+    forEachReference(callback: (ref: string, type: t_path_param, key: string) => t_loopsignal, thisArg?: any) {
         this.searchParams.references.forEach(callback, thisArg)
     }
 
     sort(sort?: SortFunc): AaURL {
-        this.sortFunc = sort ? sort : Ascend
+        this.sortFunc = sort ? sort : ASCEND
         return this
     }
 

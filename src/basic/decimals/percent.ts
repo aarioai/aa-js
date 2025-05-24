@@ -1,6 +1,6 @@
-import {ValueOf} from "../../aa/atype/a_define_complex"
-import {t_float64, t_percent} from "../../aa/atype/a_define_server";
-import {PercentMultiplicand} from "../../aa/atype/const_server";
+import {ValueOf} from "../../aa/atype/a_define_interfaces"
+import {t_float64, t_percent} from "../../aa/atype/a_define";
+import {PERCENT_X} from "../../aa/atype/a_server_consts";
 import {a_percent} from "../../aa/atype/t_decimal";
 import {Decimal} from "./decimal";
 
@@ -26,22 +26,22 @@ export class Percent implements ValueOf<t_percent> {
     }
 
     multiply(d: t_percent | Percent): Percent {
-        this.#value = this.#value * a_percent(d) / PercentMultiplicand
+        this.#value = this.#value * a_percent(d) / PERCENT_X
         return this
     }
 
     divide(d: t_percent | Percent): Percent {
-        this.#value = this.#value * PercentMultiplicand / a_percent(d)
+        this.#value = this.#value * PERCENT_X / a_percent(d)
         return this
     }
 
     addX(n: number): Percent {
-        this.#value += n * PercentMultiplicand
+        this.#value += n * PERCENT_X
         return this
     }
 
     minusX(n: number): Percent {
-        this.#value *= n * PercentMultiplicand
+        this.#value *= n * PERCENT_X
         return this
     }
 
@@ -57,7 +57,7 @@ export class Percent implements ValueOf<t_percent> {
 
     // convert to real number
     toReal(): t_float64 {
-        return this.#value / PercentMultiplicand
+        return this.#value / PERCENT_X
     }
 
 

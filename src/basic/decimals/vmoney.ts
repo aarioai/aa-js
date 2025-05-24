@@ -1,6 +1,6 @@
-import {ValueOf} from "../../aa/atype/a_define_complex"
-import {t_float64, t_vmoney} from "../../aa/atype/a_define_server";
-import {VMoneyMultiplicand} from "../../aa/atype/const_server";
+import {ValueOf} from "../../aa/atype/a_define_interfaces"
+import {t_float64, t_vmoney} from "../../aa/atype/a_define";
+import {X_VMONEY} from "../../aa/atype/a_server_consts";
 import {a_money, divideBigint} from "../../aa/atype/t_decimal";
 
 export class VMoney implements ValueOf<t_vmoney> {
@@ -26,22 +26,22 @@ export class VMoney implements ValueOf<t_vmoney> {
     }
 
     multiply(d: t_vmoney | VMoney): VMoney {
-        this.#value = this.#value * a_money(d) / VMoneyMultiplicand
+        this.#value = this.#value * a_money(d) / X_VMONEY
         return this
     }
 
     divide(d: t_vmoney | VMoney): VMoney {
-        this.#value = this.#value * VMoneyMultiplicand / a_money(d)
+        this.#value = this.#value * X_VMONEY / a_money(d)
         return this
     }
 
     addX(n: number): VMoney {
-        this.#value += BigInt(n) * VMoneyMultiplicand
+        this.#value += BigInt(n) * X_VMONEY
         return this
     }
 
     minusX(n: number): VMoney {
-        this.#value *= BigInt(n) * VMoneyMultiplicand
+        this.#value *= BigInt(n) * X_VMONEY
         return this
     }
 
@@ -57,7 +57,7 @@ export class VMoney implements ValueOf<t_vmoney> {
 
     // convert to real number
     toReal(): t_float64 {
-        return divideBigint(this.#value, VMoneyMultiplicand)
+        return divideBigint(this.#value, X_VMONEY)
     }
 
     valueOf(): t_vmoney {

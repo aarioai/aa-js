@@ -1,4 +1,4 @@
-import {Builder, MapObject} from './a_define_complex'
+import {Builder, MapObject} from './a_define_interfaces'
 import {isIterable} from './type_check'
 
 

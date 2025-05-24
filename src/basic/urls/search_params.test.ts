@@ -1,6 +1,6 @@
 import {describe, test} from '@jest/globals'
 import {SearchParams} from './search_params'
-import {P_Stringify} from '../../aa/env/const_param'
+import {P_Stringify} from '../../aa/aconfig/const_param'
 
 describe('SearchParams', () => {
 

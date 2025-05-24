@@ -1,6 +1,6 @@
-import {t_lowers, t_uppers, t_weekday} from './a_define_server'
+import {t_lowers, t_uppers, t_weekday} from './a_define'
 import {a_string} from './t_basic'
-import {Friday, InvalidWeekday, Monday, Saturday, Sunday, Thursday, Tuesday, Wednesday} from './const_server'
+import {FRIDAY, INVALID_WEEKDAY, MONDAY, SATURDAY, SUNDAY, THURSDAY, TUESDAY, WEDNESDAY} from './a_define_enums'
 
 export function a_lowers(value: unknown): t_lowers {
     return a_string(value).toLowerCase()
@@ -30,63 +30,63 @@ export function a_uppers(value: unknown): t_uppers {
  */
 export function a_weekday(value: unknown): t_weekday {
     if (!value) {
-        return InvalidWeekday
+        return INVALID_WEEKDAY
     }
     if (typeof value === 'number') {
-        return value >= 0 && value <= 6 ? value : InvalidWeekday
+        return value >= 0 && value <= 6 ? value : INVALID_WEEKDAY
     }
     if (typeof value === 'string' && value.length === 1) {
         const c = value[0]
-        return c >= '0' && c <= '6' ? Number(c) : InvalidWeekday
+        return c >= '0' && c <= '6' ? Number(c) : INVALID_WEEKDAY
     }
 
     const s = a_string(value).trim().toLowerCase().replaceAll('.', '')
     switch (s) {
-        case String(Sunday):
+        case String(SUNDAY):
         case 'sunday':
         case 'sun':
         case 'su':
-            return Sunday
+            return SUNDAY
 
-        case String(Monday):
+        case String(MONDAY):
         case 'monday':
         case 'mon':
         case 'mo':
-            return Monday
+            return MONDAY
 
-        case String(Tuesday):
+        case String(TUESDAY):
         case 'tuesday':
         case 'tue':
         case 'tues':
         case 'tu':
-            return Tuesday
+            return TUESDAY
 
-        case String(Wednesday):
+        case String(WEDNESDAY):
         case 'wednesday':
         case 'wed':
         case 'we':
-            return Wednesday
+            return WEDNESDAY
 
-        case String(Thursday):
+        case String(THURSDAY):
         case 'thursday':
         case 'thur':
         case 'thurs':
         case 'th':
-            return Thursday
+            return THURSDAY
 
-        case String(Friday):
+        case String(FRIDAY):
         case 'friday':
         case 'fri':
         case 'fr':
-            return Friday
+            return FRIDAY
 
-        case String(Saturday):
+        case String(SATURDAY):
         case 'saturday':
         case 'sat':
         case 'sa':
-            return Saturday
+            return SATURDAY
 
         default:
-            return InvalidWeekday
+            return INVALID_WEEKDAY
     }
 }

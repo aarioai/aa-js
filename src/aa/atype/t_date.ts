@@ -1,9 +1,9 @@
 import {uint16, uint24} from "./t_basic"
-import {DatePattern, DatetimePattern, MinDate, MinDatetime} from "./const_server"
-import {AConfig} from "../env/aconfig"
+import {DATE_PATTERN, DATETIME_PATTERN, MIN_DATE, MIN_DATETIME} from "./a_server_consts"
+import AConfig from "../aconfig/aconfig"
 import {TZDate} from "@date-fns/tz"
 import {format} from "date-fns";
-import {t_date, t_datetime, t_dist, t_distri, t_timestamp} from './a_define_server'
+import {t_date, t_datetime, t_dist, t_distri, t_timestamp} from './a_define'
 
 export function a_distri(n: number): t_distri {
     return uint24(n)
@@ -45,19 +45,19 @@ export function tzdate(s: string | t_timestamp | Date | TZDate, timezone?: strin
  */
 export function a_date(s: string | t_timestamp | Date | TZDate, timezone?: string): t_date {
     if (!s) {
-        return MinDate
+        return MIN_DATE
     }
 
     try {
         const d = tzdate(s, timezone)
         if (!d) {
-            return MinDate
+            return MIN_DATE
         }
-        return format(d, DatePattern)
+        return format(d, DATE_PATTERN)
     } catch (err) {
         console.error(`Unable to parse date ${s}`, err)
     }
-    return MinDate
+    return MIN_DATE
 }
 
 /**
@@ -71,16 +71,16 @@ export function a_date(s: string | t_timestamp | Date | TZDate, timezone?: strin
  */
 export function a_datetime(s: string | t_timestamp | Date, timezone?: string): t_datetime {
     if (!s) {
-        return MinDatetime
+        return MIN_DATETIME
     }
     try {
         const d = tzdate(s, timezone)
         if (!d) {
-            return MinDatetime
+            return MIN_DATETIME
         }
-        return format(d, DatetimePattern)
+        return format(d, DATETIME_PATTERN)
     } catch (err) {
         console.error(`Unable to parse datetime ${s}`, err)
     }
-    return MinDatetime
+    return MIN_DATETIME
 }

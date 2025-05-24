@@ -1,6 +1,6 @@
-import {typeArray} from "../../aa/atype/func";
-import {Break} from "../../aa/atype/const";
-import {floatToInt} from "../../aa/atype/t_basic";
+import {typeArray} from "../../aa/atype/func"
+import {floatToInt} from "../../aa/atype/t_basic"
+import {BREAK} from '../../aa/atype/a_define_enums'
 
 
 /**
@@ -122,15 +122,15 @@ export function range(start: number, end: number, step: number, callback: (i: nu
     if (start < end) {
         for (let i = start; i < end; i += step) {
             const r = callback(i)
-            if (r === Break) {
-                return Break
+            if (r === BREAK) {
+                return BREAK
             }
         }
     }
     for (let i = start; i > end; i -= step) {
         const r = callback(i)
-        if (r === Break) {
-            return Break
+        if (r === BREAK) {
+            return BREAK
         }
     }
 }

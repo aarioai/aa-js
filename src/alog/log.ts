@@ -1,6 +1,6 @@
 import {ALogStyle} from "./style";
 import {joinWith} from "../aa/format/strings";
-import {AConfig} from "../aa/env/aconfig";
+import AConfig from '../aa/aconfig/aconfig'
 
 
 export function printRaw(msg: string) {

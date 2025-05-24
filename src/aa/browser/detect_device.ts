@@ -1,20 +1,20 @@
-import {Percent, PercentMultiplicand} from "../atype/const_unit";
 import {t_percent} from "../atype/a_define";
 import {Panic} from "../atype/panic";
+import {HUNDRED_PERCENT} from '../atype/a_server_consts'
 
-export const MaxTabletWidth = 768
+export const MAX_TABLET_WIDTH = 768
 
 
 /**
  * Gets the main width of tablet devices, e.g. phones, pads
  */
-export function tabletMainWidth(proportion: t_percent = 100 * Percent): number {
+export function tabletMainWidth(proportion: t_percent = HUNDRED_PERCENT): number {
     Panic.assertLessThanZero(proportion)
-    let bodyWidth = document.querySelector('body')?.offsetWidth || MaxTabletWidth
-    if (proportion === 100 * Percent) {
+    let bodyWidth = document.querySelector('body')?.offsetWidth || MAX_TABLET_WIDTH
+    if (proportion === HUNDRED_PERCENT) {
         return bodyWidth
     }
-    return proportion * bodyWidth / PercentMultiplicand
+    return proportion * bodyWidth / HUNDRED_PERCENT
 }
 
 // Device Pixel Ratio
@@ -26,7 +26,7 @@ export function devicePixelRatio(): number {
 export function softDevicePixelRatio(): number {
     const dpr = devicePixelRatio()
     const mainWidth = tabletMainWidth()
-    const ratio = (mainWidth / MaxTabletWidth) * dpr
+    const ratio = (mainWidth / MAX_TABLET_WIDTH) * dpr
     return Number(ratio.toFixed(2))
 }
 
@@ -77,7 +77,7 @@ export function isAndroid(): boolean {
 }
 
 export function isDesktop(): boolean {
-    return documentWidth() >= MaxTabletWidth
+    return documentWidth() >= MAX_TABLET_WIDTH
 }
 
 export function isSafari(): boolean {
