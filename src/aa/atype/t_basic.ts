@@ -1,4 +1,6 @@
 import {
+    DATE_TESTER,
+    DATETIME_TESTER,
     FALSE,
     MAX_INT16,
     MAX_INT24,
@@ -8,6 +10,7 @@ import {
     MAX_UINT24,
     MAX_UINT32,
     MAX_UINT8,
+    MIN_DATETIME,
     MIN_INT16,
     MIN_INT24,
     MIN_INT32,
@@ -269,4 +272,57 @@ export function uint16(v?: t_numeric): t_uint16 {
 
 export function uint8(v?: number): t_uint8 {
     return inRange(safeInt(v), 0, MAX_UINT8, 'uint8')
+}
+
+export function zeroize<T = unknown>(value: T): T {
+    if (!value) {
+        return value
+    }
+
+    switch (typeof value) {
+        case 'boolean':
+            return false as T
+        case 'number':
+            return 0 as T
+        case 'bigint':
+            return 0n as T
+        case 'string':
+            if (DATETIME_TESTER.test(value)) {
+                return MIN_DATETIME as T
+            } else if (DATE_TESTER.test(value)) {
+                return MIN_DATETIME as T
+            }
+            return '' as T
+    }
+
+    return null
+}
+
+/**
+ * Coerces a value to match the type of the source reference value
+ * @see https://developer.mozilla.org/en-US/docs/Glossary/Type_coercion
+ *
+ * @example
+ *  coerceType(1, '200')        // '1'
+ *  coerceType(1n, 20)          // 1
+ *  coerceType(undefined, 100)  // 0
+ */
+export function coerceType<T = unknown>(target: unknown, source: T): T {
+    if (typeof target === typeof source) {
+        return target as T
+    }
+    if (!target) {
+        return zeroize(source)
+    }
+    switch (typeof source) {
+        case 'boolean':
+            return a_bool(target as any) as T
+        case 'number':
+            return a_number(target as any) as T
+        case 'bigint':
+            return BigInt(target as any) as T
+        case 'string':
+            return a_string(target) as T
+    }
+    return target as T
 }

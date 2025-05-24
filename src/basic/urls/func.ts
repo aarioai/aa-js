@@ -2,8 +2,8 @@ import {joinPath, parseBaseName, splitPath} from "../strings/path_func"
 import {
     HTTP_METHODS,
     path_param_string_t,
-    PATH_PARAM_TEST_REGEXP,
-    PATH_PARAMS_REGEXP,
+    PATH_PARAM_TESTER,
+    PATH_PARAMS_MATCHER,
     t_httpmethod
 } from "../../aa/atype/a_define_enums"
 import {a_string} from '../../aa/atype/t_basic'
@@ -249,7 +249,7 @@ export function normalizeSearchParams<T extends SearchParams = SearchParams>(tar
         if (!value || value.length < 3) {
             continue   // pattern requires at least 3 chars (e.g. {x})
         }
-        const match = value.match(PATH_PARAM_TEST_REGEXP)
+        const match = value.match(PATH_PARAM_TESTER)
         if (!match) {
             continue
         }
@@ -406,7 +406,7 @@ export function revertURLPathParams(urlPattern: t_api_pattern, params: ParamsTyp
     let hashAlias = ''
     // Handle hash parameter {<key>} or {<key><type>}
     if (hash) {
-        const match = hash.slice(1).match(PATH_PARAM_TEST_REGEXP)
+        const match = hash.slice(1).match(PATH_PARAM_TESTER)
         if (match) {
             const [, , name, paramType,] = match
             hash = safePathParamValue(search.get(name), paramType)
@@ -422,7 +422,7 @@ export function revertURLPathParams(urlPattern: t_api_pattern, params: ParamsTyp
     const pathParams: PathParamMap = new Map<string, t_path_param>()
 
     // Handle base parameter {<key>} or {<key><type>}
-    const matches = base.matchAll(PATH_PARAMS_REGEXP)
+    const matches = base.matchAll(PATH_PARAMS_MATCHER)
     for (const match of matches) {
         const [pattern, , name, paramType,] = match
         let type = paramType ? paramType : path_param_string_t

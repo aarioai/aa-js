@@ -7,7 +7,7 @@ export type AnyMap = Map<string, unknown>
 
 export type Callback<V = unknown, K = unknown> = (value: V, key: K, object?: unknown) => void | t_loopsignal
 
-export type MapCallback<V = unknown, K = unknown> = (value: V, key: K, map?: Map<K, V>) => void | t_loopsignal
+export type MapCallback<V = unknown, K = string> = (value: V, key: K, map?: Map<K, V>) => void | t_loopsignal
 
 export interface ValueOf<T = number> {
     valueOf(): T
@@ -20,6 +20,30 @@ export interface Marshallable<T = unknown> {
 
 export interface AaMap extends AnyMap, Marshallable<string> {
     readonly  isAaMap: boolean
+    readonly [Symbol.toStringTag]: string
+    size: number
+
+    clear(): void
+
+    delete(key: string, value?: unknown): boolean
+
+    forEach(callback: MapCallback, thisArg?: unknown): void
+
+    get(key: string): unknown
+
+    has(name: string, value?: unknown): boolean
+
+    set(name: string, value: unknown): this
+
+    toMap(): Map<string, unknown>
+
+    entries(): MapIterator<[string, unknown]>
+
+    keys(): MapIterator<string>     // Array.from(keys()) converts iterator to an array
+
+    values(): MapIterator<unknown>
+
+    [Symbol.iterator](): MapIterator<[string, unknown]>
 }
 
 

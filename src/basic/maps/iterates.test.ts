@@ -1,5 +1,5 @@
 import {describe, expect, test} from "@jest/globals";
-import {sort} from './rebuilds'
+import {sort} from './iterates'
 
 
 describe('map object rebuild functions', () => {

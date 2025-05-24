@@ -41,6 +41,10 @@ export const MIN_DATE: t_date = "0000-00-00"
 export const MAX_DATE: t_date = "9999-12-31"
 export const MIN_DATETIME: t_datetime = "0000-00-00 00.00.00"
 export const MAX_DATETIME: t_datetime = "9999-12-31 23:59:59"
+export const DATE_TESTER = /^\d{4}-[01]\d-[03]\d$/
+export const DATE_MATCHER = /\D?(\d{4}-[01]\d-[03]\d)\D?/
+export const DATETIME_TESTER = /^\d{4}-[01]\d-[03]\d[\sT][0-2]\d:[0-5]\d:[0-5]\d$/
+export const DATETIME_MATCHER = /\D?(\d{4}-[01]\d-[03]\d[\sT][0-2]\d:[0-5]\d:[0-5]\d)\D?/
 
 export const ZERO_VALUES = [null, '', undefined, false, 0, 0n, 0.0, '0', "0.0", "0.00", MIN_DATE, MIN_DATETIME]
 

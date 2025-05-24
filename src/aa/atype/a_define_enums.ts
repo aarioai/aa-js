@@ -20,8 +20,8 @@ export const HTTP_METHOD_REGEXP = new RegExp('^(' + HTTP_METHODS.join('|') + ')\
 
 export const PATH_PARAMS: t_path_param[] = PATH_PARAMS_RAW
 export const path_param_string_t: t_path_param = ':string'
-export const PATH_PARAM_TEST_REGEXP = new RegExp(`^({|%7B|%257B)([_a-z]\\w*)(${PATH_PARAMS.join('|')})?(}|%7D|%257D)$`, 'i')  // %7B is encodeURIComponent('{')
-export const PATH_PARAMS_REGEXP = new RegExp(`({|%7B|%257B)([_a-z]\\w*)(${PATH_PARAMS.join('|')})?(}|%7D|%257D)`, 'ig')   // {<key>} or {<key><type>}
+export const PATH_PARAM_TESTER = new RegExp(`^({|%7B|%257B)([_a-z]\\w*)(${PATH_PARAMS.join('|')})?(}|%7D|%257D)$`, 'i')  // %7B is encodeURIComponent('{')
+export const PATH_PARAMS_MATCHER = new RegExp(`({|%7B|%257B)([_a-z]\\w*)(${PATH_PARAMS.join('|')})?(}|%7D|%257D)`, 'ig')   // {<key>} or {<key><type>}
 
 
 export const INVALID_WEEKDAY = -1

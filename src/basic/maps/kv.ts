@@ -1,5 +1,32 @@
 import {ZERO_VALUES} from "../../aa/atype/a_server_consts";
 import {MapObject} from '../../aa/atype/a_define_interfaces'
+import {KV} from './base'
+
+
+export function getKV(target: KV, key: string): unknown {
+    if (!target) {
+        return undefined
+    }
+    // Handle Map-like objects (those with a .get() method), e.g. AaMap, AnyMap
+    if (typeof target.get === 'function') {
+        return target.get(key)
+    }
+    // Fallback to plain object access
+    return target[key]
+}
+
+export function setKV(target: KV, key: string, value: unknown) {
+    if (!target) {
+        return
+    }
+    // Handle Map-like objects (those with a .set() method), e.g. AaMap, AnyMap
+    if (typeof target.set === 'function') {
+        target.set(key, value)
+        return
+    }
+    // Fallback to plain object
+    target[key] = value
+}
 
 /**
  * Sets a property on a map object if the property doesn't exist or matches an excluded value.
