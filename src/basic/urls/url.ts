@@ -41,8 +41,9 @@ import {
 import {ParamsType, SearchParamsAcceptType, t_api_pattern, URLOptions} from './base'
 import {a_weekday} from '../../aa/atype/t_basic_server'
 import SearchParams from './search_params'
-import {t_httpmethod, t_loopsignal} from '../../aa/atype/a_define_enums'
+import {t_httpmethod} from '../../aa/atype/a_define_enums'
 import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
+import {MapCallback} from '../../aa/atype/a_define_interfaces'
 
 
 export default class AaURL {
@@ -259,7 +260,7 @@ export default class AaURL {
         return this.searchParams.references.get(name)
     }
 
-    forEachReference(callback: (ref: string, type: t_path_param, key: string) => t_loopsignal, thisArg?: any) {
+    forEachReference(callback: MapCallback<[string, t_path_param]>, thisArg?: any) {
         this.searchParams.references.forEach(callback, thisArg)
     }
 

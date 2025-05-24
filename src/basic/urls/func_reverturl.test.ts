@@ -9,7 +9,7 @@ function testURLBaseReferences(received: URLBase, expected: URLBase) {
     expect(base).toBe(expected.base)
     expect(hash).toBe(expected.hash)
     expect(search.sort().toString()).toBe(expected.search.sort().toString())
-    expect(search.references.data).toEqual(expected.search.references.data)
+    expect(search.references.toMap()).toEqual(expected.search.references.toMap())
 }
 
 

@@ -1,5 +1,5 @@
 import {deepEncodeURI, parseURLSearch} from './func'
-import {Callback, MapObjectable} from '../../aa/atype/a_define_interfaces'
+import {AaMap, MapCallback} from '../../aa/atype/a_define_interfaces'
 import {a_string} from '../../aa/atype/t_basic'
 import {HASH_REF_NAME, NewChangeReferrerError, ParamsType, safePathParamValue, SearchParamsAcceptType} from './base'
 import SearchReference from './search_reference'
@@ -13,54 +13,57 @@ import json from '../../aa/atype/json'
  * Pros for Web API URLSearchParams
  *  1. JSON.stringify(new URLSearchParams('a=100'))  returns '{}', but not {"a":"100"}
  *  2. Jest URLSearchParams does not have `size` property
+ *
+ * Cons:
+ *  1. SearchParams not support array search params, e.g.  a[]=100&a[]=200 is not allowed
  */
-export default class SearchParams implements MapObjectable {
-    params: StringMap   // Disable arrays, e.g.  a[]=100&a[]=200 is not allowed
+export default class SearchParams implements AaMap {
+    readonly isAaMap: boolean = true
     references: SearchReference = new SearchReference()
     sortFunc: SortFunc = ASCEND
     tidy: boolean = true
     encode: (s: string) => string = deepEncodeURI
+    readonly [Symbol.toStringTag] = 'SearchParams'
+    private readonly map: StringMap = new Map<string, string>()
 
     constructor(searchString?: SearchParamsAcceptType) {
-        this.params = new Map<string, string>()
         if (searchString) {
             this.setMany(searchString)
         }
     }
 
     get size(): number {
-        return this.params.size
+        return this.map.size
     }
-
 
     clear() {
-        this.params.clear()
+        this.map.clear()
     }
 
-    delete(name: string, value?: unknown) {
+    delete(name: string, value?: unknown): boolean {
         if (this.has(name, value)) {
-            this.params.delete(name)
+            this.map.delete(name)
             return
         }
     }
 
-
-    forEach(callback: Callback<string, string>, thisArg?: unknown) {
-        if (thisArg) {
-            callback = callback.bind(thisArg)
-        }
-        for (const [key, value] of this.entries()) {
-            if (callback(value, key) === BREAK) {
-                break
+    forEach(callback: MapCallback<string, string>, thisArg?: unknown) {
+        let stop = false
+        this.map.forEach((value, key) => {
+            if (stop) {
+                return
             }
-        }
+            if (BREAK === callback(value, key)) {
+                stop = true
+            }
+        }, thisArg)
     }
 
     get(name: string): string {
-        if (!name || !this.params.has(name)) {
+        if (!name || !this.map.has(name)) {
             return null // as URLSearchParams interface
         }
-        return this.params.get(name)
+        return this.map.get(name)
     }
 
     getHashName(): string {
@@ -80,40 +83,39 @@ export default class SearchParams implements MapObjectable {
     }
 
     has(name: string, value?: unknown): boolean {
-        if (!this.params.has(name)) {
+        if (!this.map.has(name)) {
             return false
         }
         if (typeof value === 'undefined') {
             return true
         }
-        return a_string(value) === this.params.get(name)
+        return a_string(value) === this.map.get(name)
     }
 
-
     reset(params?: SearchParamsAcceptType) {
-        this.params.clear()
+        this.map.clear()
         if (params) {
             this.setMany(params)
         }
     }
 
-
-    set(name: string, value: unknown) {
+    set(name: string, value: unknown): this {
         const v = a_string(value)
 
         if (this.references.has(name)) {
             throw NewChangeReferrerError(name, this.references.getReference(name))
         }
 
-        this.params.set(name, v)
+        this.map.set(name, v)
 
         // Set all parameters that reference to this parameter to this value
         const refs = this.references.referrers(name)
         if (refs?.length) {
             for (const [key, type] of refs) {
-                this.params.set(key, safePathParamValue(v, type))
+                this.map.set(key, safePathParamValue(v, type))
             }
         }
+        return this
     }
 
     /**
@@ -132,7 +134,6 @@ export default class SearchParams implements MapObjectable {
             this.set(key, value)
         }
     }
-
 
     setMany(params: ParamsType) {
         if (!params) {
@@ -169,17 +170,16 @@ export default class SearchParams implements MapObjectable {
         return this
     }
 
-
     toJSON(): string {
-        return json.MarshalMap(this.params)
+        return json.MarshalMap(this.map)
     }
 
     toMap(): StringMap {
-        return this.params
+        return this.map
     }
 
     toString(): string {
-        let keys = Array.from(this.params.keys())
+        let keys = Array.from(this.map.keys())
         if (keys.length === 0) {
             return ''
         }
@@ -211,25 +211,19 @@ export default class SearchParams implements MapObjectable {
         return s.slice(1)
     }
 
-    * keys(): MapIterator<string> {
-        for (const key of Object.keys(this.params)) {
-            yield key
-        }
+    entries(): MapIterator<[string, string]> {
+        return this.map.entries()
     }
 
-    * values(): MapIterator<string> {
-        for (const value of Object.values(this.params)) {
-            yield value
-        }
+    keys(): MapIterator<string> {
+        return this.map.keys()
     }
 
-    * entries(): IterableIterator<[string, string]> {
-        yield* this.params.entries()
+    values(): MapIterator<string> {
+        return this.map.values()
     }
 
-    * [Symbol.iterator](): IterableIterator<[string, string]> {
-        yield* this.entries()
+    [Symbol.iterator](): IterableIterator<[string, string]> {
+        return this.map[Symbol.iterator]()
     }
-
-
 }

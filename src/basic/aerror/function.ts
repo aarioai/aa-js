@@ -1,6 +1,6 @@
 import {AError} from "./error";
 import {E_ClientThrow} from "./code";
-import {MissingResponseBody, ParseResponseBodyFailed} from "./error_standard";
+import {E_MissingResponseBody, E_ParseResponseBodyFailed} from "./errors";
 import {ResponseBody} from '../../aa/atype/a_server_dto'
 
 export function aerror(e: number | string | Error | AError, msg?: string): AError {
@@ -15,14 +15,14 @@ export function aerror(e: number | string | Error | AError, msg?: string): AErro
 
 export function parseResponseAError(resp: undefined | string | ResponseBody): AError {
     if (!resp) {
-        return MissingResponseBody
+        return E_MissingResponseBody
     }
     if (typeof resp === "string") {
         const s = resp.trim()
         try {
             resp = JSON.parse(s) as ResponseBody
         } catch (err) {
-            return ParseResponseBodyFailed.addDetail(s)
+            return E_ParseResponseBodyFailed.addDetail(s)
         }
     }
     return new AError(resp['code'], resp['msg'])

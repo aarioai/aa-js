@@ -1,10 +1,10 @@
 import {describe, expect, test} from '@jest/globals'
-import {assign} from './merge_func'
+import {assignObjects} from './merge_func'
 
 describe('map objects merging functions', () => {
-    test('assign', () => {
+    test('assignMapObject', () => {
         const source = undefined
-        expect(assign(source, {name: 'Aario'})).toEqual({name: 'Aario'})
-        expect(assign(null, {name: 'Aario'})).toEqual({name: 'Aario'})
+        expect(assignObjects(source, {name: 'Aario'})).toEqual({name: 'Aario'})
+        expect(assignObjects(null, {name: 'Aario'})).toEqual({name: 'Aario'})
     })
 })
