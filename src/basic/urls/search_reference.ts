@@ -1,7 +1,7 @@
 import {t_path_param} from '../../aa/atype/a_define'
-import {BREAK, PathParamString, t_loopsignal} from '../../aa/atype/a_define_enums'
+import {BREAK, path_param_string_t, t_loopsignal} from '../../aa/atype/a_define_enums'
 
-export class SearchReference {
+export default class SearchReference {
     data: Map<string, [string, t_path_param]>
 
     constructor(iterable?: Iterable<any>) {
@@ -89,7 +89,7 @@ export class SearchReference {
         return this.data.values()
     }
 
-    set(name: string, ref: string, type: t_path_param = PathParamString) {
+    set(name: string, ref: string, type: t_path_param = path_param_string_t) {
         this.data.set(name, [ref, type])
     }
 

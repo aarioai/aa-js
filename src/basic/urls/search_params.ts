@@ -3,7 +3,7 @@ import {AnyMap, Callback, MapObject} from '../../aa/atype/a_define_interfaces'
 import {a_bool, a_string} from '../../aa/atype/t_basic'
 import {FALSE, TRUE} from '../../aa/atype/a_server_consts'
 import {HashAliasName, safePathParamValue} from './base'
-import {SearchReference} from './search_reference'
+import SearchReference from './search_reference'
 import {P_Stringify} from '../../aa/aconfig/const_param'
 import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
 import {t_bool} from '../../aa/atype/a_define'
@@ -23,7 +23,7 @@ export function NewChangeReferrerError(referer: string, reference: string): Erro
  *  1. JSON.stringify(new URLSearchParams('a=100'))  returns '{}', but not {"a":"100"}
  *  2. Jest URLSearchParams does not have `size` property
  */
-export class SearchParams {
+export default class SearchParams {
     params: MapObject<string> = {}   // Disable arrays, e.g.  a[]=100&a[]=200 is not allowed
     references: SearchReference = new SearchReference()
     sortFunc: SortFunc = ASCEND

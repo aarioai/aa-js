@@ -1,16 +1,16 @@
 import {joinPath, parseBaseName, splitPath} from "../strings/path_func"
 import {
     HTTP_METHODS,
+    path_param_string_t,
     PATH_PARAM_TEST_REGEXP,
     PATH_PARAMS_REGEXP,
-    PathParamString,
     t_httpmethod
 } from "../../aa/atype/a_define_enums"
 import {a_string} from '../../aa/atype/t_basic'
-import {HashAliasName, ParamPattern, PathParamMap, safePathParamValue, URLBase, URLPathError} from './base'
+import {ApiPattern, HashAliasName, PathParamMap, safePathParamValue, URLBase, URLPathError} from './base'
 import {t_path_param} from '../../aa/atype/a_define'
 import {MapObject} from '../../aa/atype/a_define_interfaces'
-import {ParamsType, SearchParams} from './search_params'
+import SearchParams, {ParamsType} from './search_params'
 
 
 /**
@@ -370,7 +370,7 @@ export function splitURLSearch(urlPattern: string): URLBase {
  * revertURLPathParams('/api/{version}/users/{uid:uint64}#{hash}?work={work}', {version:'v1', uid:100n, age:10,})
  * // Returns {base:"/api/v1/users/100", hash:'', search:{age:"10", work=""}}
  */
-export function revertURLPathParams(urlPattern: ParamPattern, params: ParamsType): URLBase {
+export function revertURLPathParams(urlPattern: ApiPattern, params: ParamsType): URLBase {
     if (!urlPattern) {
         throw new URLPathError(`url is empty`)
     }
@@ -398,7 +398,7 @@ export function revertURLPathParams(urlPattern: ParamPattern, params: ParamsType
     const matches = base.matchAll(PATH_PARAMS_REGEXP)
     for (const match of matches) {
         const [pattern, , name, paramType,] = match
-        let type = paramType ? paramType : PathParamString
+        let type = paramType ? paramType : path_param_string_t
         const simple = '{' + name + '}'
         if (pattern !== simple) {
             base = base.replace(pattern, simple)     // format to {<key>}

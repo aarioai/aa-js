@@ -11,7 +11,7 @@ import {
     splitURLSearch
 } from './func';
 import {URLBase} from './base'
-import {SearchParams} from './search_params'
+import SearchParams from './search_params'
 
 function testURLBase(received: URLBase, expected: URLBase) {
     const {base, hash, search} = received

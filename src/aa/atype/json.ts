@@ -33,7 +33,7 @@ export const unmarshalReviver = (key: string, value: unknown, ctx?: JsonReviverC
     return value
 }
 
-class json {
+export default class json {
 
 
     /**
@@ -91,4 +91,4 @@ class json {
     }
 }
 
-export default json
+

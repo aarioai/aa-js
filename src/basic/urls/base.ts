@@ -1,6 +1,6 @@
 import {a_booln, a_string, int16, int32, int64b, int8, uint16, uint32, uint64b, uint8} from '../../aa/atype/t_basic'
 import {t_path_param} from '../../aa/atype/a_define'
-import {SearchParams} from './search_params'
+import SearchParams from './search_params'
 
 export type URLBase = {
     base: string,
@@ -19,7 +19,7 @@ export type URLBase = {
  * userAPI: ParamPattern = 'https://luexu.com/api/v1/users/{uid}'
  * usersAPI: ParamPattern = '/api/v1/groups/{group}/users/page/{page:uint}
  */
-export type ParamPattern = string
+export type ApiPattern = string
 
 export type PathParamMap = Map<string, t_path_param>
 export const HashAliasName = '#HASH'

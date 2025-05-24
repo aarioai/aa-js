@@ -39,9 +39,9 @@ import {
     uint64b,
     uint8
 } from "../../aa/atype/t_basic";
-import {ParamPattern} from './base'
+import {ApiPattern} from './base'
 import {a_weekday} from '../../aa/atype/t_basic_server'
-import {ParamsType, SearchParams, SearchParamsAcceptType} from './search_params'
+import SearchParams, {ParamsType, SearchParamsAcceptType} from './search_params'
 import {t_httpmethod, t_loopsignal} from '../../aa/atype/a_define_enums'
 import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
 
@@ -61,9 +61,9 @@ export class AaURL {
     #hostname: string   // e.g. test.luexu.com
     #port: t_uint16       // e.g. 8080
 
-    #hashPattern: ParamPattern = ''  // #<hash>, e.g. #head, #{hash}
+    #hashPattern: ApiPattern = ''  // #<hash>, e.g. #head, #{hash}
 
-    #pathnamePattern: ParamPattern   // e.g. /a/chat/x
+    #pathnamePattern: ApiPattern   // e.g. /a/chat/x
 
     /**
      * Creates an AaURL instance

@@ -30,7 +30,7 @@ export type t_bitposition = t_uint16
 export type t_millisecond = t_safeint
 export type t_second = t_safeint
 
-export const pathParams = [
+export const PATH_PARAMS_RAW = [
     ':bool',
     ':int8',
     ':int16',  // no :int24 and :uint24, floats
@@ -52,7 +52,7 @@ export const pathParams = [
 
 // Iris path parameter types. See https://iris-go.gitbook.io/iris/contents/routing/routing-path-parameter-types
 
-export type t_path_param = typeof pathParams[number]
+export type t_path_param = typeof PATH_PARAMS_RAW[number]
 export type t_uuid = string       // 32 or 36 bytes, 8-4-4-4-12
 export type t_digits = string  // \d+
 export type t_lowers = string // [a-z]+

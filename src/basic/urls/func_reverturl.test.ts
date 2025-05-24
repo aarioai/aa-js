@@ -1,8 +1,8 @@
 import {HashAliasName, URLBase, URLPathError} from './base'
 import {describe, expect, test} from '@jest/globals'
 import {revertURLPathParams} from './func'
-import {SearchParams} from './search_params'
-import {SearchReference} from './search_reference'
+import SearchParams from './search_params'
+import SearchReference from './search_reference'
 
 function testURLBaseAlias(received: URLBase, expected: URLBase) {
     const {base, hash, search} = received
