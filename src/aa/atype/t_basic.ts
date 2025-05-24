@@ -56,7 +56,7 @@ function inRange(value: number, min: number, max: number, name: string): number 
  * a_array([1, 2, 3])    // => [1, 2, 3]
  * a_array({a: 1, b: 2}) // => [1, 2]
  */
-export function a_array<T = unknown>(value: object | unknown[] | null | undefined, cast?: (value: unknown) => T): T[] {
+export function a_array<T = unknown>(value: object | unknown[] | undefined, cast?: (value: unknown) => T): T[] {
     if (value === undefined || value == null) {
         return []
     }
@@ -67,7 +67,7 @@ export function a_array<T = unknown>(value: object | unknown[] | null | undefine
     return Object.values(value)
 }
 
-export function a_func(value: Function | undefined | null) {
+export function a_func(value: Function | undefined) {
     return typeof value === "function" ? value : NIF
 }
 
@@ -77,7 +77,7 @@ export function record<T = unknown>(key: string, value: T): MapObject<T> {
     return result
 }
 
-export function a_maps(value: MapObject | unknown[] | undefined | null): MapObject {
+export function a_maps(value: MapObject | unknown[] | undefined): MapObject {
     if (!value) {
         return {}
     }
@@ -174,7 +174,7 @@ export function a_string(value: unknown): string {
  * Converts a visible ASCII byte character
  * @returns Single ASCII character or null character (\0) if conversion fails
  */
-export function a_char(value: string | number | undefined | null): t_char {
+export function a_char(value: string | number | undefined): t_char {
     if (!value) {
         return '\0' // String.fromCharCode(0)
     }
@@ -193,7 +193,7 @@ export function a_char(value: string | number | undefined | null): t_char {
     return '\0';
 }
 
-export function a_bool(value: boolean | number | bigint | string | undefined | null): boolean {
+export function a_bool(value: boolean | number | bigint | string | undefined): boolean {
     switch (typeof value) {
         case "boolean":
             return value
@@ -209,7 +209,7 @@ export function a_bool(value: boolean | number | bigint | string | undefined | n
     }
 }
 
-export function a_booln(value: boolean | number | bigint | string | undefined | null): t_booln {
+export function a_booln(value: boolean | number | bigint | string | undefined): t_booln {
     return a_bool(value) ? TRUE : FALSE
 }
 

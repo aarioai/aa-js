@@ -1,12 +1,13 @@
-import SearchParams from '../../basic/urls/search_params'
 import {t_httpmethod} from '../../aa/atype/a_define_enums'
 import {MapObject} from '../../aa/atype/a_define_interfaces'
 import {ParamsType, t_api_pattern} from '../../basic/urls/base'
 import {t_credentials} from './define_enums'
+import AaURL from '../../basic/urls/url'
 
 export interface RequestOptions {
     method?: t_httpmethod
     baseURL?: string
+    hash?: string
     headers?: MapObject<string>
     params?: ParamsType
     data?: MapObject | FormData
@@ -16,11 +17,9 @@ export interface RequestOptions {
 }
 
 export interface NormalizedRequestOptions {
-    method: t_httpmethod
-    url: string
-    headers: MapObject<string> | null
-    params: SearchParams | null
-    data: MapObject | FormData | null
+    url: AaURL
+    headers: MapObject<string>  // nullable
+    data: MapObject | FormData  // nullable
     body: string
     timeout: number
     credentials: t_credentials

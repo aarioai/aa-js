@@ -5,12 +5,12 @@ const defaults = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
         },
-        Head: {},
-        Get: {},
-        Delete: {},
-        Post: {},
-        Put: {},
-        Patch: {},
+        'HEAD': {},
+        'GET': {},
+        'DELETE': {},
+        'POST': {},
+        'PUT': {},
+        'PATCH': {},
     },
 
 }

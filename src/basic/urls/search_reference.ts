@@ -1,7 +1,9 @@
 import {t_path_param} from '../../aa/atype/a_define'
 import {BREAK, path_param_string_t, t_loopsignal} from '../../aa/atype/a_define_enums'
+import {MapObjectable} from '../../aa/atype/a_define_interfaces'
+import json from '../../aa/atype/json'
 
-export default class SearchReference {
+export default class SearchReference implements MapObjectable {
     data: Map<string, [string, t_path_param]>
 
     constructor(iterable?: Iterable<any>) {
@@ -42,12 +44,6 @@ export default class SearchReference {
     }
 
 
-    * entries(): IterableIterator<[string, string, t_path_param]> {
-        for (const [key, [ref, type]] of this.data.entries()) {
-            yield [key, ref, type];
-        }
-    }
-
     delete(name: string) {
         this.data.delete(name)
     }
@@ -81,19 +77,37 @@ export default class SearchReference {
         return this.data.has(name)
     }
 
-    keys(): MapIterator<string> {
-        return this.data.keys()
-    }
-
-    values(): IterableIterator<[string, t_path_param]> {
-        return this.data.values()
-    }
 
     set(name: string, ref: string, type: t_path_param = path_param_string_t) {
         this.data.set(name, [ref, type])
     }
 
-    * [Symbol.iterator](): IterableIterator<[string, string, t_path_param]> {
-        yield* this.entries();
+    toJSON(): string {
+        return json.MarshalMap(this.data)
     }
+
+    toMap(): Map<string, [string, t_path_param]> {
+        return this.data
+    }
+
+    * entries(): MapIterator<[string, string, t_path_param]> {
+        for (const [key, [ref, type]] of this.data.entries()) {
+            yield [key, ref, type];
+        }
+    }
+
+    * keys(): MapIterator<string> {
+        return this.data.keys()
+    }
+
+    * values(): MapIterator<[string, t_path_param]> {
+        return this.data.values()
+    }
+
+
+    * [Symbol.iterator](): MapIterator<[string, string, t_path_param]> {
+        yield* this.entries()
+    }
+
+
 }

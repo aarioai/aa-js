@@ -9,7 +9,7 @@ import {
 import {a_string} from '../../aa/atype/t_basic'
 import {HASH_REF_NAME, ParamsType, PathParamMap, safePathParamValue, t_api_pattern, URLBase, URLPathError} from './base'
 import {t_path_param} from '../../aa/atype/a_define'
-import {MapObject} from '../../aa/atype/a_define_interfaces'
+import {AnyMap, MapObject} from '../../aa/atype/a_define_interfaces'
 import SearchParams from './search_params'
 
 
@@ -223,13 +223,15 @@ export function joinURL(start: string, ...parts: (number | string)[]): string {
 }
 
 
-export function searchParam(params: ParamsType, name: string): unknown {
+export function searchParam(params: SearchParams | URLSearchParams | MapObject | AnyMap, name: string): unknown {
     if (!name || !params) {
         return undefined
     }
-    if (params instanceof URLSearchParams || params instanceof Map || params instanceof SearchParams) {
+    // Handle getter, e.g. SearchParams, URLSearchParams, Map
+    if (typeof params.get === 'function') {
         return params.get(name)
     }
+    // Fallback MapObject
     return params.hasOwnProperty(name) ? params[name] : undefined
 }
 

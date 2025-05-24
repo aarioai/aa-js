@@ -1,55 +1,35 @@
-import {MapObject, ToJSON} from "./a_define_interfaces";
-import {isSafeInt} from './type_check'
+import {AnyMap, MapObject, Marshallable} from "./a_define_interfaces";
+import {JsonMarshalError, marshalReviver, unmarshalReviver} from './json_base'
 
-export interface JsonReviverCtx {
-    source: string
-
-    [key: string]: any  // other keys
-}
-
-export const marshalReviver = (key: string, value: unknown): any => {
-    return typeof value === 'bigint' ? value.toString() : value
-}
-
-export const unmarshalReviver = (key: string, value: unknown, ctx?: JsonReviverCtx): any => {
-    if (!ctx) {
-        return value
-    }
-    if (typeof value === 'number') {
-        // Keep floats as-is
-        if (ctx.source.includes('.')) {
-            return value
-        }
-        if (isSafeInt(ctx.source)) {
-            return value
-        }
-        // Bigint
-        try {
-            return BigInt(ctx.source)
-        } catch {
-            return value
-        }
-    }
-    return value
-}
 
 export default class json {
+    // Safely converts a Map to JSON strings with BigInt support and without using toJSON method
+    static MarshalMap(o: AnyMap): string {
+        if (!o) {
+            return null
+        }
+        let data: MapObject = {}
+        o.forEach((value: unknown, key: string) => {
+            data[key] = value
+        })
+        return json.Marshal(data)
+    }
+
     /**
      * Safely converts a value to JSON string with BigInt support.
-     * Returns 'null' is safer than returns empty string ''
      *
      * @example
      * Marshal({a: 1, b: 2n}) // '{"a":1,"b":"2"}'
      * Marshal(null)           // null
      * Marshal(undefined)      // null
      */
-    static Marshal(o: object | ToJSON<string> | null | undefined): string {
+    static Marshal(o: object | Marshallable<string> | undefined): string {
         if (!o) {
             return 'null'
         }
 
         try {
-            if ((o as any).toJSON === 'function') {
+            if (typeof (o as any).toJSON === 'function') {
                 const s = (o as any).toJSON()
                 if (typeof s === 'string') {
                     return s
@@ -58,9 +38,8 @@ export default class json {
             // Convert bigint into string
             return JSON.stringify(o, marshalReviver)
         } catch (error) {
-            console.error(`json marshal error: ${error}`, o)
+            throw new JsonMarshalError(error, o)
         }
-        return 'null'
     }
 
     /**
@@ -72,7 +51,7 @@ export default class json {
      * Unmarshal(null)      // null
      * Unmarshal('invalid') // null
      */
-    static Unmarshal(input: string | undefined | null | MapObject | Array<unknown>): object {
+    static Unmarshal(input: string | undefined | MapObject | Array<unknown>): object {
         if (!input || (typeof input === "string" && input.trim().toLowerCase() === "null")) {
             return null
         }

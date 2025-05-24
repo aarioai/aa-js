@@ -43,7 +43,7 @@ function forever(run: (i: number) => unknown, interval: number, i: number = 0) {
 /**
  * Try call the method if the method is a function
  */
-export function safeCall<T = unknown>(fn: ((...args: unknown[]) => T) | null | undefined, ...args: unknown[]): T | null {
+export function safeCall<T = unknown>(fn: ((...args: unknown[]) => T) | undefined, ...args: unknown[]): T {
     if (!fn) {
         return null
     }

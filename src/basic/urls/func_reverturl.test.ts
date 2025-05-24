@@ -4,7 +4,7 @@ import {revertURLPathParams} from './func'
 import SearchParams from './search_params'
 import SearchReference from './search_reference'
 
-function testURLBaseAlias(received: URLBase, expected: URLBase) {
+function testURLBaseReferences(received: URLBase, expected: URLBase) {
     const {base, hash, search} = received
     expect(base).toBe(expected.base)
     expect(hash).toBe(expected.hash)
@@ -15,7 +15,7 @@ function testURLBaseAlias(received: URLBase, expected: URLBase) {
 
 describe('revertURLPathParams', () => {
 
-    test('revertURLPathParams Alias', () => {
+    test('revertURLPathParams References', () => {
         const urlPattern = 'https://luexu.com/api/v1/users/{uid:uint64}/records/page/{page:int}?redirect={refer}&win={top:bool}#{hash:string}'
         const params = {
             'uid': 123n,
@@ -23,7 +23,7 @@ describe('revertURLPathParams', () => {
         }
         let search = new SearchParams({redirect: ''})
         search.references = new SearchReference([[HASH_REF_NAME, ['hash', ':string']], ['redirect', ['refer', ':string']], ['win', ['top', ':bool']]])
-        testURLBaseAlias(revertURLPathParams(urlPattern, params), {
+        testURLBaseReferences(revertURLPathParams(urlPattern, params), {
             base: 'https://luexu.com/api/v1/users/123/records/page/100',
             hash: '',
             search: search,
@@ -34,7 +34,7 @@ describe('revertURLPathParams', () => {
         search = new SearchParams({name: 'Aario', sex: 1, gender: 1})
         search.references = new SearchReference([[HASH_REF_NAME, ['hash', ':string']], ['sex', ['gender', ':uint8']]])
 
-        testURLBaseAlias(revertURLPathParams(urlPatternWithAlias, {
+        testURLBaseReferences(revertURLPathParams(urlPatternWithAlias, {
             uid: 1000n,
             page: 1,
             hash: 'alias',
@@ -58,7 +58,7 @@ describe('revertURLPathParams', () => {
 
     test('revertURLPathParams MapObject', () => {
         let search = new SearchParams({mark: "true", from: "me", hello: "", uid: "1000"})
-        testURLBaseAlias(revertURLPathParams(urlPatternNoParams, {uid: 1000n}), {
+        testURLBaseReferences(revertURLPathParams(urlPatternNoParams, {uid: 1000n}), {
             base: 'https://luexu.com/m',
             hash: '#top',
             search: search
@@ -68,13 +68,13 @@ describe('revertURLPathParams', () => {
         expect(() => revertURLPathParams(urlPatternSimple, {uid: ''})).toThrow(URLPathError)
 
         search = new SearchParams()
-        testURLBaseAlias(revertURLPathParams(urlPatternSimple, {uid: 0n}), {
+        testURLBaseReferences(revertURLPathParams(urlPatternSimple, {uid: 0n}), {
             base: 'https://luexu.com/api/v1/users/0',
             hash: '',
             search: search,
         })
         search = new SearchParams({hash: 'end'})
-        testURLBaseAlias(revertURLPathParams(urlPatternSimple, {uid: 1000n, hash: 'end'}), {
+        testURLBaseReferences(revertURLPathParams(urlPatternSimple, {uid: 1000n, hash: 'end'}), {
             base: 'https://luexu.com/api/v1/users/1000',
             hash: '',
             search: search
@@ -83,27 +83,27 @@ describe('revertURLPathParams', () => {
         expect(() => revertURLPathParams(urlPatternTyped, {uid: 'uid', hash: 'end'})).toThrow()
 
         search = new SearchParams({page: '1', hash: 'end', name: 'Aario', age: '18'})
-        testURLBaseAlias(revertURLPathParams(urlPatternTyped, {uid: 0n, page: 1, hash: 'end'}), {
+        testURLBaseReferences(revertURLPathParams(urlPatternTyped, {uid: 0n, page: 1, hash: 'end'}), {
             base: 'https://luexu.com/api/v1/users/0',
             hash: '#middle',
             search: search,
         })
         search = new SearchParams({hash: 'end'})
-        testURLBaseAlias(revertURLPathParams(urlPatternMixed, {uid: 0n, page: 1, hash: 'end'}), {
+        testURLBaseReferences(revertURLPathParams(urlPatternMixed, {uid: 0n, page: 1, hash: 'end'}), {
             base: 'https://luexu.com/api/v1/users/0/records/page/1',
             hash: '#middle',
             search: search,
         })
         search = new SearchParams({redirect: ''})
         search.references = new SearchReference([[HASH_REF_NAME, ['hash', ':string']]])
-        testURLBaseAlias(revertURLPathParams(urlPatternComplex, {uid: 1000n, page: 1, hash: 'end'}), {
+        testURLBaseReferences(revertURLPathParams(urlPatternComplex, {uid: 1000n, page: 1, hash: 'end'}), {
             base: '/api/v1/users/1000/records/page/1',
             hash: '#end',
             search: search,
         })
         search = new SearchParams({redirect: ''})
         search.references = new SearchReference([[HASH_REF_NAME, ['hash', ':string']]])
-        testURLBaseAlias(revertURLPathParams(urlPatternComplex, {uid: 1000n, page: 1, hash: 'end'}), {
+        testURLBaseReferences(revertURLPathParams(urlPatternComplex, {uid: 1000n, page: 1, hash: 'end'}), {
             base: '/api/v1/users/1000/records/page/1',
             hash: '#end',
             search: search,
@@ -112,7 +112,7 @@ describe('revertURLPathParams', () => {
 
     test('revertURLPathParams Map', () => {
         let search = new SearchParams({mark: "true", from: "me", hello: "", uid: "1000"})
-        testURLBaseAlias(revertURLPathParams(urlPatternNoParams, new Map([['uid', 1000n]])), {
+        testURLBaseReferences(revertURLPathParams(urlPatternNoParams, new Map([['uid', 1000n]])), {
             base: 'https://luexu.com/m',
             hash: '#top',
             search: search,
@@ -122,14 +122,14 @@ describe('revertURLPathParams', () => {
         expect(() => revertURLPathParams(urlPatternSimple, new Map([['uid', '']]))).toThrow(URLPathError)
 
         search = new SearchParams()
-        testURLBaseAlias(revertURLPathParams(urlPatternSimple, new Map([['uid', 0n]])), {
+        testURLBaseReferences(revertURLPathParams(urlPatternSimple, new Map([['uid', 0n]])), {
             base: 'https://luexu.com/api/v1/users/0',
             hash: '',
             search: search,
         })
 
         search = new SearchParams({hash: 'end'})
-        testURLBaseAlias(revertURLPathParams(urlPatternSimple, new Map<string, unknown>([['uid', 1000n], ['hash', 'end']])), {
+        testURLBaseReferences(revertURLPathParams(urlPatternSimple, new Map<string, unknown>([['uid', 1000n], ['hash', 'end']])), {
             base: 'https://luexu.com/api/v1/users/1000',
             hash: '',
             search: search,
@@ -139,14 +139,14 @@ describe('revertURLPathParams', () => {
 
 
         search = new SearchParams({page: '1', hash: 'end', name: 'Aario', age: '18'})
-        testURLBaseAlias(revertURLPathParams(urlPatternTyped, new Map<string, unknown>([['uid', 0n], ['hash', 'end'], ['page', 1]])), {
+        testURLBaseReferences(revertURLPathParams(urlPatternTyped, new Map<string, unknown>([['uid', 0n], ['hash', 'end'], ['page', 1]])), {
             base: 'https://luexu.com/api/v1/users/0',
             hash: '#middle',
             search: search,
         })
 
         search = new SearchParams({hash: 'end'})
-        testURLBaseAlias(revertURLPathParams(urlPatternMixed, new Map<string, unknown>([['uid', 0n], ['page', 1], ['hash', 'end']])), {
+        testURLBaseReferences(revertURLPathParams(urlPatternMixed, new Map<string, unknown>([['uid', 0n], ['page', 1], ['hash', 'end']])), {
             base: 'https://luexu.com/api/v1/users/0/records/page/1',
             hash: '#middle',
             search: search,
@@ -154,7 +154,7 @@ describe('revertURLPathParams', () => {
 
         search = new SearchParams({redirect: ''})
         search.references = new SearchReference([[HASH_REF_NAME, ['hash', ':string']]])
-        testURLBaseAlias(revertURLPathParams(urlPatternComplex, new Map<string, unknown>([['uid', 1000n], ['page', 1], ['hash', 'end']])), {
+        testURLBaseReferences(revertURLPathParams(urlPatternComplex, new Map<string, unknown>([['uid', 1000n], ['page', 1], ['hash', 'end']])), {
             base: '/api/v1/users/1000/records/page/1',
             hash: '#end',
             search: search,
@@ -163,7 +163,7 @@ describe('revertURLPathParams', () => {
 
     test('revertURLPathParams URLSearchParams', () => {
         let search = new SearchParams({mark: "true", from: "me", hello: "", uid: "1000"})
-        testURLBaseAlias(revertURLPathParams(urlPatternNoParams, new URLSearchParams('uid=1000')), {
+        testURLBaseReferences(revertURLPathParams(urlPatternNoParams, new URLSearchParams('uid=1000')), {
             base: 'https://luexu.com/m',
             hash: '#top',
             search: search,
@@ -173,14 +173,14 @@ describe('revertURLPathParams', () => {
         expect(() => revertURLPathParams(urlPatternSimple, new URLSearchParams('uid=&page=2'))).toThrow(URLPathError)
 
         search = new SearchParams()
-        testURLBaseAlias(revertURLPathParams(urlPatternSimple, new URLSearchParams('uid=0')), {
+        testURLBaseReferences(revertURLPathParams(urlPatternSimple, new URLSearchParams('uid=0')), {
             base: 'https://luexu.com/api/v1/users/0',
             hash: '',
             search: search,
         })
 
         search = new SearchParams({hash: 'end'})
-        testURLBaseAlias(revertURLPathParams(urlPatternSimple, new URLSearchParams('uid=1000&hash=end')), {
+        testURLBaseReferences(revertURLPathParams(urlPatternSimple, new URLSearchParams('uid=1000&hash=end')), {
             base: 'https://luexu.com/api/v1/users/1000',
             hash: '',
             search: search,
@@ -191,7 +191,7 @@ describe('revertURLPathParams', () => {
 
 
         search = new SearchParams({page: '1', hash: 'end', name: 'Aario', age: '18'})
-        testURLBaseAlias(revertURLPathParams(urlPatternTyped, new URLSearchParams('uid=0&page=1&hash=end')), {
+        testURLBaseReferences(revertURLPathParams(urlPatternTyped, new URLSearchParams('uid=0&page=1&hash=end')), {
             base: 'https://luexu.com/api/v1/users/0',
             hash: '#middle',
             search: search,
@@ -199,7 +199,7 @@ describe('revertURLPathParams', () => {
 
 
         search = new SearchParams({hash: 'end'})
-        testURLBaseAlias(revertURLPathParams(urlPatternMixed, new URLSearchParams('uid=0&page=1&hash=end')), {
+        testURLBaseReferences(revertURLPathParams(urlPatternMixed, new URLSearchParams('uid=0&page=1&hash=end')), {
             base: 'https://luexu.com/api/v1/users/0/records/page/1',
             hash: '#middle',
             search: search,
@@ -208,7 +208,7 @@ describe('revertURLPathParams', () => {
 
         search = new SearchParams({redirect: ''})
         search.references = new SearchReference([[HASH_REF_NAME, ['hash', ':string']]])
-        testURLBaseAlias(revertURLPathParams(urlPatternComplex, new URLSearchParams('uid=1000&page=1&hash=end')), {
+        testURLBaseReferences(revertURLPathParams(urlPatternComplex, new URLSearchParams('uid=1000&page=1&hash=end')), {
             base: '/api/v1/users/1000/records/page/1',
             hash: '#end',
             search: search

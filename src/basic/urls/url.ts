@@ -1,6 +1,5 @@
 import {buildURL, normalizeSearchParams, normalizeURLWithMethod, revertURLPathParams} from "./func";
 import {
-    t_bool,
     t_booln,
     t_char,
     t_float64,
@@ -88,13 +87,6 @@ export default class AaURL {
         this.searchParams = normalizeSearchParams(new SearchParams(u.searchParams), options?.params)
     }
 
-    get xStringify(): boolean {
-        return this.searchParams.xStringify
-    }
-
-    set xStringify(value: t_bool) {
-        this.searchParams.xStringify = value
-    }
 
     get hash(): string {
         return this.#hashPattern

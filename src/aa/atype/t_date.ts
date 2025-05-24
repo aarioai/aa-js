@@ -14,7 +14,7 @@ export function a_dist(n: number): t_dist {
 }
 
 
-export function tzdate(s: string | t_timestamp | Date | TZDate, timezone?: string): TZDate | null {
+export function tzdate(s: string | t_timestamp | Date | TZDate, timezone?: string): TZDate {
     if (!s) {
         return null
     }

@@ -40,7 +40,7 @@ export function translate(text: string, d?: Dictionary): string {
 
 const dictionaryPatternCache = new Map<string, RegExp>()
 
-export function findDictionaryPattern(text: string, d: Dictionary): { pattern: string | null, values: string[] } {
+export function findDictionaryPattern(text: string, d: Dictionary): { pattern: string, values: string[] } {
     if (d[text]) {
         return {
             pattern: text,

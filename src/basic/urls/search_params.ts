@@ -1,13 +1,12 @@
 import {deepEncodeURI, parseURLSearch} from './func'
-import {Callback, MapObject} from '../../aa/atype/a_define_interfaces'
-import {a_bool, a_string} from '../../aa/atype/t_basic'
-import {FALSE, TRUE} from '../../aa/atype/a_server_consts'
+import {Callback, MapObjectable} from '../../aa/atype/a_define_interfaces'
+import {a_string} from '../../aa/atype/t_basic'
 import {HASH_REF_NAME, NewChangeReferrerError, ParamsType, safePathParamValue, SearchParamsAcceptType} from './base'
 import SearchReference from './search_reference'
-import {P_Stringify} from '../../aa/aconfig/const_param'
 import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
-import {t_bool} from '../../aa/atype/a_define'
 import {BREAK} from '../../aa/atype/a_define_enums'
+import {StringMap} from 'ts-jest'
+import json from '../../aa/atype/json'
 
 
 /**
@@ -15,47 +14,36 @@ import {BREAK} from '../../aa/atype/a_define_enums'
  *  1. JSON.stringify(new URLSearchParams('a=100'))  returns '{}', but not {"a":"100"}
  *  2. Jest URLSearchParams does not have `size` property
  */
-export default class SearchParams {
-    params: MapObject<string> = {}   // Disable arrays, e.g.  a[]=100&a[]=200 is not allowed
+export default class SearchParams implements MapObjectable {
+    params: StringMap   // Disable arrays, e.g.  a[]=100&a[]=200 is not allowed
     references: SearchReference = new SearchReference()
     sortFunc: SortFunc = ASCEND
     tidy: boolean = true
     encode: (s: string) => string = deepEncodeURI
 
     constructor(searchString?: SearchParamsAcceptType) {
-        this.params[P_Stringify] = String(TRUE)
+        this.params = new Map<string, string>()
         if (searchString) {
             this.setMany(searchString)
         }
     }
 
     get size(): number {
-        return this.keys().length
+        return this.params.size
     }
 
-    get xStringify(): boolean {
-        return a_bool(this.get(P_Stringify))
-    }
 
-    set xStringify(value: t_bool) {
-        const v = a_bool(value)
-        if (v) {
-            this.set(P_Stringify, String(TRUE))
-        } else {
-            this.delete(P_Stringify)
-        }
+    clear() {
+        this.params.clear()
     }
 
     delete(name: string, value?: unknown) {
         if (this.has(name, value)) {
-            delete this.params[name]
+            this.params.delete(name)
             return
         }
     }
 
-    entries(): [string, string][] {
-        return Object.entries(this.params)
-    }
 
     forEach(callback: Callback<string, string>, thisArg?: unknown) {
         if (thisArg) {
@@ -68,21 +56,21 @@ export default class SearchParams {
         }
     }
 
-    get(name: string): string | null {
-        if (!name || !this.params.hasOwnProperty(name)) {
+    get(name: string): string {
+        if (!name || !this.params.has(name)) {
             return null // as URLSearchParams interface
         }
-        return this.params[name]
+        return this.params.get(name)
     }
 
-    getHashName(): string | null {
+    getHashName(): string {
         if (this.references && this.references.has(HASH_REF_NAME)) {
             return this.references.get(HASH_REF_NAME)[0]
         }
         return null
     }
 
-    getHash(): string | null {
+    getHash(): string {
         const hashName = this.getHashName()
         if (!hashName) {
             return null
@@ -92,21 +80,18 @@ export default class SearchParams {
     }
 
     has(name: string, value?: unknown): boolean {
-        if (!this.params.hasOwnProperty(name)) {
+        if (!this.params.has(name)) {
             return false
         }
         if (typeof value === 'undefined') {
             return true
         }
-        return a_string(value) === this.params[name]
+        return a_string(value) === this.params.get(name)
     }
 
-    keys(): string[] {
-        return Object.keys(this.params)
-    }
 
     reset(params?: SearchParamsAcceptType) {
-        this.params = {}
+        this.params.clear()
         if (params) {
             this.setMany(params)
         }
@@ -115,29 +100,19 @@ export default class SearchParams {
 
     set(name: string, value: unknown) {
         const v = a_string(value)
-        if (name == P_Stringify && v === String(FALSE)) {
-            this.delete(name)
-            return
-        }
 
         if (this.references.has(name)) {
             throw NewChangeReferrerError(name, this.references.getReference(name))
         }
 
-        this.params[name] = v
+        this.params.set(name, v)
 
         // Set all parameters that reference to this parameter to this value
         const refs = this.references.referrers(name)
         if (refs?.length) {
             for (const [key, type] of refs) {
-                this.params[key] = safePathParamValue(v, type)
+                this.params.set(key, safePathParamValue(v, type))
             }
-        }
-    }
-
-    setFromEntries(entries: [string, unknown][]) {
-        for (const [key, value] of entries) {
-            this.set(key, value)
         }
     }
 
@@ -153,7 +128,9 @@ export default class SearchParams {
         if (!valid) {
             return
         }
-        this.setFromEntries(Object.entries(search))
+        for (const [key, value] of Object.entries(search)) {
+            this.set(key, value)
+        }
     }
 
 
@@ -165,22 +142,18 @@ export default class SearchParams {
             this.setFromSearch(params)
             return
         }
-        if (params instanceof SearchParams) {
-            this.setFromEntries(params.entries())
-            return
-        }
-        if (params instanceof Map) {
-            this.setFromEntries(params.entries() as any)
-            return
-        }
-        if (params instanceof URLSearchParams) {
-            // Jest URLSearchParams not support `size` and `entries()` yet
-            params.forEach((value, key) => {
+        // Handle ForEachIterable, e.g. SearchParams, URLSearchParams, Map
+        if (typeof params.forEach === 'function') {
+            params.forEach((value: unknown, key: string) => {
                 this.set(key, value)
             })
             return
         }
-        this.setFromEntries(Object.entries(params))
+
+        // Fallback, e.g. MapObject
+        for (const [key, value] of Object.entries(params)) {
+            this.set(key, value)
+        }
     }
 
     /**
@@ -198,12 +171,15 @@ export default class SearchParams {
 
 
     toJSON(): string {
-        return this.toString()
+        return json.MarshalMap(this.params)
+    }
+
+    toMap(): StringMap {
+        return this.params
     }
 
     toString(): string {
-
-        let keys = this.keys()
+        let keys = Array.from(this.params.keys())
         if (keys.length === 0) {
             return ''
         }
@@ -235,13 +211,25 @@ export default class SearchParams {
         return s.slice(1)
     }
 
-    values(): string[] {
-        return Object.values(this.params)
-    }
-
-    * [Symbol.iterator](): IterableIterator<[string, any]> {
-        for (const [key, value] of this.entries()) {
-            yield [key, value]
+    * keys(): MapIterator<string> {
+        for (const key of Object.keys(this.params)) {
+            yield key
         }
     }
+
+    * values(): MapIterator<string> {
+        for (const value of Object.values(this.params)) {
+            yield value
+        }
+    }
+
+    * entries(): IterableIterator<[string, string]> {
+        yield* this.params.entries()
+    }
+
+    * [Symbol.iterator](): IterableIterator<[string, string]> {
+        yield* this.entries()
+    }
+
+
 }
