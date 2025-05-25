@@ -1,5 +1,5 @@
 import {describe, expect, test} from '@jest/globals'
-import {assignObjects} from './merge_func'
+import {assignObjects} from './groups'
 
 describe('map objects merging functions', () => {
     test('assignMapObject', () => {

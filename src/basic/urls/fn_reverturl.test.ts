@@ -1,6 +1,6 @@
 import {HASH_REF_NAME, URLBase, URLPathError} from './base'
 import {describe, expect, test} from '@jest/globals'
-import {revertURLPathParams} from './func'
+import {revertURLPathParams} from './fn'
 import SearchParams from './search_params'
 import SearchReference from './search_reference'
 
@@ -9,7 +9,7 @@ function testURLBaseReferences(received: URLBase, expected: URLBase) {
     expect(base).toBe(expected.base)
     expect(hash).toBe(expected.hash)
     expect(search.sort().toString()).toBe(expected.search.sort().toString())
-    expect(search.references.toMap()).toEqual(expected.search.references.toMap())
+    expect(search.references.sort().toString()).toBe(expected.search.references.sort().toString())
 }
 
 

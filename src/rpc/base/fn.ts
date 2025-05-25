@@ -2,7 +2,7 @@ import {t_httpmethod} from '../../aa/atype/a_define_enums'
 import {t_api_pattern} from '../../basic/urls/base'
 import {NormalizedRequestOptions, RequestOptions} from './define_interfaces'
 import AaURL from '../../basic/urls/url'
-import {fillObjects} from '../../basic/maps/merge_func'
+import {fillObjects} from '../../basic/maps/groups'
 import defaults from './defaults'
 
 function fileChecksum(file: File): string {
@@ -71,7 +71,7 @@ export function getBaseURL(opts: RequestOptions): string {
 
 export function normalizeRequestOptions(apiPattern: t_api_pattern, opts: RequestOptions): NormalizedRequestOptions {
     const url = new AaURL(apiPattern, {
-        method: opts?.method,
+        method: opts?.method ?? 'GET',
         baseURL: getBaseURL(opts),
         params: opts?.params,
     })

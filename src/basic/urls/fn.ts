@@ -1,12 +1,12 @@
 import {joinPath, parseBaseName, splitPath} from "../strings/path_func"
 import {
+    CONTINUE,
     HTTP_METHODS,
     path_param_string_t,
     PATH_PARAM_TESTER,
     PATH_PARAMS_MATCHER,
     t_httpmethod
 } from "../../aa/atype/a_define_enums"
-import {a_string} from '../../aa/atype/t_basic'
 import {HASH_REF_NAME, ParamsType, PathParamMap, safePathParamValue, t_api_pattern, URLBase, URLPathError} from './base'
 import {t_path_param} from '../../aa/atype/a_define'
 import {AnyMap, MapObject} from '../../aa/atype/a_define_interfaces'
@@ -237,42 +237,45 @@ export function searchParam(params: SearchParams | URLSearchParams | MapObject |
 
 
 export function normalizeSearchParams<T extends SearchParams = SearchParams>(target: T, source?: ParamsType): T {
+    let typedSource: SearchParams
     // merge SearchParams alias
     if (source instanceof SearchParams) {
-        target.references.spread(source.references)
+        typedSource = source
+        typedSource.references.merge(source.references)
     } else {
-        source = new SearchParams(source)
+        typedSource = new SearchParams(source)
     }
     const set: string[] = []
     // Handle parameter alias, e.g. winner={max_score}&best={winner:string}
-    for (const [key, value] of target.entries()) {
+
+    target.forEach((value, key) => {
         if (!value || value.length < 3) {
-            continue   // pattern requires at least 3 chars (e.g. {x})
+            return CONTINUE   // pattern requires at least 3 chars (e.g. {x})
         }
         const match = value.match(PATH_PARAM_TESTER)
         if (!match) {
-            continue
+            return CONTINUE
         }
         const [, , name, paramType,] = match
         set.push(key)
-        const v = safePathParamValue(searchParam(source, name), paramType)
+        const v = safePathParamValue(searchParam(typedSource, name), paramType)
         if (key !== name) {
-            target.references.set(key, name, paramType)
+            target.references.set(key, [name, paramType])
             set.push(name)
             target.set(name, v)  // set reference will sync to all its referrers
         } else {
             target.set(key, v)
         }
-    }
+    })
 
-    for (const [key, value] of source.entries()) {
+    typedSource.forEach((value, key) => {
         if (set.includes(key)) {
-            continue
+            return
         }
         if (!target.references.has(key)) {
-            target.set(key, a_string(value))
+            target.set(key, value)
         }
-    }
+    })
     return target
 }
 
@@ -413,7 +416,7 @@ export function revertURLPathParams(urlPattern: t_api_pattern, params: ParamsTyp
             if (hash) {
                 hash = '#' + hash
             }
-            search.references.set(HASH_REF_NAME, name, paramType)
+            search.references.set(HASH_REF_NAME, [name, paramType])
             hashAlias = name
         }
     }

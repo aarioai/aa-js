@@ -1,4 +1,4 @@
-import {buildURL, normalizeSearchParams, normalizeURLWithMethod, revertURLPathParams} from "./func";
+import {buildURL, normalizeSearchParams, normalizeURLWithMethod, revertURLPathParams} from "./fn";
 import {
     t_booln,
     t_char,
@@ -38,12 +38,12 @@ import {
     uint64b,
     uint8
 } from "../../aa/atype/t_basic";
-import {ParamsType, SearchParamsAcceptType, t_api_pattern, URLOptions} from './base'
+import {ParamsType, t_api_pattern, t_searchparam, URLOptions} from './base'
 import {a_weekday} from '../../aa/atype/t_basic_server'
 import SearchParams from './search_params'
 import {t_httpmethod} from '../../aa/atype/a_define_enums'
 import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
-import {MapCallback} from '../../aa/atype/a_define_interfaces'
+import {MapCallbackFn} from '../maps/base'
 
 
 export default class AaURL {
@@ -248,8 +248,8 @@ export default class AaURL {
         return this.searchParams.references.has(name)
     }
 
-    setReference(name: string, ref: string, type: t_path_param) {
-        this.searchParams.references.set(name, ref, type)
+    setReference(name: string, value: [string, t_path_param]) {
+        this.searchParams.references.set(name, value)
     }
 
     deleteReference(name: string) {
@@ -260,7 +260,7 @@ export default class AaURL {
         return this.searchParams.references.get(name)
     }
 
-    forEachReference(callback: MapCallback<[string, t_path_param]>, thisArg?: any) {
+    forEachReference(callback: MapCallbackFn<[string, t_path_param]>, thisArg?: any) {
         this.searchParams.references.forEach(callback, thisArg)
     }
 
@@ -269,7 +269,7 @@ export default class AaURL {
         return this
     }
 
-    resetParams(params?: SearchParamsAcceptType): AaURL {
+    resetParams(params?: t_searchparam): AaURL {
         this.searchParams.reset(params)
         return this
     }
@@ -280,15 +280,7 @@ export default class AaURL {
     }
 
     setParams(params?: ParamsType): AaURL {
-        if (!params) {
-            return this
-        }
-        if (!(params instanceof SearchParams)) {
-            params = new SearchParams(params)
-        }
-        for (const [key, value] of params.entries()) {
-            this.setParam(key, value)
-        }
+        this.searchParams.setMany(params)
         return this
     }
 

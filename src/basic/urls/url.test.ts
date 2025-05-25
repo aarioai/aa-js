@@ -3,7 +3,6 @@ import AaURL from './url'
 import {NewChangeReferrerError, URLPathError} from './base'
 
 describe('AaURL with absolute URL', () => {
-
     test(`AaURL simple`, () => {
         const base = 'https://luexu.com/api/v1/users/{uid:uint64}'
         const url = new AaURL(base)
@@ -33,8 +32,6 @@ describe('AaURL with absolute URL', () => {
         url.tidy = false
         expect(url.href).toBe('https://luexu.com/api/v1/users/1?nation=Singapore&redirect=')
     })
-
-
 })
 
 
@@ -53,6 +50,9 @@ describe('AaURL with relative URL', () => {
     })
 
     test(`AaURL simple relative URL`, () => {
+        const simple = '/api/v1/users/1/groups/g?redirect={refer}'
+        expect(new AaURL(simple).toString()).toBe('https://luexu.com/api/v1/users/1/groups/g')
+
         const base = '/api/v1/users/{uid:uint64}/groups/{group_tag}?redirect={refer}'
         const url = new AaURL(base)
         expect(() => url.href).toThrow(URLPathError)
@@ -65,6 +65,7 @@ describe('AaURL with relative URL', () => {
         })
         expect(url.host).toBe('luexu.com')
         expect(url.pathname).toBe('/api/v1/users/%7Buid:uint64%7D/groups/%7Bgroup_tag%7D')
+
         expect(url.toString()).toBe('https://luexu.com/api/v1/users/10000/groups/classmates')
 
         url.setParam('name', 'Aario')

@@ -2,6 +2,25 @@ import {ZERO_VALUES} from "../../aa/atype/a_server_consts";
 import {MapObject} from '../../aa/atype/a_define_interfaces'
 import {KV} from './base'
 
+// Converts a KV object to a Map instance
+export function mapizeKV<V = unknown, K = string>(source: KV): Map<K, V> {
+    if (!source) {
+        return new Map<K, V>()
+    }
+    if (source instanceof Map) {
+        return source as Map<K, V>
+    }
+    if ('map' in source && source.map instanceof Map) {
+        return source.map as Map<K, V>
+    }
+
+    // Handle Iterable Array<[key:string, value:unknown]>
+    if (Array.isArray(source)) {
+        return new Map<K, V>(source)
+    }
+    // Fallback to plain object
+    return new Map<K, V>(Object.entries(source) as [K, V][])
+}
 
 export function getKV(target: KV, key: string): unknown {
     if (!target) {
@@ -11,7 +30,7 @@ export function getKV(target: KV, key: string): unknown {
     if (typeof target.get === 'function') {
         return target.get(key)
     }
-    // Fallback to plain object access
+    // Fallback to plain object
     return target.hasOwnProperty(key) ? target[key] : undefined
 }
 

@@ -1,8 +1,8 @@
 import {a_booln, a_string, int16, int32, int64b, int8, uint16, uint32, uint64b, uint8} from '../../aa/atype/t_basic'
 import {t_path_param} from '../../aa/atype/a_define'
 import SearchParams from './search_params'
-import {AnyMap, MapObject} from '../../aa/atype/a_define_interfaces'
 import {t_httpmethod} from '../../aa/atype/a_define_enums'
+import {IterableKV} from '../maps/base'
 
 export type URLBase = {
     base: string,
@@ -31,8 +31,10 @@ export class URLPathError extends Error {
 
 }
 
-export type SearchParamsAcceptType = string | URLSearchParams | MapObject | AnyMap
-export type ParamsType = SearchParamsAcceptType | SearchParams
+// Search param types, string for a=100&b=200
+export type t_searchparam = string | IterableKV | URLSearchParams
+
+export type ParamsType = t_searchparam | SearchParams
 
 
 export function NewChangeReferrerError(referer: string, reference: string): Error {

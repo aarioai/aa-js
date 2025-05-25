@@ -2,10 +2,60 @@ import {MapObject} from '../../aa/atype/a_define_interfaces'
 import {E_MissingArgument} from '../aerror/errors'
 import {KV} from './base'
 import {forEach} from './iterates'
-import {isMeaningfulValue} from './base_func'
+import {isMeaningfulValue} from './base_fn'
 import {getKV, setKV} from './kv'
 import {coerceType, zeroize} from '../../aa/atype/t_basic'
+import {BREAK} from '../../aa/atype/a_define_enums'
 
+
+export function compareAny(a: unknown, b: unknown): boolean {
+    if (!a && !b) {
+        return a === b
+    }
+    if (!a || !b) {
+        return false
+    }
+    if (typeof a !== 'object') {
+        return a === b
+    }
+    if (Array.isArray(a)) {
+        const lenA = a.length
+        if (!Array.isArray(b) || lenA !== b.length) {
+            return false
+        }
+        for (let i = 0; i < lenA; i++) {
+            if (!compareAny(a[i], b[i])) {
+                return false
+            }
+        }
+        return true
+    }
+
+    return compare(a as any, b as any)
+}
+
+export function compare(a: KV, b: KV): boolean {
+    if (!a && !b) {
+        return a === b
+    }
+    if (!a || !b) {
+        return false
+    }
+    const sizeA = a.size
+    const sizeB = b.size
+    if (typeof sizeA === 'number' && typeof sizeB === 'number' && sizeA !== sizeB) {
+        return false
+    }
+    let same = true
+    forEach(a, (valueA, key) => {
+        const valueB = getKV(b, key)
+        if (!compareAny(valueA, valueB)) {
+            same = false
+            return BREAK
+        }
+    })
+    return same
+}
 
 /**
  * Assigns from a source KV object to a target KV object

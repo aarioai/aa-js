@@ -1,107 +1,111 @@
 import {t_path_param} from '../../aa/atype/a_define'
-import {BREAK, path_param_string_t} from '../../aa/atype/a_define_enums'
-import {AaMap, MapCallback} from '../../aa/atype/a_define_interfaces'
-import json from '../../aa/atype/json'
+import AaMap from '../maps/map'
+import {ParamsType} from './base'
+import {parseURLSearch} from './fn'
+import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
+import {path_param_string_t} from '../../aa/atype/a_define_enums'
 
-export default class SearchReference implements AaMap {
-    readonly isAaMap: boolean = true
-    readonly [Symbol.toStringTag] = 'SearchReference'
-    private readonly map: Map<string, [string, t_path_param]>
+export default class SearchReference<V = [string, t_path_param]> extends AaMap<V> {
+    [Symbol.toStringTag] = 'SearchReference'
+    sortFunc: SortFunc = ASCEND
 
-    constructor(iterable?: Iterable<any>) {
-        this.map = new Map<string, [string, t_path_param]>(iterable)
-    }
- 
-    get size(): number {
-        return this.map.size
-    }
-
-    spread(source?: SearchReference, overwrite: boolean = false) {
+    constructor(source?: ParamsType) {
+        super()
         if (!source) {
             return
         }
-        if (source instanceof SearchReference) {
-            for (const [key, [ref, type]] of source.entries()) {
-                if (!overwrite && this.has(key)) {
-                    continue
-                }
-                this.set(key, ref, type)
-            }
+        this.setMany(source)
+    }
+
+    readonly cast = (v: [string, t_path_param?]): V => {
+        if (!v[1]) {
+            v[1] = path_param_string_t
         }
+        return v as V
+    }
+
+    /**
+     * Sets parameters from a search string
+     * @example
+     *  setFromSearch('a={a:uint}&b={b}')
+     */
+    setFromSearch(searchString: string) {
+        const {valid, search} = parseURLSearch(searchString)
+        if (!valid) {
+            return
+        }
+        for (const [key, value] of Object.entries(search)) {
+            this.set(key, [value, path_param_string_t])
+        }
+    }
+
+    set(key: string, value: [string, t_path_param?] | undefined): this {
+        if (!value) {
+            return
+        }
+        super.set(key, value)
+        return this
+    }
+
+    setMany(source?: ParamsType): this {
+        if (!source) {
+            return this
+        }
+        if (typeof source === 'string') {
+            this.setFromSearch(source)
+            return this
+        }
+
+        super.setMany(source)
+        return this
+    }
+
+    /**
+     * Sets sort function, default is Ascend
+     *
+     * @example
+     *  sort(null)      // Disable sorting
+     *  sort()          // Default Ascend sort
+     *  sort(Descend)  // Descend sort
+     */
+    sort(sortFunc: SortFunc = ASCEND): this {
+        this.sortFunc = sortFunc
+        return this
     }
 
     referrers(reference: string): [string, t_path_param][] {
         const result: [string, t_path_param][] = []
-        for (const [referer, [ref, type]] of this.entries()) {
-            if (ref === reference) {
-                result.push([referer, type])
+        this.forEach((ref, referer) => {
+            if (ref[0] === reference) {
+                result.push([referer, ref[1]])
             }
-        }
+        })
         return result
     }
 
-    clear() {
-        this.map.clear()
-    }
-
-
-    delete(name: string): boolean {
-        return this.map.delete(name)
-    }
-
-
-    forEach(callback: MapCallback<[string, t_path_param], string>, thisArg?: any) {
-        let stop = false
-        this.map.forEach((value, key) => {
-            if (stop) {
-                return
-            }
-            if (BREAK === callback(value, key)) {
-                stop = true
-            }
-        }, thisArg)
-    }
-
-    get(name: string): [string, t_path_param] {
-        return this.map.get(name)
-    }
 
     getReference(name: string): string {
         return this.get(name)[0]
     }
 
-    has(name: string): boolean {
-        return this.map.has(name)
+    toString(): string {
+        let keys = this.keysArray()
+        if (keys.length === 0) {
+            return ''
+        }
+        if (this.sortFunc) {
+            keys.sort(this.sortFunc)
+        }
+        let s = ''
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i]
+            const value = this.get(key)
+            s += `&${key}=${value}`
+        }
+        if (!s) {
+            return ''
+        }
+        return s.slice(1)
     }
 
-
-    set(name: string, ref: string, type: t_path_param = path_param_string_t): this {
-        this.map.set(name, [ref, type])
-        return this
-    }
-
-    toJSON(): string {
-        return json.MarshalMap(this.map)
-    }
-
-    toMap(): Map<string, [string, t_path_param]> {
-        return this.map
-    }
-
-    entries(): MapIterator<[string, [string, t_path_param]]> {
-        return this.map.entries()
-    }
-
-    keys(): MapIterator<string> {
-        return this.map.keys()
-    }
-
-    values(): MapIterator<[string, t_path_param]> {
-        return this.map.values()
-    }
-
-
-    [Symbol.iterator](): IterableIterator<[string, [string, t_path_param]]> {
-        return this.map[Symbol.iterator]()
-    }
 }

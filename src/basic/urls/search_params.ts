@@ -1,12 +1,9 @@
-import {deepEncodeURI, parseURLSearch} from './func'
-import {AaMap, MapCallback} from '../../aa/atype/a_define_interfaces'
+import {deepEncodeURI, parseURLSearch} from './fn'
 import {a_string} from '../../aa/atype/t_basic'
-import {HASH_REF_NAME, NewChangeReferrerError, ParamsType, safePathParamValue, SearchParamsAcceptType} from './base'
-import SearchReference from './search_reference'
+import {HASH_REF_NAME, NewChangeReferrerError, ParamsType, safePathParamValue} from './base'
 import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
-import {BREAK} from '../../aa/atype/a_define_enums'
-import {StringMap} from 'ts-jest'
-import json from '../../aa/atype/json'
+import AaMap from '../maps/map'
+import SearchReference from './search_reference'
 
 
 /**
@@ -17,63 +14,30 @@ import json from '../../aa/atype/json'
  * Cons:
  *  1. SearchParams not support array search params, e.g.  a[]=100&a[]=200 is not allowed
  */
-export default class SearchParams implements AaMap {
-    readonly isAaMap: boolean = true
+export default class SearchParams extends AaMap<string> {
+    [Symbol.toStringTag] = 'SearchParams'
+    readonly cast = a_string as any
+    readonly isAaMap = true
     references: SearchReference = new SearchReference()
     sortFunc: SortFunc = ASCEND
     tidy: boolean = true
     encode: (s: string) => string = deepEncodeURI
-    readonly [Symbol.toStringTag] = 'SearchParams'
-    private readonly map: StringMap = new Map<string, string>()
 
-    constructor(searchString?: SearchParamsAcceptType) {
-        if (searchString) {
-            this.setMany(searchString)
-        }
+
+    constructor(source?: ParamsType) {
+        super()
+        this.setMany(source)
     }
 
-    get size(): number {
-        return this.map.size
-    }
 
-    clear() {
-        this.map.clear()
-    }
-
-    delete(name: string, value?: unknown): boolean {
-        if (this.has(name, value)) {
-            this.map.delete(name)
-            return
-        }
-    }
-
-    forEach(callback: MapCallback<string, string>, thisArg?: unknown) {
-        let stop = false
-        this.map.forEach((value, key) => {
-            if (stop) {
-                return
-            }
-            if (BREAK === callback(value, key)) {
-                stop = true
-            }
-        }, thisArg)
-    }
-
-    get(name: string): string {
-        if (!name || !this.map.has(name)) {
-            return null // as URLSearchParams interface
-        }
-        return this.map.get(name)
-    }
-
-    getHashName(): string {
-        if (this.references && this.references.has(HASH_REF_NAME)) {
+    getHashName(): string | null {
+        if (this.references.has(HASH_REF_NAME)) {
             return this.references.get(HASH_REF_NAME)[0]
         }
         return null
     }
 
-    getHash(): string {
+    getHash(): string | null {
         const hashName = this.getHashName()
         if (!hashName) {
             return null
@@ -82,25 +46,14 @@ export default class SearchParams implements AaMap {
         return (!hash || hash.startsWith('#')) ? hash : ('#' + hash)
     }
 
-    has(name: string, value?: unknown): boolean {
-        if (!this.map.has(name)) {
-            return false
-        }
-        if (typeof value === 'undefined') {
-            return true
-        }
-        return a_string(value) === this.map.get(name)
-    }
-
-    reset(params?: SearchParamsAcceptType) {
+    reset(source?: ParamsType): this {
         this.map.clear()
-        if (params) {
-            this.setMany(params)
-        }
+        this.setMany(source)
+        return this
     }
 
     set(name: string, value: unknown): this {
-        const v = a_string(value)
+        const v = this.cast(value)
 
         if (this.references.has(name)) {
             throw NewChangeReferrerError(name, this.references.getReference(name))
@@ -110,13 +63,25 @@ export default class SearchParams implements AaMap {
 
         // Set all parameters that reference to this parameter to this value
         const refs = this.references.referrers(name)
-        if (refs?.length) {
-            for (const [key, type] of refs) {
-                this.map.set(key, safePathParamValue(v, type))
-            }
+        for (let i = 0; i < refs.length; i++) {
+            const [key, type] = refs[i]
+            this.map.set(key, safePathParamValue(v, type))
         }
         return this
     }
+
+    setMany(source?: ParamsType): this {
+        if (!source) {
+            return this
+        }
+        if (typeof source === 'string') {
+            return this.setFromSearch(source)
+        }
+
+        super.setMany(source)
+        return this
+    }
+
 
     /**
      * Sets parameters from a search string
@@ -125,36 +90,15 @@ export default class SearchParams implements AaMap {
      * @example
      *  setFromSearch('a=100&a==300')       // set a=300
      */
-    setFromSearch(searchString: string) {
+    setFromSearch(searchString: string): this {
         const {valid, search} = parseURLSearch(searchString)
         if (!valid) {
-            return
+            return this
         }
         for (const [key, value] of Object.entries(search)) {
             this.set(key, value)
         }
-    }
-
-    setMany(params: ParamsType) {
-        if (!params) {
-            return
-        }
-        if (typeof params === 'string') {
-            this.setFromSearch(params)
-            return
-        }
-        // Handle ForEachIterable, e.g. SearchParams, URLSearchParams, Map
-        if (typeof params.forEach === 'function') {
-            params.forEach((value: unknown, key: string) => {
-                this.set(key, value)
-            })
-            return
-        }
-
-        // Fallback, e.g. MapObject
-        for (const [key, value] of Object.entries(params)) {
-            this.set(key, value)
-        }
+        return this
     }
 
     /**
@@ -165,21 +109,14 @@ export default class SearchParams implements AaMap {
      *  sort()          // Default Ascend sort
      *  sort(Descend)  // Descend sort
      */
-    sort(sortFunc?: SortFunc): SearchParams {
-        this.sortFunc = sortFunc || sortFunc === null ? sortFunc : ASCEND
+    sort(sortFunc: SortFunc = ASCEND): SearchParams {
+        this.sortFunc = sortFunc
         return this
     }
 
-    toJSON(): string {
-        return json.MarshalMap(this.map)
-    }
-
-    toMap(): StringMap {
-        return this.map
-    }
 
     toString(): string {
-        let keys = Array.from(this.map.keys())
+        let keys = this.keysArray()
         if (keys.length === 0) {
             return ''
         }
@@ -189,7 +126,8 @@ export default class SearchParams implements AaMap {
         const hashName = this.getHashName()
         let s = ''
 
-        for (const key of keys) {
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i]
             let value = ''
             // The alias overrides/prevails over the key.
             if (this.references.has(key)) {
@@ -209,21 +147,5 @@ export default class SearchParams implements AaMap {
             return ''
         }
         return s.slice(1)
-    }
-
-    entries(): MapIterator<[string, string]> {
-        return this.map.entries()
-    }
-
-    keys(): MapIterator<string> {
-        return this.map.keys()
-    }
-
-    values(): MapIterator<string> {
-        return this.map.values()
-    }
-
-    [Symbol.iterator](): IterableIterator<[string, string]> {
-        return this.map[Symbol.iterator]()
     }
 }

@@ -1,24 +1,37 @@
-import {MapCallback, MapObject} from '../../aa/atype/a_define_interfaces'
+import {MapObject} from '../../aa/atype/a_define_interfaces'
 import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
-import {KV} from './base'
+import {IterableKV, MapCallbackFn} from './base'
+import {BREAK, t_loopsignal} from '../../aa/atype/a_define_enums'
 
 // Iterates over a key-value collection, executing a callback for each entry.
-export function forEach(obj: KV, callback: MapCallback, thisArg?: unknown) {
+export function forEach(obj: IterableKV, callbackfn: MapCallbackFn, thisArg?: unknown): t_loopsignal {
     if (!obj) {
         return
     }
+
     // Handle Map-like objects that have their own forEach
     if (typeof obj.forEach === 'function') {
-        obj.forEach(callback, thisArg)
+        let stop = false
+        obj.forEach((value: unknown, key: string, map?: Map<string, unknown>) => {
+            if (stop) {
+                return BREAK
+            }
+            if (callbackfn(value, key, map) === BREAK) {
+                stop = true
+                return BREAK
+            }
+        }, thisArg)
         return
     }
     if (thisArg) {
-        callback.bind(this)
+        callbackfn.bind(this)
     }
 
     // Fallback handle plain objects
     for (const [key, value] of Object.entries(obj)) {
-        callback(key, value)
+        if (callbackfn(value, key) === BREAK) {
+            return
+        }
     }
 }
 

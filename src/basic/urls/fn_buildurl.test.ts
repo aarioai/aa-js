@@ -1,5 +1,5 @@
 import {describe} from '@jest/globals'
-import {buildURL, revertURLPathParams} from './func'
+import {buildURL, revertURLPathParams} from './fn'
 import {DESCEND} from '../../aa/atype/a_define_funcs'
 
 describe('buildURL', () => {

@@ -12,9 +12,10 @@ describe('SearchParams', () => {
         expect(json.Marshal(data)).toBe(p.toJSON())
 
         const entries = {}
-        for (const [key, value] of p.entries()) {
+        p.forEach((value, key) => {
             entries[key] = value
-        }
+        })
+ 
         expect(json.Marshal(entries)).toBe(p.toJSON())
 
         expect(p.has('test')).toBe(false)
@@ -30,7 +31,7 @@ describe('SearchParams', () => {
         expect(p.get('b')).toBe('{b:uint}')
         p.delete('b', '{b:uint}')
         expect(p.has('b')).toBe(false)
-        expect(p.get('b')).toBe(null)
+        expect(p.get('b')).toBe(undefined)
 
         p.setFromSearch('c=1')
         expect(p.get('c')).toBe('1')

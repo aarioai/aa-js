@@ -9,7 +9,7 @@ import {
     splitURLHost,
     splitURLMethod,
     splitURLSearch
-} from './func';
+} from './fn';
 import {URLBase} from './base'
 import SearchParams from './search_params'
 
