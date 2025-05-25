@@ -87,8 +87,7 @@ export default class AaURL {
         this.hash = typeof options?.hash === 'string' ? options.hash : u.hash  // options.hash can be ''
         this.searchParams = normalizeSearchParams(new SearchParams(u.searchParams), options?.params)
     }
-
-
+    
     get hash(): string {
         return this.#hashPattern
     }

@@ -2,6 +2,7 @@ import {
     DATE_TESTER,
     DATETIME_TESTER,
     FALSE,
+    FALSE_STRINGS,
     MAX_INT16,
     MAX_INT24,
     MAX_INT32,
@@ -206,7 +207,7 @@ export function a_bool(value: boolean | number | bigint | string | undefined): b
             return value > 0n
         case "string":
             value = value.trim().toLowerCase()
-            return !["", "false", "f", "0", "0n", "no", "off", "null"].includes(value)
+            return !FALSE_STRINGS.has(value)
         default:
             return Boolean(value)
     }

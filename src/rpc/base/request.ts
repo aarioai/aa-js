@@ -7,6 +7,11 @@ export class AaDefaultRequest implements RequestInterface {
     constructor() {
     }
 
+
+    needDebounce(options: NormalizedRequestOptions): boolean {
+        return false
+    }
+
     Request(api: t_api_pattern | NormalizedRequestOptions, options?: RequestOptions): Promise<unknown> {
         const opts = typeof api === 'string' ? normalizeRequestOptions(api, options) : api
 

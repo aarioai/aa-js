@@ -1,4 +1,4 @@
-import {E_ClientThrow, E_FailedAndSeeOther, E_Gone, E_NoRowsAvailable, E_NotFound} from "./code";
+import {E_ClientThrow, E_FailedAndSeeOther} from "./code";
 import {code2msg} from "./code2msg";
 import {language, matchLanguage} from "../../aa/translate/language";
 import {AErrorDictionaries} from "./dictionaries";
@@ -6,6 +6,7 @@ import {translate} from "../../aa/translate/dictionary";
 import {LF} from "../../aa/atype/a_define_consts";
 import {t_numeric} from '../../aa/atype/a_define'
 import {a_number} from '../../aa/atype/t_basic'
+import {NotFoundCodes} from './base'
 
 export class AError extends Error {
     readonly code: number
@@ -100,7 +101,7 @@ export class AError extends Error {
     }
 
     isNotFound(): boolean {
-        return [E_NotFound, E_Gone, E_NoRowsAvailable].includes(this.code)
+        return NotFoundCodes.has(this.code)
     }
 
     isOK(): boolean {

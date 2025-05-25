@@ -1,9 +1,11 @@
+export const LOCALHOST_DOMAINS = new Set(['localhost', '127.0.0.1', '::1'])
+
 export function isLocalhost(): boolean {
     if (typeof location === 'undefined' || !location.hostname) {
         return true
     }
     const h = location.hostname.toLowerCase()
-    if (['localhost', '127.0.0.1', '::1'].includes(h)) {
+    if (LOCALHOST_DOMAINS.has(h)) {
         return true
     }
     // A类局域网IP范围

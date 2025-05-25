@@ -100,7 +100,7 @@ export function deleteKV(target: KV, key: string, value?: unknown): boolean {
  * // Auto-create target
  * setNX(null, 'a', 1); // { a: 1 }
  */
-export function setNX<V = unknown, T = MapObject<V>>(target: T, key: string, value: V, excludes?: unknown[]): T {
+export function setNX<V = unknown, T = MapObject<V>>(target: T, key: string, value: V, excludes?: Set<unknown>): T {
     if (!target) {
         target = {} as T
         target[key] = value
@@ -114,13 +114,9 @@ export function setNX<V = unknown, T = MapObject<V>>(target: T, key: string, val
         return target
     }
 
-    if (excludes?.length) {
-        for (const exclude of excludes) {
-            if (old === exclude) {
-                target[key] = value
-                return target
-            }
-        }
+    if (excludes && excludes.has(old)) {
+        target[key] = value
+        return target
     }
 
     return target

@@ -11,7 +11,50 @@ import {HASH_REF_NAME, ParamsType, PathParamMap, safePathParamValue, t_api_patte
 import {t_path_param} from '../../aa/atype/a_define'
 import {AnyMap, MapObject} from '../../aa/atype/a_define_interfaces'
 import SearchParams from './search_params'
+import {LOCALHOST_DOMAINS} from '../../aa/browser/detect'
+import {DOMAIN_GTLDS} from './consts'
 
+
+/**
+ * Extracts the main domain or IP from a hostname
+ *
+ * @example
+ *  extractDomain('test.luexu.com.cn')  // luexu.com.cn
+ *  extractDomain('m.luexu.com')       // luexu.com
+ */
+export function unsafeExtractDomain(hostname: string): string {
+    if (!hostname) {
+        return ''
+    }
+    // Remove port number if present
+    hostname = hostname.split('.')[0]
+
+    // Handle IP address
+    if (LOCALHOST_DOMAINS.has(hostname) || /^(\d+\.){3}\d+$/.test(hostname)) {
+        return hostname
+    }
+    const parts = hostname.split('.')
+    const n = parts.length
+    if (n <= 2) {
+        return hostname
+    }
+
+    const lastOne = parts[n - 1]
+    const lastTwo = parts[n - 2]
+    const lastTwos = `${lastTwo}.${lastOne}`
+    // Handle gTLDs
+    if (DOMAIN_GTLDS.has(lastOne)) {
+        return lastTwos
+    }
+
+    // Regards last one is two character as country-code TLDs
+    const isCountryCode = lastOne.length === 2
+    if (isCountryCode && DOMAIN_GTLDS.has(lastTwo)) {
+        return `${parts[n - 3]}.${lastTwos}`
+    }
+    // Fallback to last two parts
+    return lastTwos
+}
 
 /**
  * Fully decodes a URI-encoded string until no further decoding is possible.
@@ -61,7 +104,7 @@ export function splitURLMethod(url: string): { method: t_httpmethod | '', url: s
         return {method: '', url: url}
     }
     const uppercaseMethod = url.slice(0, spaceIndex).toUpperCase() as t_httpmethod
-    if (!HTTP_METHODS.includes(uppercaseMethod)) {
+    if (!HTTP_METHODS.has(uppercaseMethod)) {
         return {method: '', url: url}
     }
     return {

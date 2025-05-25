@@ -1,6 +1,10 @@
 export const NIF = () => undefined
 export const NIP = new Promise(NIF) // a nil promise
 
+export type ResolveFn<T = unknown> = (value: T | PromiseLike<T>) => void
+export type RejectFn = (reason?: unknown) => void
+export type PromiseFn<T = unknown> = (resolve: ResolveFn, reject: RejectFn) => void
+
 export type SortFunc = null | ((a: unknown, b: unknown) => number)
 export const ASCEND: SortFunc = (a: unknown, b: unknown): number => {
     let aa = a

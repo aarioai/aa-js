@@ -57,7 +57,6 @@ export function generateRequestChecksum(method: t_httpmethod, url: string, body?
     return `${method} ${url} {${content}}`
 }
 
-
 // Determines the base URL for API requests based on priority: options > defaults > location.origin
 export function getBaseURL(opts: RequestOptions): string {
     if (opts?.baseURL) {
@@ -84,5 +83,6 @@ export function normalizeRequestOptions(apiPattern: t_api_pattern, opts: Request
         body: opts?.body ?? null,
         timeout: opts?.timeout ?? 0,
         credentials: opts?.credentials ?? null,
+        debounceInterval: opts?.debounceInterval ?? defaults.debounceInterval
     }
 }

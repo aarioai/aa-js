@@ -3,6 +3,7 @@ import {MapObject} from '../../aa/atype/a_define_interfaces'
 import {ParamsType, t_api_pattern} from '../../basic/urls/base'
 import {t_credentials} from './define_enums'
 import AaURL from '../../basic/urls/url'
+import {t_millisecond} from '../../aa/atype/a_define'
 
 export interface RequestOptions {
     method?: t_httpmethod
@@ -14,6 +15,7 @@ export interface RequestOptions {
     body?: string
     timeout?: number
     credentials?: t_credentials
+    debounceInterval?: t_millisecond
 }
 
 export interface NormalizedRequestOptions {
@@ -23,6 +25,7 @@ export interface NormalizedRequestOptions {
     body: string
     timeout: number
     credentials: t_credentials
+    debounceInterval: t_millisecond
 }
 
 export interface RequestInterface {

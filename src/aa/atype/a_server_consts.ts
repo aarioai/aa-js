@@ -46,7 +46,8 @@ export const DATE_MATCHER = /\D?(\d{4}-[01]\d-[03]\d)\D?/
 export const DATETIME_TESTER = /^\d{4}-[01]\d-[03]\d[\sT][0-2]\d:[0-5]\d:[0-5]\d$/
 export const DATETIME_MATCHER = /\D?(\d{4}-[01]\d-[03]\d[\sT][0-2]\d:[0-5]\d:[0-5]\d)\D?/
 
-export const ZERO_VALUES = [null, '', undefined, false, 0, 0n, 0.0, '0', "0.0", "0.00", MIN_DATE, MIN_DATETIME]
+export const ZERO_VALUES = new Set([null, '', undefined, false, 0, 0n, 0.0, '0', "0.0", "0.00", MIN_DATE, MIN_DATETIME])
+export const FALSE_STRINGS = new Set(["", "false", "f", "0", "0n", "no", "off", "null"])
 
 export const PERCENT_SCALE = 2
 export const PERCENT_X: t_percent = Math.pow(10, PERCENT_SCALE)//  percent multiplicand = 100 = 10^2    percent is number, not big int
