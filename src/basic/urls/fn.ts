@@ -11,7 +11,7 @@ import {HASH_REF_NAME, ParamsType, PathParamMap, safePathParamValue, t_api_patte
 import {t_path_param} from '../../aa/atype/a_define'
 import {AnyMap, MapObject} from '../../aa/atype/a_define_interfaces'
 import SearchParams from './search_params'
-import {LOCALHOST_DOMAINS} from '../../aa/browser/detect'
+import {LOCALHOST_DOMAINS} from '../../aa/aconfig/detect'
 import {DOMAIN_GTLDS} from './consts'
 
 

@@ -1,5 +1,5 @@
 import {describe, expect, test} from "@jest/globals";
-import {DATE_PATTERN, DATETIME_PATTERN, MIN_DATE} from "./a_server_consts";
+import {DATE_PATTERN, DATETIME_PATTERN, MYSQL_MIN_DATE} from "../atype/a_server_consts";
 import {a_date, tzdate} from "./t_date";
 import {format} from "date-fns";
 
@@ -52,10 +52,10 @@ describe('tzdate', () => {
 })
 describe('cast to date/datetime', () => {
     test('a_date null', () => {
-        expect(a_date(null)).toBe(MIN_DATE)
+        expect(a_date(null)).toBe(MYSQL_MIN_DATE)
     })
     test('a_date undefined', () => {
-        expect(a_date(undefined)).toBe(MIN_DATE)
+        expect(a_date(undefined)).toBe(MYSQL_MIN_DATE)
     })
     test('a_date 2012-01-01', () => {
         expect(a_date('2012-01-01')).toBe('2012-01-01')

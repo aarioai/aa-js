@@ -11,11 +11,11 @@ import {
     MAX_UINT24,
     MAX_UINT32,
     MAX_UINT8,
-    MIN_DATETIME,
     MIN_INT16,
     MIN_INT24,
     MIN_INT32,
     MIN_INT8,
+    MYSQL_MIN_DATETIME,
     TRUE
 } from "./a_server_consts";
 import {Panic} from "./panic";
@@ -289,9 +289,9 @@ export function zeroize<T = unknown>(value: T): T {
             return 0n as T
         case 'string':
             if (DATETIME_TESTER.test(value)) {
-                return MIN_DATETIME as T
+                return MYSQL_MIN_DATETIME as T
             } else if (DATE_TESTER.test(value)) {
-                return MIN_DATETIME as T
+                return MYSQL_MIN_DATETIME as T
             }
             return '' as T
     }

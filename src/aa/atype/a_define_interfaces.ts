@@ -7,7 +7,6 @@ export interface ValueOf<T = number> {
     valueOf(): T
 }
 
-
 export interface Marshallable<T = unknown> {
     toJSON(): T    // Decimal.toJSON() => string, Percent.toJSON() => number
 }

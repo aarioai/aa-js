@@ -47,7 +47,7 @@ export default class AaCookie implements StorageImpl {
     }
 
     getItem(key: string): string | null {
-        return undefined
+        return this.getAll().get(key)
     }
 
     getAll(): StringMap {
@@ -64,7 +64,7 @@ export default class AaCookie implements StorageImpl {
             options = {}
         }
         if (!options.expires) {
-            options.expires = new Date(0)
+            options.expires = new Date(0) // 1970-01-01
         }
         this.setItem(key, '', options)
     }

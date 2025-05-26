@@ -1,6 +1,6 @@
 # aa-js 说明文档
 
-AaJS 是基于 airis Go 框架后端代码的前端调用SDK，主要用于同步后端类型、枚举值，以及快捷调用 airis Go Restful API接口。
+AaJS 一个优雅调用 Restful API 的库，包括路由自动填充、鉴权、防抖、限流、自动重试、token过期自动更新等功能。
 
 * aa
     * atype
@@ -29,7 +29,9 @@ AaJS 是基于 airis Go 框架后端代码的前端调用SDK，主要用于同�
 inside aa
 
 ```
-aa <- aa/atype <-- aa/base 
+aa <- aa/dynamics <-- aa/aconfig <-- aa/atype
+
+aa <- aa/atype
 aa <- aa/format <-- aa/atype
 aa <- aa/translate <-- aa/format
 

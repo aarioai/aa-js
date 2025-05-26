@@ -15,7 +15,7 @@ import {
     t_uint32,
     t_uint8,
     t_vmoney
-} from "./a_define";
+} from './a_define'
 
 
 export const MIN_INT32: t_int32 = -2147483648
@@ -37,17 +37,21 @@ export const TRUE: t_booln = 1
 export const DATE_PATTERN = 'yyyy-MM-dd'  // TZData
 export const DATETIME_PATTERN = 'yyyy-MM-dd HH:mm:ss'
 
-export const MIN_DATE: t_date = "0000-00-00"
-export const MAX_DATE: t_date = "9999-12-31"
-export const MIN_DATETIME: t_datetime = "0000-00-00 00.00.00"
-export const MAX_DATETIME: t_datetime = "9999-12-31 23:59:59"
+export const ZERO_DATE: t_date = '0000-00-00'
+export const MYSQL_MIN_DATE: t_date = '1000-01-01'
+export const MYSQL_MAX_DATE: t_date = '9999-12-31'
+export const ZERO_DATETIME: t_date = '0000-00-00 00:00:00'
+export const MYSQL_MIN_DATETIME: t_datetime = '1000-01-01 00:00:00'
+export const MYSQL_MAX_DATETIME: t_datetime = '9999-12-31 23:59:59'
 export const DATE_TESTER = /^\d{4}-[01]\d-[03]\d$/
 export const DATE_MATCHER = /\D?(\d{4}-[01]\d-[03]\d)\D?/
 export const DATETIME_TESTER = /^\d{4}-[01]\d-[03]\d[\sT][0-2]\d:[0-5]\d:[0-5]\d$/
 export const DATETIME_MATCHER = /\D?(\d{4}-[01]\d-[03]\d[\sT][0-2]\d:[0-5]\d:[0-5]\d)\D?/
 
-export const ZERO_VALUES = new Set([null, '', undefined, false, 0, 0n, 0.0, '0', "0.0", "0.00", MIN_DATE, MIN_DATETIME])
-export const FALSE_STRINGS = new Set(["", "false", "f", "0", "0n", "no", "off", "null"])
+export const ZERO_VALUES = new Set([null, '', undefined, false, 0, 0n, 0.0, '0', '0.0', '0.00'])
+
+
+export const FALSE_STRINGS = new Set(['', 'false', 'f', '0', 'no', 'off', 'null'])  // any string to express false/true, 0/1, no/yes, on/off
 
 export const PERCENT_SCALE = 2
 export const PERCENT_X: t_percent = Math.pow(10, PERCENT_SCALE)//  percent multiplicand = 100 = 10^2    percent is number, not big int

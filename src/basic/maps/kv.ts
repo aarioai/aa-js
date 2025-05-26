@@ -1,6 +1,6 @@
-import {ZERO_VALUES} from "../../aa/atype/a_server_consts";
 import {MapObject} from '../../aa/atype/a_define_interfaces'
 import {KV} from './base'
+import {zeroValues} from '../../aa/dynamics/fn'
 
 // Converts a KV object to a Map instance
 export function mapizeKV<V = unknown, K = string>(source: KV): Map<K, V> {
@@ -124,6 +124,6 @@ export function setNX<V = unknown, T = MapObject<V>>(target: T, key: string, val
 
 
 export function setNotZero<T extends object, K extends keyof unknown>(target: T, key: K, value: unknown): T {
-    return setNX(target, key, value, ZERO_VALUES)
+    return setNX(target, key, value, zeroValues())
 }
 

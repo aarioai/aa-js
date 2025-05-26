@@ -1,16 +1,22 @@
-import {uint16, uint24} from "./t_basic"
-import {DATE_PATTERN, DATETIME_PATTERN, MIN_DATE, MIN_DATETIME} from "./a_server_consts"
-import AConfig from "../aconfig/aconfig"
+import {DATE_PATTERN, DATETIME_PATTERN, ZERO_DATE, ZERO_DATETIME} from "../atype/a_server_consts"
+import aconfig from "../aconfig/aconfig"
 import {TZDate} from "@date-fns/tz"
 import {format} from "date-fns";
-import {t_date, t_datetime, t_dist, t_distri, t_timestamp} from './a_define'
+import {t_date, t_datetime, t_timestamp} from '../atype/a_define'
 
-export function a_distri(n: number): t_distri {
-    return uint24(n)
-}
 
-export function a_dist(n: number): t_dist {
-    return uint16(n)
+export function isZeroDate(s: string | t_timestamp): boolean {
+    if (!s) {
+        return true
+    }
+
+
+    if (aconfig.enableZeroDate) {
+        if (s === ZERO_DATE || s === ZERO_DATETIME) {
+            return true
+        }
+    }
+    return s === aconfig.minDate || s == aconfig.minDatetime
 }
 
 
@@ -19,7 +25,7 @@ export function tzdate(s: string | t_timestamp | Date | TZDate, timezone?: strin
         return null
     }
     if (!timezone) {
-        timezone = AConfig.timezone
+        timezone = aconfig.timezone
     }
     if (s instanceof TZDate) {
         return s.withTimeZone(timezone)
@@ -44,20 +50,20 @@ export function tzdate(s: string | t_timestamp | Date | TZDate, timezone?: strin
  *  a_date(new Date('2012-01-01 12:00:00')) // 2012-01-01
  */
 export function a_date(s: string | t_timestamp | Date | TZDate, timezone?: string): t_date {
-    if (!s) {
-        return MIN_DATE
+    if (!s || (typeof s === 'string' && isZeroDate(s))) {
+        return aconfig.minDate
     }
 
     try {
         const d = tzdate(s, timezone)
         if (!d) {
-            return MIN_DATE
+            return aconfig.minDate
         }
         return format(d, DATE_PATTERN)
     } catch (err) {
         console.error(`Unable to parse date ${s}`, err)
     }
-    return MIN_DATE
+    return aconfig.minDate
 }
 
 /**
@@ -71,16 +77,16 @@ export function a_date(s: string | t_timestamp | Date | TZDate, timezone?: strin
  */
 export function a_datetime(s: string | t_timestamp | Date, timezone?: string): t_datetime {
     if (!s) {
-        return MIN_DATETIME
+        return aconfig.minDatetime
     }
     try {
         const d = tzdate(s, timezone)
         if (!d) {
-            return MIN_DATETIME
+            return aconfig.minDatetime
         }
         return format(d, DATETIME_PATTERN)
     } catch (err) {
         console.error(`Unable to parse datetime ${s}`, err)
     }
-    return MIN_DATETIME
+    return aconfig.minDatetime
 }

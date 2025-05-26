@@ -1,10 +1,10 @@
 import {ALogStyle} from "./style";
 import {joinWith} from "../aa/format/strings";
-import AConfig from '../aa/aconfig/aconfig'
+import aconfig from '../aa/aconfig/aconfig'
 
 
 export function printRaw(msg: string) {
-    if (AConfig.debugger.isAlert()) {
+    if (aconfig.debugger.isAlert()) {
         return
     }
 
@@ -28,11 +28,11 @@ export function log(...messages: unknown[]) {
 }
 
 export function prints(style: ALogStyle, ...messages: unknown[]) {
-    if (AConfig.debugger.disabled()) {
+    if (aconfig.debugger.disabled()) {
         return
     }
     const msg = joinWith(' ', ...messages)
-    if (AConfig.debugger.isAlert()) {
+    if (aconfig.debugger.isAlert()) {
         printRaw(msg)
         return
     }
@@ -50,7 +50,7 @@ export function printColor(color: string, ...messages: unknown[]) {
 }
 
 export function println(first: unknown, ...others: unknown[]) {
-    if (AConfig.debugger.disabled()) {
+    if (aconfig.debugger.disabled()) {
         return
     }
     if (others.length === 0) {

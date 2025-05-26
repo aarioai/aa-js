@@ -1,5 +1,5 @@
 import {P_ClientDebug} from "./const_param";
-import {isLocalhost} from "../browser/detect";
+import {isLocalhost} from './detect'
 
 export const DebuggerStorageKeyName = "aa_" + P_ClientDebug
 export type DebuggerMethod = 'log' | 'alert'

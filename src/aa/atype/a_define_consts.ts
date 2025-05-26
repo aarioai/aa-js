@@ -6,7 +6,6 @@ export const APX_MAX_SAFE_INT: t_safeint = 9000999999999999  // slightly smaller
 export const APX_MIN_SAFE_INT: t_safeint = -9000999999999999 // slightly greater than -9007199254740991 = Number.MIN_SAFE_INTEGER
 export const APX_MAX_SAFE_INT_LEN = 16 // String(ApproximateMaxUint).length
 
-
 export const atoz: t_lowers = 'abcdefghijklmnopqrstuvwxyz'
 export const AtoZ: t_uppers = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 export const ALPHABETICAL: t_alphabetical = atoz + AtoZ
