@@ -1,4 +1,5 @@
 import {t_millisecond, t_utc} from '../../aa/atype/a_define'
+import {MapObject} from '../../aa/atype/a_define_interfaces'
 
 export const STORAGE_SEPARATOR = ' `'
 
@@ -9,11 +10,13 @@ export interface StorageImpl {
 
     clear(options?: StorageOptions): void
 
-    getItem(key: string): unknown
+    getItem(key: string): unknown | null
+
+    getItems(key: (RegExp | string)[] | RegExp | string, ...keys: (RegExp | string)[]): MapObject | null
 
     removeItem(key: string): void
 
-    removeItems(key: RegExp): void
+    removeItems(keys: (RegExp | string)[] | RegExp | string): void
 
     setItem(key: string, value: unknown, options?: StorageOptions): void
 }
@@ -38,4 +41,9 @@ export interface CookieOptions extends StorageOptions {
     path?: string
     secure?: boolean
     sameSite?: 'Strict' | 'Lax' | 'None'
+}
+
+export interface InsertCondition {
+    is?: string | RegExp | (string | RegExp)[]  //  matching `is` can overwrite matching `not`
+    not?: string | RegExp | (string | RegExp)[]
 }

@@ -1,10 +1,11 @@
 import {CookieOptions, StorageImpl} from './define_types'
-import {StringMap} from '../../aa/atype/a_define_interfaces'
+import {MapObject, StringMap} from '../../aa/atype/a_define_interfaces'
 import {MapCallbackFn} from '../maps/base'
 import {BREAK} from '../../aa/atype/a_define_enums'
 import {a_string} from '../../aa/atype/t_basic'
 import {unsafeExtractDomain} from '../urls/fn'
 import {Millisecond} from '../../aa/atype/a_define_units'
+import {matchAny, normalizeArrayArguments} from '../arrays/fn'
 
 export default class AaCookie implements StorageImpl {
     readonly name: 'AaCookie'
@@ -41,6 +42,22 @@ export default class AaCookie implements StorageImpl {
         return this.getAll().get(key)
     }
 
+    getItems(key: (RegExp | string)[] | RegExp | string, ...keys: (RegExp | string)[]): MapObject<string> | null {
+        const fields = normalizeArrayArguments(key, ...keys)
+        let result: MapObject<string> = {}
+        let has = false
+        this.forEach((_, key) => {
+            if (matchAny(key, fields)) {
+                const value = this.getItem(key)
+                if (value !== null && value !== undefined) {
+                    result[key] = value
+                    has = true
+                }
+            }
+        })
+        return has ? result : null
+    }
+
     getAll(): StringMap {
         return this.syncCache()
     }
@@ -57,9 +74,12 @@ export default class AaCookie implements StorageImpl {
         })
     }
 
-    removeItems(keyPattern: RegExp, options?: CookieOptions): void {
+    removeItems(keys: (RegExp | string)[] | RegExp | string, options?: CookieOptions): void {
+        if (!Array.isArray(keys)) {
+            keys = [keys]
+        }
         this.forEach((_, key) => {
-            if (keyPattern.test(key)) {
+            if (matchAny(key, keys)) {
                 this.removeItem(key, options)
             }
         })

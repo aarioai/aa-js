@@ -5,8 +5,10 @@ import {StorageImpl, StorageOptions} from './define_types'
 import {Second} from '../../aa/atype/a_define_units'
 import {floatToInt} from '../../aa/atype/t_basic'
 import {t_millisecond, t_second} from '../../aa/atype/a_define'
+import {matchAny, normalizeArrayArguments} from '../arrays/fn'
+import {MapObject} from '../../aa/atype/a_define_interfaces'
 
-export class AaStorageEngine implements StorageImpl {
+export default class AaStorageEngine implements StorageImpl {
     readonly name = 'AaStorageEngine'
     readonly unclearable: Set<string>
     readonly storage: Storage
@@ -51,7 +53,7 @@ export class AaStorageEngine implements StorageImpl {
         }
     }
 
-    getItem(key: string): unknown {
+    getItem(key: string): unknown | null {
         let encodedValue = this.storage.getItem(key)
         if (!encodedValue) {
             return encodedValue
@@ -66,6 +68,21 @@ export class AaStorageEngine implements StorageImpl {
         return value
     }
 
+    getItems(key: (RegExp | string)[] | RegExp | string, ...keys: (RegExp | string)[]): MapObject | null {
+        const fields = normalizeArrayArguments(key, ...keys)
+        let result: MapObject = {}
+        let has = false
+        this.forEach((_, key) => {
+            if (matchAny(key, fields)) {
+                const value = this.getItem(key)
+                if (value !== null && value !== undefined) {
+                    result[key] = value
+                    has = true
+                }
+            }
+        })
+        return has ? result : null
+    }
 
     key(index: number): string | null {
         return this.storage.key(index)
@@ -86,15 +103,18 @@ export class AaStorageEngine implements StorageImpl {
         this.storage.removeItem(key)
     }
 
-    removeItems(keyPattern: RegExp): void {
+    removeItems(keys: (RegExp | string)[] | RegExp | string): void {
+        if (!Array.isArray(keys)) {
+            keys = [keys]
+        }
         this.forEach((_, key) => {
-            if (keyPattern.test(key)) {
+            if (matchAny(key, keys)) {
                 this.removeItem(key)
             }
         })
     }
 
-    setItem(key: string, value: string, options?: StorageOptions): void {
+    setItem(key: string, value: unknown, options?: StorageOptions): void {
         const encodedValue = encodeStorageValue(value, {
             ...options,
             timeDiff: this.timeDiff(),
