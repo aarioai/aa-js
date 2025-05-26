@@ -86,7 +86,7 @@ export default class AaCookie implements StorageImpl {
         return {
             domain: options?.domain ?? unsafeExtractDomain(location.hostname),
             expires: expires,
-            persistent: options?.persistent ?? false,
+            unclearable: options?.unclearable ?? false,
             path: options?.path ?? '/',
             secure: options?.secure ?? location.protocol === 'https',
             sameSite: options?.sameSite ?? 'Lax',
@@ -107,7 +107,7 @@ export default class AaCookie implements StorageImpl {
         if (options.path) {
             s += `; path='${options.path}'`
         }
-        if (options.persistent) {
+        if (options.unclearable) {
             s += `; persistent`
         }
         if (options.sameSite) {

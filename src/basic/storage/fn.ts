@@ -31,7 +31,7 @@ function normalizeStorageExpires(expires: t_storage_expires, timeDiff: t_millise
 function normalizeStorageOptions(options: StorageOptions): NormalizedStorageOptions {
     return {
         expires: normalizeStorageExpires(options.expires, options.timeDiff),
-        persistent: options.persistent ?? false,
+        unclearable: options.unclearable ?? false,
         timeDiff: options.timeDiff ?? 0,
     }
 }
@@ -41,8 +41,8 @@ function encodeStorageOptions(options: NormalizedStorageOptions): string {
         return ''
     }
     const expires = options.expires ? ('-' + floatToInt(options.expires / Minute)) : ''
-    const persis = options?.persistent ? ':' : ''
-    return `${expires}${persis}`
+    const unclearable = options?.unclearable ? ':' : ''
+    return `${expires}${unclearable}`
 }
 
 export function encodeStorageValue(value: unknown, options?: StorageOptions): string | null {
@@ -80,11 +80,11 @@ export function decodeStorageValue(s: string): { value: unknown, options?: Norma
     if (last.length === 1) {
         return {value: value}
     }
-    const persistent = last.endsWith(':')
-    const exp = last.substring(2, persistent ? last.length - 1 : last.length)
+    const unclearable = last.endsWith(':')
+    const exp = last.substring(2, unclearable ? last.length - 1 : last.length)
     let expires: t_millisecond | null = NO_EXPIRES
     if (exp) {
         expires = Number(exp) * Minute
     }
-    return {value: value, options: {persistent, expires, timeDiff: 0}}
+    return {value: value, options: {unclearable, expires, timeDiff: 0}}
 }

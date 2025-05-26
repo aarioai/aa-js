@@ -23,13 +23,13 @@ export type t_storage_expires = t_millisecond | Date | t_utc
 
 export interface StorageOptions {
     expires?: t_storage_expires
-    persistent?: boolean
+    unclearable?: boolean
     timeDiff?: t_millisecond
 }
 
 export interface NormalizedStorageOptions {
     expires: t_millisecond | null
-    persistent: boolean
+    unclearable: boolean
     timeDiff: t_millisecond
 }
 

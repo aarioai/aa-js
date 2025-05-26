@@ -8,15 +8,13 @@ import {t_millisecond, t_second} from '../../aa/atype/a_define'
 
 export class AaStorageEngine implements StorageImpl {
     readonly name = 'AaStorageEngine'
-    readonly persistentNames: Set<string>
+    readonly unclearable: Set<string>
     readonly storage: Storage
-    readonly encode: boolean = false
     readonly startTimeKey = 'aa:storage:start_time'
 
-    constructor(storage: Storage, encode: boolean = false, persistentNames: string[] = []) {
+    constructor(storage: Storage, unclearable: Set<string> = new Set()) {
         this.storage = storage
-        this.encode = encode
-        this.persistentNames = new Set(persistentNames)
+        this.unclearable = unclearable
         this.removeExpiredItems()
     }
 
@@ -24,8 +22,22 @@ export class AaStorageEngine implements StorageImpl {
         return this.storage.length
     }
 
-    clear(options?: StorageOptions): void {
-        this.storage.clear()
+    clear(): void {
+        for (let i = 0; i < this.storage.length; i++) {
+            const key = this.storage.key(i)
+            if (this.unclearable.has(key)) {
+                continue
+            }
+            const encodedValue = this.storage.getItem(key)
+            if (!encodedValue) {
+                this.removeItem(key)
+                continue
+            }
+            const {options} = decodeStorageValue(encodedValue)
+            if (!options?.unclearable) {
+                this.removeItem(key)
+            }
+        }
     }
 
     forEach(fn: MapCallbackFn<unknown, string, StorageImpl>, thisArg?: unknown): void {
@@ -41,7 +53,7 @@ export class AaStorageEngine implements StorageImpl {
 
     getItem(key: string): unknown {
         let encodedValue = this.storage.getItem(key)
-        if (!encodedValue || !this.encode) {
+        if (!encodedValue) {
             return encodedValue
         }
         const {value, options} = decodeStorageValue(encodedValue)
