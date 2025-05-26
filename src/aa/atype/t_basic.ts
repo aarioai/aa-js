@@ -35,11 +35,12 @@ import {
     t_uint64b,
     t_uint8,
 } from "./a_define";
-import {MapObject} from './a_define_interfaces'
+import Serializable, {MapObject} from './a_define_interfaces'
 import {typeArray} from './func'
 
 import json from './json'
 import {NIF} from './a_define_funcs'
+import {SERIALIZE_SEPARATOR} from './a_define_consts'
 
 function inRange(value: number, min: number, max: number, name: string): number {
     if ((typeof min !== 'undefined' && value < min) || (typeof max !== 'undefined' && value > max)) {
@@ -145,13 +146,17 @@ export function a_string(value: unknown): string {
         return ''
     }
 
-    // toJSON() > toString() > valueOf()
+    // Serializable > toJSON() > toString() > valueOf()
+    if (value instanceof Serializable) {
+        return value.constructor.name + SERIALIZE_SEPARATOR + value.serialize()  // special, high priority
+    }
+
     if (typeof (value as any).toJSON === 'function') {
         return a_string((value as any).toJSON())
     }
 
     if (Array.isArray(value)) {
-        return JSON.stringify(value)
+        return json.Marshal(value)
     }
 
     if (typeof (value as any).toString === 'function') {

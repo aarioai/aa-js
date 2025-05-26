@@ -1,5 +1,6 @@
 import {Builder, MapObject} from './a_define_interfaces'
 import {isIterable} from './type_check'
+import json from './json'
 
 
 /**
@@ -115,7 +116,7 @@ export function cloneObjectMap(source: MapObject): MapObject {
     for (const key in source) {
         if (Object.prototype.hasOwnProperty.call(source, key)) {
             const value = source[key]
-            target[key] = (value && typeof value === 'object') ? JSON.parse(JSON.stringify(value)) : value
+            target[key] = (value && typeof value === 'object') ? json.Unmarshal(json.Marshal(value)) : value
         }
     }
     return target

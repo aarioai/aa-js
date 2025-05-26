@@ -4,6 +4,7 @@ import {MapCallbackFn} from '../maps/base'
 import {BREAK} from '../../aa/atype/a_define_enums'
 import {a_string} from '../../aa/atype/t_basic'
 import {unsafeExtractDomain} from '../urls/fn'
+import {Second} from '../../aa/atype/a_define_units'
 
 export default class AaCookie implements StorageImpl {
     readonly name: 'AaCookie'
@@ -39,6 +40,9 @@ export default class AaCookie implements StorageImpl {
         all.forEach((value, key) => {
             if (stop) {
                 return BREAK
+            }
+            if (thisArg) {
+                callbackfn.bind(thisArg, value, key, stop)
             }
             if (callbackfn(value, key) === BREAK) {
                 return BREAK
@@ -78,7 +82,7 @@ export default class AaCookie implements StorageImpl {
                 let expiresDate: Date = null
                 if (typeof options.expires === 'number') {
                     expiresDate = new Date()
-                    expiresDate.setTime(expiresDate.getTime() + options.expires)
+                    expiresDate.setTime(expiresDate.getTime() + options.expires * Second)
                 } else if (options.expires instanceof Date) {
                     expiresDate = options.expires
                 }

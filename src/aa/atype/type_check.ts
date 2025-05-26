@@ -1,4 +1,4 @@
-import {mapobject_t, node_t, nodelist_t, objectAtype} from './atype'
+import {mapobject_t, node_t, nodelist_t, objectAtype} from './t_atype'
 import {APX_MAX_SAFE_INT_LEN} from './a_define_consts'
 
 

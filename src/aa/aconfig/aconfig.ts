@@ -7,43 +7,10 @@ class AConfigure {
     readonly debugger = new Debugger()
     enableZeroDate: boolean = true
 
-    #minDate: t_date = MYSQL_MIN_DATE
-    #maxDate: t_date = MYSQL_MAX_DATE
-    #minDatetime: t_datetime = MYSQL_MIN_DATETIME
-    #maxDatetime: t_datetime = MYSQL_MAX_DATETIME
-
-
-    get minDate(): t_date {
-        return this.#minDate
-    }
-
-    set minDate(date: t_date) {
-        this.#minDate = date
-    }
-
-    get maxDate(): t_date {
-        return this.#maxDate
-    }
-
-    set maxDate(maxDate: t_date) {
-        this.#maxDate = maxDate
-    }
-
-    get minDatetime(): t_datetime {
-        return this.#minDatetime
-    }
-
-    set minDatetime(datetime: t_datetime) {
-        this.#minDatetime = datetime
-    }
-
-    get maxDatetime(): t_datetime {
-        return this.#maxDatetime
-    }
-
-    set maxDatetime(datetime: t_datetime) {
-        this.#maxDatetime = datetime
-    }
+    minDate: t_date = MYSQL_MIN_DATE
+    maxDate: t_date = MYSQL_MAX_DATE
+    minDatetime: t_datetime = MYSQL_MIN_DATETIME
+    maxDatetime: t_datetime = MYSQL_MAX_DATETIME
 
 
 }

@@ -11,3 +11,7 @@ export const AtoZ: t_uppers = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 export const ALPHABETICAL: t_alphabetical = atoz + AtoZ
 export const DIGITS: t_digits = '0123456789'
 export const ALPHA_DIGITS: t_alphadigits = ALPHABETICAL + DIGITS
+
+export const SERIALIZE_SEPARATOR = '::'  // a separator to split class name and its serialize string
+
+ 

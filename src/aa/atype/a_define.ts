@@ -4,6 +4,7 @@
 export type t_safeint = number  // [APX_MAX_SAFE_INT, APX_MIN_SAFE_INT] is narrower than [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]
 export type t_numeric = number | bigint | string
 export type t_bool = boolean | t_booln | '0' | '1'
+export type t_utc = string  // UTC date string, (new Date()).toUTCString()
 
 /****************************************** types from server *********************************************************/
 
