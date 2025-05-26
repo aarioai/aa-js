@@ -1,4 +1,5 @@
 import {KB} from "../aa/atype/a_define_units";
+import {floatToInt} from '../aa/atype/t_basic'
 
 /**
  * Format bytes to B/KB/MB/GB/TB/PB/EB/ZB/YB
@@ -15,7 +16,7 @@ export function formatBytes(bytes: number, decimals: number = 0): [number, strin
     const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
     const dec = Math.max(0, decimals)
     const exponent = Math.min(
-        Math.floor(Math.log(bytes) / Math.log(KB)),
+        floatToInt(Math.log(bytes) / Math.log(KB)),
         units.length - 1
     )
     const value = bytes / Math.pow(KB, exponent)

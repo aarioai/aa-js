@@ -4,16 +4,12 @@ import {MapCallbackFn} from '../maps/base'
 import {BREAK} from '../../aa/atype/a_define_enums'
 import {a_string} from '../../aa/atype/t_basic'
 import {unsafeExtractDomain} from '../urls/fn'
-import {Second} from '../../aa/atype/a_define_units'
+import {Millisecond} from '../../aa/atype/a_define_units'
 
 export default class AaCookie implements StorageImpl {
     readonly name: 'AaCookie'
     private cachedCookie: string = ''  // no need share
     private cached: StringMap = new Map()
-
-    constructor() {
-
-    }
 
     get length(): number {
         return this.getAll().size
@@ -26,28 +22,19 @@ export default class AaCookie implements StorageImpl {
      * It will not delete cookies that have been set with a Path value. (This is despite the fact that those cookies will appear in document.cookie, but you can't delete it without specifying the same Path value with which it was set.)
      */
     clear(options?: CookieOptions): void {
-        this.forEach((value, key) => {
+        this.forEach((_, key) => {
             this.removeItem(key, options)
         })
     }
 
     forEach(callbackfn: MapCallbackFn<string>, thisArg?: unknown) {
         const all = this.getAll()
-        if (!all?.size) {
-            return
+        for (const [key, value] of all) {
+            const result = thisArg ? callbackfn.call(thisArg, value, key, all) : callbackfn(value, key, all)
+            if (result === BREAK) {
+                break
+            }
         }
-        let stop = false
-        all.forEach((value, key) => {
-            if (stop) {
-                return BREAK
-            }
-            if (thisArg) {
-                callbackfn.bind(thisArg, value, key, stop)
-            }
-            if (callbackfn(value, key) === BREAK) {
-                return BREAK
-            }
-        })
     }
 
     getItem(key: string): string | null {
@@ -64,13 +51,18 @@ export default class AaCookie implements StorageImpl {
     }
 
     removeItem(key: string, options?: CookieOptions): void {
-        if (!options) {
-            options = {}
-        }
-        if (!options.expires) {
-            options.expires = new Date(0) // 1970-01-01
-        }
-        this.setItem(key, '', options)
+        this.setItem(key, '', {
+            ...options,
+            expires: options?.expires ?? new Date(0), // 1970-01-01
+        })
+    }
+
+    removeItems(keyPattern: RegExp, options?: CookieOptions): void {
+        this.forEach((_, key) => {
+            if (keyPattern.test(key)) {
+                this.removeItem(key, options)
+            }
+        })
     }
 
     normalizeOptions(options?: CookieOptions | undefined): CookieOptions {
@@ -82,7 +74,7 @@ export default class AaCookie implements StorageImpl {
                 let expiresDate: Date = null
                 if (typeof options.expires === 'number') {
                     expiresDate = new Date()
-                    expiresDate.setTime(expiresDate.getTime() + options.expires * Second)
+                    expiresDate.setTime(expiresDate.getTime() + options.expires * Millisecond)
                 } else if (options.expires instanceof Date) {
                     expiresDate = options.expires
                 }
@@ -159,4 +151,6 @@ export default class AaCookie implements StorageImpl {
         this.cachedCookie = cookieString
         return this.cached
     }
+
+
 }

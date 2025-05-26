@@ -2,7 +2,7 @@ import {AnyMap, ForEachIterable, MapObject, Marshallable} from '../../aa/atype/a
 import {t_loopsignal} from '../../aa/atype/a_define_enums'
 
 
-export type MapCallbackFn<V = unknown, K = string> = (value: V, key: K, map?: Map<K, V>) => void | t_loopsignal
+export type MapCallbackFn<V = unknown, K = string, T = Map<K, V>> = (value: V, key: K, map?: T) => void | t_loopsignal
 
 
 export interface AaMapImpl<V = unknown> extends AnyMap, Marshallable<string> {

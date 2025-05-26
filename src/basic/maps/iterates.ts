@@ -4,7 +4,7 @@ import {IterableKV, MapCallbackFn} from './base'
 import {BREAK, t_loopsignal} from '../../aa/atype/a_define_enums'
 
 // Iterates over a key-value collection, executing a callback for each entry.
-export function forEach(obj: IterableKV, callbackfn: MapCallbackFn, thisArg?: unknown): t_loopsignal {
+export function forEach(obj: IterableKV, callbackfn: MapCallbackFn<unknown, string, unknown>, thisArg?: unknown): t_loopsignal {
     if (!obj) {
         return
     }
@@ -16,20 +16,19 @@ export function forEach(obj: IterableKV, callbackfn: MapCallbackFn, thisArg?: un
             if (stop) {
                 return BREAK
             }
-            if (callbackfn(value, key, map) === BREAK) {
+            const result = thisArg ? callbackfn.call(thisArg, value, key, map) : callbackfn(value, key, map)
+            if (result === BREAK) {
                 stop = true
                 return BREAK
             }
-        }, thisArg)
+        })
         return
-    }
-    if (thisArg) {
-        callbackfn.bind(this)
     }
 
     // Fallback handle plain objects
     for (const [key, value] of Object.entries(obj)) {
-        if (callbackfn(value, key) === BREAK) {
+        const result = thisArg ? callbackfn.call(thisArg, value, key, obj) : callbackfn(value, key, obj)
+        if (result === BREAK) {
             return
         }
     }

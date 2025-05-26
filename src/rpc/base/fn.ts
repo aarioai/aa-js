@@ -4,6 +4,7 @@ import {NormalizedRequestOptions, RequestOptions} from './define_interfaces'
 import AaURL from '../../basic/urls/url'
 import {fillObjects} from '../../basic/maps/groups'
 import defaults from './defaults'
+import {floatToInt} from '../../aa/atype/t_basic'
 
 function fileChecksum(file: File): string {
     const {size, type, lastModified, name, webkitRelativePath} = file
@@ -15,7 +16,7 @@ function stringChecksum(s: string): string {
     if (length < 1024) {
         return `#${length}|${s}`
     }
-    const m = Math.floor(length / 2)
+    const m = floatToInt(length / 2)
     let s2 = s.substring(0, 256) + s.substring(m - 256, m + 256) + s.substring(length - 256)
     return `#${length}>|${s2}`
 }

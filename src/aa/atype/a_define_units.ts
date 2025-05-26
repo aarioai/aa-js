@@ -7,6 +7,8 @@ export const Minute: t_millisecond = 60 * Second
 export const Hour: t_millisecond = 60 * Minute
 export const Day: t_millisecond = 24 * Hour
 
+export const NO_EXPIRES: t_millisecond = 365 * Day  // client storage is not reliable
+
 
 export const Wan = 10000
 export const Million = 100 * Wan

@@ -1,19 +1,36 @@
-import {ForEachIterable} from '../../aa/atype/a_define_interfaces'
-import {t_second, t_utc} from '../../aa/atype/a_define'
+import {t_millisecond, t_utc} from '../../aa/atype/a_define'
 
 export const STORAGE_SEPARATOR = ' `'
 
-export interface StorageImpl extends Storage, ForEachIterable<string> {
+export interface StorageImpl {
+    readonly length: number
 
+    key(index: number): string | null
+
+    clear(options?: StorageOptions): void
+
+    getItem(key: string): unknown
+
+    removeItem(key: string): void
+
+    removeItems(key: RegExp): void
+
+    setItem(key: string, value: unknown, options?: StorageOptions): void
 }
 
 
-export type t_storage_expires = t_second | Date | t_utc | null
-export const NO_EXPIRES: t_storage_expires = null
+export type t_storage_expires = t_millisecond | Date | t_utc
 
 export interface StorageOptions {
     expires?: t_storage_expires
     persistent?: boolean
+    timeDiff?: t_millisecond
+}
+
+export interface NormalizedStorageOptions {
+    expires: t_millisecond | null
+    persistent: boolean
+    timeDiff: t_millisecond
 }
 
 export interface CookieOptions extends StorageOptions {

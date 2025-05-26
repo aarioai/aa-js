@@ -53,14 +53,16 @@ export default class AaMap<V = unknown> implements AaMapImpl<V> {
 
     forEach(callbackfn: MapCallbackFn<V>, thisArg?: unknown): void {
         let stop = false
-        this.map.forEach((value, key) => {
+        this.map.forEach((value, key, map?) => {
             if (stop) {
-                return
+                return BREAK
             }
-            if (BREAK === callbackfn(value, key)) {
+            const result = thisArg ? callbackfn.call(thisArg, value, key, map) : callbackfn(value, key, map)
+            if (result === BREAK) {
                 stop = true
+                return BREAK
             }
-        }, thisArg)
+        })
     }
 
     get(key: string): V {
