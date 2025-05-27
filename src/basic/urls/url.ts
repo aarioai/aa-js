@@ -49,21 +49,21 @@ import {MapCallbackFn} from '../maps/base'
 export default class AaURL {
     name = 'aa-url'
     method: t_httpmethod   // can be null
-    searchParams: SearchParams   // as URL interface
-    sortFunc: SortFunc = ASCEND
-    tidy: boolean = true  // remove empty string value parameter, e.g. a=&b=10
+    #tidy: boolean = true  // remove empty string value parameter, e.g. a=&b=10
 
-    username: string = ''
-    password: string = ''
+    private readonly searchParams: SearchParams   // as URL interface
+    private sortFunc: SortFunc = ASCEND
 
     // https://developer.mozilla.org/en-US/docs/Web/API/URL/host
     #protocol: string   // e.g. https:, or blob:https:
     #hostname: string   // e.g. test.luexu.com
     #port: t_uint16       // e.g. 8080
-
     #hashPattern: t_api_pattern = ''  // #<hash>, e.g. #head, #{hash}
-
     #pathnamePattern: t_api_pattern   // e.g. /a/chat/x
+    #password: string = ''
+    #username: string = ''
+
+    #href: string
 
     /**
      * Creates an AaURL instance
@@ -82,12 +82,21 @@ export default class AaURL {
         this.#hostname = u.hostname
         this.#port = u.port ? uint16(u.port) : 0
         this.#pathnamePattern = u.pathname
-        this.username = u.username
-        this.password = u.password
+        this.#username = u.username
+        this.#password = u.password
         this.hash = typeof options?.hash === 'string' ? options.hash : u.hash  // options.hash can be ''
         this.searchParams = normalizeSearchParams(new SearchParams(u.searchParams), options?.params)
     }
-    
+
+    get tidy(): boolean {
+        return this.#tidy
+    }
+
+    set tidy(tidy: boolean) {
+        this.#href = ''
+        this.#tidy = tidy
+    }
+
     get hash(): string {
         return this.#hashPattern
     }
@@ -96,6 +105,7 @@ export default class AaURL {
         if (typeof hash !== 'string') {
             return
         }
+        this.#href = ''
         if (!hash) {
             this.#hashPattern = ''
             return
@@ -126,7 +136,7 @@ export default class AaURL {
         if (!hostname) {
             return // act as URL interface
         }
-
+        this.#href = ''
         this.#hostname = hostname
         if (!port || !/^\d+$/.test(port)) {
             return  // act as URL interface
@@ -146,11 +156,15 @@ export default class AaURL {
         if (!vale) {
             return  // act as URL interface
         }
+        this.#href = ''
         this.#hostname = vale
     }
 
     get href(): string {
-        return this.toString()
+        if (!this.#href) {
+            this.#href = this.toString()
+        }
+        return this.#href
     }
 
     get origin(): string {
@@ -162,6 +176,7 @@ export default class AaURL {
     }
 
     set pathname(value: string) {
+        this.#href = ''
         if (!value || value === '/') {
             this.#pathnamePattern = '/'
             return
@@ -175,6 +190,7 @@ export default class AaURL {
     }
 
     set port(value: string | number) {
+        this.#href = ''
         if (!value) {
             this.#port = 0
             return
@@ -199,6 +215,7 @@ export default class AaURL {
         if (!value) {
             return
         }
+        this.#href = ''
         this.#protocol = value.toLowerCase().replace(/\/+$/g, '')
         this.tidyPort(this.#protocol, this.#port)
     }
@@ -211,12 +228,30 @@ export default class AaURL {
         this.resetParams(value)
     }
 
+    get username(): string {
+        return this.#username
+    }
+
+    set username(value: string) {
+        this.#href = ''
+        this.#username = value
+    }
+
+    get password(): string {
+        return this.#password
+    }
+
+    set password(value: string) {
+        this.#href = ''
+        this.#password = value
+    }
+
     userinfo(): string {
-        if (!this.username && !this.password) {
+        if (!this.#username && !this.#password) {
             return ''
         }
-        const username = this.username ? this.username : 'root'
-        return `${username}:${this.password}`
+        const username = this.#username ? this.#username : 'root'
+        return `${username}:${this.#password}`
     }
 
     tidyPort(protocol: string, port: t_uint16) {
@@ -240,6 +275,7 @@ export default class AaURL {
     }
 
     clearReference() {
+        this.#href = ''
         this.searchParams.references.clear()
     }
 
@@ -248,10 +284,12 @@ export default class AaURL {
     }
 
     setReference(name: string, value: [string, t_path_param]) {
+        this.#href = ''
         this.searchParams.references.set(name, value)
     }
 
     deleteReference(name: string) {
+        this.#href = ''
         this.searchParams.references.delete(name)
     }
 
@@ -260,30 +298,36 @@ export default class AaURL {
     }
 
     forEachReference(callback: MapCallbackFn<[string, t_path_param]>, thisArg?: any) {
+        this.#href = ''
         this.searchParams.references.forEach(callback, thisArg)
     }
 
     sort(sort?: SortFunc): AaURL {
+        this.#href = ''
         this.sortFunc = sort ? sort : ASCEND
         return this
     }
 
     resetParams(params?: t_searchparam): AaURL {
+        this.#href = ''
         this.searchParams.reset(params)
         return this
     }
 
     setParam(key: string, value: unknown): AaURL {
+        this.#href = ''
         this.searchParams.set(key, a_string(value))
         return this
     }
 
     setParams(params?: ParamsType): AaURL {
+        this.#href = ''
         this.searchParams.setMany(params)
         return this
     }
 
     deleteParam(key: string, value?: unknown): AaURL {
+        this.#href = ''
         this.searchParams.delete(key, value)
         return this
     }
@@ -385,7 +429,7 @@ export default class AaURL {
     }
 
     toJSON() {
-        return this.toString()
+        return this.href
     }
 
     toString() {
