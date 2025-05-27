@@ -1,5 +1,5 @@
 import {t_millisecond, t_utc} from '../../aa/atype/a_define'
-import {MapObject} from '../../aa/atype/a_define_interfaces'
+import {AnyMap, MapObject} from '../../aa/atype/a_define_interfaces'
 
 export const STORAGE_SEPARATOR = ' `'
 
@@ -46,4 +46,22 @@ export interface CookieOptions extends StorageOptions {
 export interface InsertCondition {
     is?: string | RegExp | (string | RegExp)[]  //  matching `is` can overwrite matching `not`
     not?: string | RegExp | (string | RegExp)[]
+}
+
+export interface DbLikeImpl {
+    delete(tableName: string, key: string): void
+
+    drop(tableName: string): void
+
+    find(tableName: string, key: string): unknown
+
+    findMany(tableName: string, keys: string[]): MapObject | null
+
+    findAll(tableName: string): MapObject | null
+
+    insert(tableName: string, key: string, value: unknown, options?: StorageOptions): void
+
+    insertMany(tableName: string, data: AnyMap, options?: StorageOptions): void
+
+    insertWhen(tableName: string, data: AnyMap, when: InsertCondition, options?: StorageOptions): void
 }

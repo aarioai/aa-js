@@ -68,12 +68,12 @@ export default class AaStorageEngine implements StorageImpl {
         return value
     }
 
-    getItems(key: (RegExp | string)[] | RegExp | string, ...keys: (RegExp | string)[]): MapObject | null {
-        const fields = normalizeArrayArguments(key, ...keys)
+    getItems(key: (RegExp | string)[] | RegExp | string, ...rest: (RegExp | string)[]): MapObject | null {
+        const keys = normalizeArrayArguments(key, ...rest)
         let result: MapObject = {}
         let has = false
         this.forEach((_, key) => {
-            if (matchAny(key, fields)) {
+            if (matchAny(key, keys)) {
                 const value = this.getItem(key)
                 if (value !== null && value !== undefined) {
                     result[key] = value

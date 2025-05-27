@@ -12,6 +12,7 @@ export default class AaStorageManager {
     readonly session: StorageImpl
 
     constructor(cookieStorage?: StorageImpl, localStorage?: Storage, sessionStorage?: Storage) {
+        // Share cookie with server, need keep original value
         this.cookie = cookieStorage ? cookieStorage : new AaCookie()
         this.local = new AaStorageEngine(localStorage ? localStorage : window.localStorage)
         this.session = new AaStorageEngine(sessionStorage ? sessionStorage : window.sessionStorage)

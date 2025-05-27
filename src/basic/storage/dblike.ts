@@ -1,21 +1,13 @@
 import AaStorageEngine from './engine'
-import {InsertCondition, StorageOptions} from './define_types'
+import {DbLikeImpl, InsertCondition, StorageOptions} from './define_types'
 import {AnyMap, MapObject} from '../../aa/atype/a_define_interfaces'
 import {matchAny} from '../arrays/fn'
 
-export default class AaDbLike {
+export default class AaDbLike implements DbLikeImpl {
     readonly storage: AaStorageEngine
 
     constructor(storage?: AaStorageEngine) {
         this.storage = storage ? storage : new AaStorageEngine(window.localStorage)
-    }
-
-    normalizeTableName(name: string): string {
-        return `aa:db:${name}`
-    }
-
-    normalizeFieldKey(tableName: string, key: string): string {
-        return this.normalizeTableName(tableName) + '.' + key
     }
 
     delete(tableName: string, key: string): void {
@@ -38,12 +30,12 @@ export default class AaDbLike {
         for (let i = 0; i < keys.length; i++) {
             fields.push(this.normalizeFieldKey(tableName, keys[i]))
         }
-        return this.storage.getItems(fields)
+        return this.revertItems(this.storage.getItems(fields))
     }
 
     findAll(tableName: string): MapObject | null {
         tableName = this.normalizeTableName(tableName)
-        return this.storage.getItems(new RegExp(`^${tableName}\\.`))
+        return this.revertItems(this.storage.getItems(new RegExp(`^${tableName}\\.`)))
     }
 
     insert(tableName: string, key: string, value: unknown, options?: StorageOptions): void {
@@ -76,5 +68,31 @@ export default class AaDbLike {
 
             this.insert(tableName, key, value, options)
         }
+    }
+
+    private normalizeFieldKey(tableName: string, key: string): string {
+        return this.normalizeTableName(tableName) + '.' + key
+    }
+
+    private normalizeTableName(name: string): string {
+        return `aa:db:${name}`
+    }
+
+    private extractFieldName(field: string): [string, string] {
+        field = field.replace(/^aa:db:/, '')
+        const [tableName, key] = field.split('.')
+        return [tableName, key]
+    }
+
+    private revertItems(items: MapObject | null): MapObject | null {
+        if (!items) {
+            return null
+        }
+        const result: MapObject = {}
+        for (const [field, value] of Object.entries(items)) {
+            const [_, key] = this.extractFieldName(field)
+            result[key] = value
+        }
+        return result
     }
 }
