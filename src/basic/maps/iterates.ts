@@ -2,6 +2,7 @@ import {MapObject} from '../../aa/atype/a_define_interfaces'
 import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
 import {IterableKV, MapCallbackFn} from './base'
 import {BREAK, t_loopsignal} from '../../aa/atype/a_define_enums'
+import {a_string} from '../../aa/atype/t_basic'
 
 // Iterates over a key-value collection, executing a callback for each entry.
 export function forEach(obj: IterableKV, callbackfn: MapCallbackFn<unknown, string, unknown>, thisArg?: unknown): t_loopsignal {
@@ -39,4 +40,12 @@ export function sort<T = MapObject>(source: T, compareFn: SortFunc = ASCEND): T 
         acc[key] = source[key]
         return acc
     }, {} as T)
+}
+
+export function valuesSortedByKeys(obj: MapObject, sortKey: SortFunc = ASCEND): string[] {
+    let values: string[] = []
+    Object.keys(obj).sort(sortKey).forEach(key => {
+        values.push(a_string(obj[key]))
+    })
+    return values
 }

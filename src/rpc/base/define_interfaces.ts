@@ -11,18 +11,16 @@ export interface RequestOptions {
     hash?: string
     headers?: MapObject<string>
     params?: ParamsType
-    data?: MapObject | FormData
-    body?: string
+    data?: MapObject | File | FormData | string | null
     timeout?: number
     credentials?: t_credentials
     debounceInterval?: t_millisecond
 }
 
-export interface NormalizedRequestOptions {
-    url: AaURL
+export interface RequestStruct {
+    url: AaURL  // method is in AaURL, url.method
     headers: MapObject<string>  // nullable
-    data: MapObject | FormData  // nullable
-    body: string
+    data: MapObject | File | FormData | string | null
     timeout: number
     credentials: t_credentials
     debounceInterval: t_millisecond

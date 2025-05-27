@@ -1,32 +1,31 @@
 import {Second} from "../atype/a_define_units";
 
-let _aaLockIncr_ = 0
-const defaultAaLockTimeout = 5 * Second
+let aaLockIncr = 0
 
 export class AaLock {
     static debug = false
     name = 'aa-lock'
-    readonly timeout: number
-    #id = AaLock.atomicId()
-    #lockAt: number = 0
-    #timer: number
+    private cleanTimer: number
+    private readonly id = AaLock.atomicId()
+    private readonly timeout: number
+    private lockTime: number = 0
 
-    constructor(timeout?: number) {
-        this.timeout = timeout && timeout > 0 ? timeout : defaultAaLockTimeout
+    constructor(timeout: number = 5 * Second) {
+        this.timeout = timeout
     }
 
     static atomicId() {
-        return ++_aaLockIncr_
+        return ++aaLockIncr
     }
 
     destroy() {
         this.log('Destroy lock')
-        this.#clearTimer()
+        this.clearTimer()
     }
 
 
     isLocked(): boolean {
-        return this.#lockAt > 0 && (this.#lockAt + this.timeout > Date.now())
+        return this.lockTime > 0 && (this.lockTime + this.timeout > Date.now())
     }
 
 
@@ -36,16 +35,16 @@ export class AaLock {
         }
 
         this.log('Lock')
-        this.#lockAt = Date.now()  // BEGIN 事务开启
+        this.lockTime = Date.now()  // BEGIN 事务开启
 
-        this.#setAutoUnlockTimer()
+        this.setAutoUnlockTimer()
         return true
     }
 
     unlock() {
         this.log('Unlock')
-        this.#clearTimer()
-        this.#lockAt = 0
+        this.clearTimer()
+        this.lockTime = 0
     }
 
 
@@ -55,11 +54,11 @@ export class AaLock {
 
     getStatus() {
         return {
-            id: this.#id,
+            id: this.id,
             isLocked: this.isLocked(),
-            lockAt: this.#lockAt,
+            lockAt: this.lockTime,
             timeout: this.timeout,
-            remainingTime: this.#lockAt > 0 ? Math.max(0, this.#lockAt + this.timeout - Date.now()) : 0
+            remainingTime: this.lockTime > 0 ? Math.max(0, this.lockTime + this.timeout - Date.now()) : 0
         };
     }
 
@@ -78,29 +77,28 @@ export class AaLock {
 
     log(msg: string) {
         if (AaLock.debug) {
-            console.debug("#" + this.#id + " " + msg)
+            console.debug("#" + this.id + " " + msg)
         }
+    }
+
+    private setAutoUnlockTimer() {
+        const timeout = this.timeout
+        this.clearTimer();
+        this.cleanTimer = window.setTimeout(() => {
+            this.log(`Lock timeout (${timeout}ms)`);
+            this.lockTime = 0;
+        }, timeout);
     }
 
     /**
      * 清除定时器
      * @private
      */
-    #clearTimer() {
-        if (this.#timer) {
-            clearTimeout(this.#timer);
-            this.#timer = null;
+    private clearTimer() {
+        if (this.cleanTimer) {
+            clearTimeout(this.cleanTimer);
+            this.cleanTimer = null;
         }
-    }
-
-
-    #setAutoUnlockTimer() {
-        const timeout = this.timeout > 0 ? this.timeout : defaultAaLockTimeout
-        this.#clearTimer();
-        this.#timer = window.setTimeout(() => {
-            this.log(`Lock timeout (${timeout}ms)`);
-            this.#lockAt = 0;
-        }, timeout);
     }
 
 }

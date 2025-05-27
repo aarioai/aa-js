@@ -100,7 +100,8 @@ export type t_yearmonth = t_uint24  // 6 digits number, format YYYYMM
 export type t_ymd = t_uint32  // 8 digits number, format YYYYMMDD
 export type t_date = string // format YYYY-MM-DD
 export type t_datetime = string // format YYYY-MM-DD HH:II:SS
-export type t_timestamp = t_safeint  // unix timestamp
+export type t_timestamp = t_safeint  // unix timestamp in seconds
+export type t_timestamp_ms = t_safeint // unix timestamp in milliseconds
 
 // @see ./t_district.ts
 
