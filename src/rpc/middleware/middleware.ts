@@ -1,6 +1,7 @@
 import {Millisecond} from '../../aa/atype/a_define_units'
 import AaRateLimit from './ratelimit'
 import {RequestStruct} from '../base/define_interfaces'
+import {AError} from '../../basic/aerror/error'
 
 export default class AaMiddleware {
     readonly rateLimit: AaRateLimit
@@ -10,7 +11,7 @@ export default class AaMiddleware {
         this.rateLimit = new AaRateLimit(debounceInterval)
     }
 
-    deny(r: RequestStruct): boolean {
-        return this.rateLimit.deny(r)
+    denied(r: RequestStruct): [boolean, AError?] {
+        return this.rateLimit.denied(r)
     }
 }

@@ -121,6 +121,6 @@ export default class AaMap<V = unknown> implements AaMapImpl<V> {
     }
 
     toJSON(): string {
-        return json.MarshalMap(this.map)
+        return json.Marshal(this.map)
     }
 }

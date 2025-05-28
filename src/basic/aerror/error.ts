@@ -74,7 +74,7 @@ export class AError extends Error {
         return e
     }
 
-    addDetail(detail: string): AError {
+    widthDetail(detail: string): AError {
         let e = this.#locked ? this.clone() : this
         e.#details.push(detail)
         return e
@@ -89,7 +89,7 @@ export class AError extends Error {
         }
         if (this.#details.length) {
             for (const detail of this.#details) {
-                e.addDetail(detail)
+                e.widthDetail(detail)
             }
         }
 
@@ -129,7 +129,7 @@ export class AError extends Error {
     }
 
 
-    text(lang?: string): string {
+    toString(lang?: string): string {
         const availableLangs = Object.keys(AErrorDictionaries)
         lang = lang ? matchLanguage(lang, availableLangs) : language(availableLangs)
         if (lang === '') {

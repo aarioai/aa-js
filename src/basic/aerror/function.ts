@@ -23,7 +23,7 @@ export function parseResponseAError(resp: undefined | string | ResponseBody): AE
         try {
             resp = json.Unmarshal(s) as ResponseBody
         } catch (err) {
-            return E_ParseResponseBodyFailed.addDetail(s)
+            return E_ParseResponseBodyFailed.widthDetail(s)
         }
     }
     return new AError(resp['code'], resp['msg'])

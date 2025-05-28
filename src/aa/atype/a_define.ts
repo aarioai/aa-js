@@ -5,6 +5,18 @@ export type t_safeint = number  // [APX_MAX_SAFE_INT, APX_MIN_SAFE_INT] is narro
 export type t_numeric = number | bigint | string
 export type t_bool = boolean | t_booln | '0' | '1'
 export type t_utc = string  // UTC date string, (new Date()).toUTCString()
+export type TypedArray =
+    Int8Array
+    | Uint8Array
+    | Uint8ClampedArray
+    | Int16Array
+    | Uint16Array
+    | Int32Array
+    | Uint32Array
+    | Float32Array
+    | Float64Array
+    | BigInt64Array
+    | BigUint64Array
 
 /****************************************** types from server *********************************************************/
 

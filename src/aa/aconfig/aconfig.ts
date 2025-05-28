@@ -11,8 +11,6 @@ class AConfigure {
     maxDate: t_date = MYSQL_MAX_DATE
     minDatetime: t_datetime = MYSQL_MIN_DATETIME
     maxDatetime: t_datetime = MYSQL_MAX_DATETIME
-
-
 }
 
 const aconfig = new AConfigure()

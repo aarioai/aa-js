@@ -3,6 +3,8 @@ import {AnyMap} from '../../aa/atype/a_define_interfaces'
 import {createRequestFactor} from '../base/fn_checksum'
 import {Millisecond, Second} from '../../aa/atype/a_define_units'
 import {RequestStruct} from '../base/define_interfaces'
+import {AError} from '../../basic/aerror/error'
+import {E_ClientDenyDebounce} from '../base/errors'
 
 export default class AaRateLimit {
     readonly debounceInterval: number
@@ -14,7 +16,7 @@ export default class AaRateLimit {
         this.activeAutoClean()
     }
 
-    deny(r: RequestStruct): boolean {
+    denied(r: RequestStruct): [boolean, AError?] {
         this.activeAutoClean()
 
         const now = new Date().getTime()
@@ -23,9 +25,9 @@ export default class AaRateLimit {
 
         if (prevTime + this.debounceInterval < now) {
             this.records.set(factor, now)
-            return false        // allow
+            return [false]       // allow
         }
-        return true // deny
+        return [true, E_ClientDenyDebounce] // deny
     }
 
     private cleanExpiredRecords(): void {

@@ -5,11 +5,12 @@ export const P_ClientAuthAt = "_auth_at"
 // server parameters
 export const P_Stringify = 'x-stringify'
 export const P_StringifyHeader = 'X-Stringify'
+export const P_Fingerprint = "apollo"
 
 export const P_Debug = "x_debug"
 export const P_DebugUrl = "x_debug_url"
 export const P_Mock = "x_mock"
-export const P_Apollo = "apollo"
+
 export const P_Authorization = "Authorization"  // 由 token_type access_token 组合而成
 export const P_AccessTokenType = "token_type"
 export const P_AccessToken = "access_token"  // header/query/cookie

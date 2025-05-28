@@ -3,7 +3,7 @@ import {t_api_pattern} from '../../basic/urls/base'
 import {normalizeRequestOptions} from '../base/fn'
 import {fillObjects} from '../../basic/maps/groups'
 import AaMiddleware from './middleware'
-import {warn} from '../../alog/log'
+import {reject} from '../../basic/promises/fn'
 
 export class AaDefaultRequest implements RequestInterface {
     readonly defaultOptions?: RequestOptions
@@ -16,21 +16,15 @@ export class AaDefaultRequest implements RequestInterface {
     }
 
 
-    needDebounce(options: RequestStruct): boolean {
-        return false
-    }
-
     fetch(r: RequestStruct): Promise<unknown> {
         return fetch(r.url.href, {})
     }
 
     async request(r: RequestStruct): Promise<unknown> {
-        if (this.middleware.deny(r)) {
-            return new Promise<unknown>((resolve, reject) => {
-                warn(`${r.url.method} ${r.url.href} is denied`)
-            })
+        const [denied, err] = this.middleware.denied(r)
+        if (denied) {
+            return reject(err.widthDetail(`${r.url.method} ${r.url.href} is denied`))
         }
-
         return await this.fetch(r)
     }
 

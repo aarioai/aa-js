@@ -2,7 +2,10 @@
   "compilerOptions": {
     "moduleResolution": "node",
     "target": "ES2023",
-    "lib": ["ES2023", "dom"],
-    "esModuleInterop": true,
+    "lib": [
+      "ES2023",
+      "dom"
+    ],
+    "esModuleInterop": true
   }
 }

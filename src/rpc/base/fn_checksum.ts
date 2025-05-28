@@ -2,6 +2,7 @@ import {floatToInt} from '../../aa/atype/t_basic'
 import {t_httpmethod} from '../../aa/atype/a_define_enums'
 import {MapObject} from '../../aa/atype/a_define_interfaces'
 import {valuesSortedByKeys} from '../../basic/maps/iterates'
+import {t_requestdata} from './define_interfaces'
 
 function createFileFactor(file: File): string {
     const {size, type, lastModified, name, webkitRelativePath} = file
@@ -35,23 +36,28 @@ function createFormDataFactor(formData: FormData): string {
     return `#${content.length}|${content}`;
 }
 
+function createBlobFactor(blob: Blob): string {
+    return `#${blob.size}|${blob.type}>|${blob.slice(0, 32)}`
+}
 
 /**
  * Creates a request checksum factor
  */
-export function createRequestFactor(method: t_httpmethod, url: string, headers?: MapObject<string>, body?: File | MapObject | FormData | string | null): string {
+export function createRequestFactor(method: t_httpmethod, url: string, headers?: MapObject<string>, body?: t_requestdata): string {
     let checksum = `${method} ${url}${valuesSortedByKeys(headers).join('')}`
     if (!body) {
         return checksum
     }
 
     let content = ''
-    if (body instanceof File) {
+    if (typeof body === "string") {
+        content = createStringFactor(body)
+    } else if (body instanceof Blob) {
+        content = createBlobFactor(body)
+    } else if (body instanceof File) {
         content = createFileFactor(body)
     } else if (body instanceof FormData) {
         content = createFormDataFactor(body)
-    } else if (typeof body === "string") {
-        content = createStringFactor(body)
     } else {
         content = valuesSortedByKeys(body).join('')
     }

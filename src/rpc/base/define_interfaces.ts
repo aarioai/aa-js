@@ -5,13 +5,25 @@ import {t_credentials} from './define_enums'
 import AaURL from '../../basic/urls/url'
 import {t_millisecond} from '../../aa/atype/a_define'
 
+// https://developer.mozilla.org/en-US/docs/Web/API/RequestInit
+export type t_fetchbody = string
+//  | ArrayBuffer
+    | Blob
+    // | DataView
+    | File
+    | FormData
+//| ReadableStream
+//  | TypedArray
+
+export type t_requestdata = t_fetchbody | MapObject | null
+
 export interface RequestOptions {
     method?: t_httpmethod
     baseURL?: string
     hash?: string
     headers?: MapObject<string>
     params?: ParamsType
-    data?: MapObject | File | FormData | string | null
+    data?: t_requestdata
     timeout?: number
     credentials?: t_credentials
     debounceInterval?: t_millisecond
@@ -20,7 +32,7 @@ export interface RequestOptions {
 export interface RequestStruct {
     url: AaURL  // method is in AaURL, url.method
     headers: MapObject<string>  // nullable
-    data: MapObject | File | FormData | string | null
+    data: t_requestdata
     timeout: number
     credentials: t_credentials
     debounceInterval: t_millisecond
