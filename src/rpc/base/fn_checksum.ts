@@ -1,6 +1,5 @@
 import {floatToInt} from '../../aa/atype/t_basic'
 import {t_httpmethod} from '../../aa/atype/a_define_enums'
-import {MapObject} from '../../aa/atype/a_define_interfaces'
 import {valuesSortedByKeys} from '../../basic/maps/iterates'
 import {t_requestdata} from './define_interfaces'
 
@@ -40,11 +39,26 @@ function createBlobFactor(blob: Blob): string {
     return `#${blob.size}|${blob.type}>|${blob.slice(0, 32)}`
 }
 
+function marshalHeaders(headers?: Headers): string {
+    if (!headers) {
+        return ''
+    }
+
+    const keys = Array.from(headers.keys()).sort()
+    const values = new Array(keys.length)
+    for (let i = 0; i < keys.length; i++) {
+        const key = keys[i]
+        values.push(headers.get(key))
+    }
+    return values.join('')
+}
+
 /**
  * Creates a request checksum factor
  */
-export function createRequestFactor(method: t_httpmethod, url: string, headers?: MapObject<string>, body?: t_requestdata): string {
-    let checksum = `${method} ${url}${valuesSortedByKeys(headers).join('')}`
+export function createRequestFactor(method: t_httpmethod, url: string, headers?: Headers, body?: t_requestdata): string {
+
+    let checksum = `${method} ${url}${marshalHeaders(headers)}`
     if (!body) {
         return checksum
     }

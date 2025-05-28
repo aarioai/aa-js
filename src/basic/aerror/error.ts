@@ -7,6 +7,7 @@ import {LF} from "../../aa/atype/a_define_consts";
 import {t_numeric} from '../../aa/atype/a_define'
 import {a_number} from '../../aa/atype/t_basic'
 import {NotFoundCodes} from './base'
+import {isOK} from './fn'
 
 export class AError extends Error {
     readonly code: number
@@ -105,7 +106,7 @@ export class AError extends Error {
     }
 
     isOK(): boolean {
-        return this.code >= 200 && this.code < 300
+        return isOK(this.code)
     }
 
     isFailedAndSeeOther(): boolean {

@@ -34,7 +34,7 @@ export class URLPathError extends Error {
 // Search param types, string for a=100&b=200
 export type t_searchparam = string | IterableKV | URLSearchParams
 
-export type ParamsType = t_searchparam | SearchParams
+export type t_params = t_searchparam | SearchParams
 
 
 export function NewChangeReferrerError(referer: string, reference: string): Error {
@@ -45,7 +45,7 @@ export function NewChangeReferrerError(referer: string, reference: string): Erro
 export interface URLOptions {
     method?: t_httpmethod,
     baseURL?: string
-    params?: ParamsType,
+    params?: t_params,
     hash?: string
 }
 

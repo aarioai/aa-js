@@ -38,7 +38,7 @@ import {
     uint64b,
     uint8
 } from "../../aa/atype/t_basic";
-import {ParamsType, t_api_pattern, t_searchparam, URLOptions} from './base'
+import {t_api_pattern, t_params, t_searchparam, URLOptions} from './base'
 import {a_weekday} from '../../aa/atype/t_basic_server'
 import SearchParams from './search_params'
 import {t_httpmethod} from '../../aa/atype/a_define_enums'
@@ -320,7 +320,7 @@ export default class AaURL {
         return this
     }
 
-    setParams(params?: ParamsType): AaURL {
+    setParams(params?: t_params): AaURL {
         this.#href = ''
         this.searchParams.setMany(params)
         return this

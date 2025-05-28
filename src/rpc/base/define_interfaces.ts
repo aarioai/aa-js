@@ -1,40 +1,25 @@
-import {t_httpmethod} from '../../aa/atype/a_define_enums'
 import {MapObject} from '../../aa/atype/a_define_interfaces'
-import {ParamsType, t_api_pattern} from '../../basic/urls/base'
-import {t_credentials} from './define_enums'
+import {t_api_pattern, t_params} from '../../basic/urls/base'
+import {BaseOptions, FetchBaseOptions, t_fetchbody} from './define_fetch'
 import AaURL from '../../basic/urls/url'
 import {t_millisecond} from '../../aa/atype/a_define'
+import {AError} from '../../basic/aerror/error'
+import {ResponseBodyData} from '../../aa/atype/a_server_dto'
 
-// https://developer.mozilla.org/en-US/docs/Web/API/RequestInit
-export type t_fetchbody = string
-//  | ArrayBuffer
-    | Blob
-    // | DataView
-    | File
-    | FormData
-//| ReadableStream
-//  | TypedArray
 
 export type t_requestdata = t_fetchbody | MapObject | null
 
-export interface RequestOptions {
-    method?: t_httpmethod
+export interface RequestOptions extends BaseOptions {
     baseURL?: string
     hash?: string
-    headers?: MapObject<string>
-    params?: ParamsType
-    data?: t_requestdata
+    params?: t_params
     timeout?: number
-    credentials?: t_credentials
     debounceInterval?: t_millisecond
 }
 
-export interface RequestStruct {
+export interface RequestStruct extends FetchBaseOptions {
     url: AaURL  // method is in AaURL, url.method
-    headers: MapObject<string>  // nullable
-    data: t_requestdata
     timeout: number
-    credentials: t_credentials
     debounceInterval: t_millisecond
 }
 
@@ -56,5 +41,11 @@ export interface AdapterInterface {
     Put(api: t_api_pattern, options?: RequestOptions): Promise<unknown>
 
     Patch(api: t_api_pattern, options?: RequestOptions): Promise<unknown>
+}
+
+export interface RequestHooks {
+    preHook: (r: RequestStruct) => RequestStruct,
+    deniedHook: (err: AError, r: RequestStruct) => Promise<ResponseBodyData>
+    beforeFetchHook: (r: RequestStruct) => Promise<RequestStruct>
 }
 

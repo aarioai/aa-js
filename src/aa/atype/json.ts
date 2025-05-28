@@ -40,15 +40,20 @@ export default class json {
      *  Unmarshal('invalid')    // null
      */
     static Unmarshal(input: string | undefined | MapObject | Array<unknown>): object {
-        if (!input || (typeof input === "string" && input.trim().toLowerCase() === "null")) {
+        if (!input) {
             return null
         }
-        if (typeof input === 'object') {
+        if (typeof input !== 'string') {
             return input
         }
-
+        input = input.trim()
+        
+        // null is the most common case
+        if (input === 'null' || input.toUpperCase() === 'NULL') {
+            return null
+        }
         try {
-            return JSON.parse(input.trim(), unmarshalReviver)
+            return JSON.parse(input, unmarshalReviver)
         } catch (error) {
             console.error(`json unmarshal error: ${error}`, input)
         }

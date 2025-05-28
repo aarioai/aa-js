@@ -20,7 +20,7 @@ export default class AaRateLimit {
         this.activeAutoClean()
 
         const now = new Date().getTime()
-        const factor = createRequestFactor(r.url.method, r.url.href, r.headers, r.data)
+        const factor = createRequestFactor(r.url.method, r.url.href, r.headers, r.body)
         const prevTime = this.records.get(factor) ?? 0
 
         if (prevTime + this.debounceInterval < now) {

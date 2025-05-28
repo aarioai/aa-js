@@ -1,10 +1,10 @@
 import {RequestInterface} from '../base/define_interfaces'
-import {AaDefaultRequest} from '../middleware/request'
+import {AaDefaultFetch} from '../middleware/fetch'
 
 class Auth {
     readonly request: RequestInterface
 
-    constructor(r: RequestInterface = new AaDefaultRequest()) {
+    constructor(r: RequestInterface = new AaDefaultFetch()) {
         this.request = r
     }
 }

@@ -1,6 +1,6 @@
 import {t_path_param} from '../../aa/atype/a_define'
 import AaMap from '../maps/map'
-import {ParamsType} from './base'
+import {t_params} from './base'
 import {parseURLSearch} from './fn'
 import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
 import {path_param_string_t} from '../../aa/atype/a_define_enums'
@@ -9,7 +9,7 @@ export default class SearchReference<V = [string, t_path_param]> extends AaMap<V
     [Symbol.toStringTag] = 'SearchReference'
     sortFunc: SortFunc = ASCEND
 
-    constructor(source?: ParamsType) {
+    constructor(source?: t_params) {
         super()
         if (!source) {
             return
@@ -47,7 +47,7 @@ export default class SearchReference<V = [string, t_path_param]> extends AaMap<V
         return this
     }
 
-    setMany(source?: ParamsType): this {
+    setMany(source?: t_params): this {
         if (!source) {
             return this
         }

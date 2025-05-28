@@ -1,5 +1,5 @@
 import {AError} from "../aerror/error";
-import {aerror} from "../aerror/function";
+import {aerror} from "../aerror/fn";
 
 export function asleep(delay: number, ...args: unknown[]) {
     return new Promise(resolve => setTimeout(resolve, delay, ...args))

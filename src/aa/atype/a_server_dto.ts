@@ -1,9 +1,11 @@
 import {t_float64, t_uint, t_uint16, t_uint8, t_versiontag} from './a_define'
+import {MapObject} from './a_define_interfaces'
 
+export type ResponseBodyData = MapObject | string | null
 export type ResponseBody = {
     code: number,
     msg: string,
-    data: unknown,
+    data: ResponseBodyData,
 }
 
 export type Paging = {

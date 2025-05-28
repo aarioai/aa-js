@@ -1,6 +1,6 @@
 import {deepEncodeURI, parseURLSearch} from './fn'
 import {a_string} from '../../aa/atype/t_basic'
-import {HASH_REF_NAME, NewChangeReferrerError, ParamsType, safePathParamValue} from './base'
+import {HASH_REF_NAME, NewChangeReferrerError, safePathParamValue, t_params} from './base'
 import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
 import AaMap from '../maps/map'
 import SearchReference from './search_reference'
@@ -24,7 +24,7 @@ export default class SearchParams extends AaMap<string> {
     encode: (s: string) => string = deepEncodeURI
 
 
-    constructor(source?: ParamsType) {
+    constructor(source?: t_params) {
         super()
         this.setMany(source)
     }
@@ -46,7 +46,7 @@ export default class SearchParams extends AaMap<string> {
         return (!hash || hash.startsWith('#')) ? hash : ('#' + hash)
     }
 
-    reset(source?: ParamsType): this {
+    reset(source?: t_params): this {
         this.map.clear()
         this.setMany(source)
         return this
@@ -70,7 +70,7 @@ export default class SearchParams extends AaMap<string> {
         return this
     }
 
-    setMany(source?: ParamsType): this {
+    setMany(source?: t_params): this {
         if (!source) {
             return this
         }

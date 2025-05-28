@@ -5,8 +5,8 @@ export type t_loopsignal = '-.../.-././.-/-.-' | undefined
 export const BREAK: t_loopsignal = '-.../.-././.-/-.-'  // Morse code of BREAK
 export const CONTINUE: t_loopsignal = undefined // return Continue in a loop is not important, but better for people to read
 
-
-export const HTTP_METHODS_RAW = ['HEAD', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+// https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods
+export const HTTP_METHODS_RAW = ['CONNECT', 'DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'TRACE']
 export type t_httpmethod = typeof HTTP_METHODS_RAW[number]
 export const HTTP_METHODS: Set<t_httpmethod> = new Set(HTTP_METHODS_RAW)
 export const HTTP_METHOD_REGEXP = new RegExp('^(' + HTTP_METHODS_RAW.join('|') + ')\\s+', 'i')

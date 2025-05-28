@@ -1,8 +1,13 @@
 import {t_api_pattern} from '../../basic/urls/base'
-import {RequestOptions, RequestStruct, t_fetchbody, t_requestdata} from './define_interfaces'
+import {RequestOptions, RequestStruct} from './define_interfaces'
 import AaURL from '../../basic/urls/url'
-import {fillObjects} from '../../basic/maps/groups'
 import defaults from './defaults'
+import {BaseOptions, FetchBaseOptions} from './define_fetch'
+import {normalizeHeaders} from './fn_fetch'
+import {t_httpmethod} from '../../aa/atype/a_define_enums'
+import {ResponseBody} from '../../aa/atype/a_server_dto'
+import {AError} from '../../basic/aerror/error'
+import {E_MissingResponseBody, E_ParseResponseBodyFailed} from '../../basic/aerror/errors'
 import json from '../../aa/atype/json'
 
 
@@ -17,42 +22,50 @@ export function getBaseURL(opts: RequestOptions): string {
     return location.origin
 }
 
+export function extractFetchOptions(method: t_httpmethod, source: BaseOptions): FetchBaseOptions {
+    const result = {
+        method: method,
+        headers: normalizeHeaders(method, source.headers),
+    }
+    for (const [key, value] of Object.entries(source)) {
+        // Handled headers
+        if (key === 'headers') {
+            continue
+        }
+        if (value !== null && value !== undefined && value !== '') {
+            result[key] = value
+        }
+    }
+    return result
+}
+
 export function normalizeRequestOptions(apiPattern: t_api_pattern, opts: RequestOptions): RequestStruct {
     const url = new AaURL(apiPattern, {
         method: opts?.method ?? 'GET',
         baseURL: getBaseURL(opts),
         params: opts?.params,
     })
-    const headers = fillObjects<string>(opts?.headers, defaults.headers[url.method], defaults.headers.common)
+    const options = extractFetchOptions(url.method, opts)
 
-    const contentType = headers['Content-Type']
-    // multipart/form-data needs boundary
-    if (contentType === 'multipart/form-data' || contentType === '') {
-        delete headers['Content-Type']
-    }
     return {
         url: url,
-        headers: headers,
-        data: opts?.data ?? null,
         timeout: opts?.timeout ?? 0,
-        credentials: opts?.credentials ?? null,
-        debounceInterval: opts?.debounceInterval ?? defaults.debounceInterval
+        debounceInterval: opts?.debounceInterval ?? defaults.debounceInterval,
+        ...options
     }
 }
 
-// https://developer.mozilla.org/en-US/docs/Web/API/RequestInit
-export function buildFetchBody(data: t_requestdata, contentType: string = 'application/json'): t_fetchbody {
-    if (!data) {
-        return null
+export function parseResponseAError(resp: undefined | string | ResponseBody): AError {
+    if (!resp) {
+        return E_MissingResponseBody
     }
-    if (typeof data === 'string'
-        || data instanceof Blob
-        || data instanceof DataView
-        || data instanceof File
-        || data instanceof FormData
-        || data instanceof ReadableStream
-    ) {
-        return data
+    if (typeof resp === "string") {
+        const s = resp.trim()
+        try {
+            resp = json.Unmarshal(s) as ResponseBody
+        } catch (err) {
+            return E_ParseResponseBodyFailed.widthDetail(s)
+        }
     }
-    return json.Marshal(data)
+    return new AError(resp['code'], resp['msg'])
 }
