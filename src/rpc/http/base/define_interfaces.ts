@@ -1,8 +1,8 @@
-import {t_api_pattern, t_params} from '../../basic/urls/base'
+import {t_api_pattern, t_params} from '../../../basic/urls/base'
 import {BaseOptions, FetchBaseOptions} from './define_fetch'
-import AaURL from '../../basic/urls/url'
-import {t_millisecond} from '../../aa/atype/a_define'
-import {ResponseBodyData} from '../../aa/atype/a_server_dto'
+import AaURL from '../../../basic/urls/url'
+import {t_millisecond} from '../../../aa/atype/a_define'
+import {ResponseBodyData} from '../../../aa/atype/a_server_dto'
 
 export interface BaseRequestOptions extends BaseOptions {
     baseURL?: string
@@ -37,13 +37,13 @@ export interface RequestHooks extends BaseRequestHooks {
 
 }
 
-export interface RequestInterface {
+export interface RequestImpl {
     request<T = ResponseBodyData>(r: BasicRequestStruct, hooks?: BaseRequestHooks): Promise<T>
 
     Request<T = ResponseBodyData>(api: t_api_pattern, options?: BaseRequestOptions, hooks?: BaseRequestHooks): Promise<T>
 }
 
-export interface AdapterInterface {
+export interface HttpImpl {
     request<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T>
 
     Request<T = ResponseBodyData>(api: t_api_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T>

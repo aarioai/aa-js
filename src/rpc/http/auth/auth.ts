@@ -1,25 +1,25 @@
-import {BaseRequestOptions, RequestInterface} from '../base/define_interfaces'
+import {BaseRequestOptions, RequestImpl} from '../base/define_interfaces'
 import {AaRequest} from '../middleware/request'
-import AaCollection from '../../basic/storage/collection'
-import {NormalizedUserToken, t_usertoken_key, UserToken, UserTokenAttach} from '../../aa/atype/a_server_dto'
-import {CookieOptions, StorageImpl, StorageOptions} from '../../basic/storage/define_types'
-import AaStorageManager from '../../basic/storage/manager'
-import AaDbLike from '../../basic/storage/dblike'
-import {P_Logout} from '../../aa/aconfig/const_param'
+import AaCollection from '../../../basic/storage/collection'
+import {NormalizedUserToken, t_usertoken_key, UserToken, UserTokenAttach} from '../../../aa/atype/a_server_dto'
+import {CookieOptions, StorageImpl, StorageOptions} from '../../../basic/storage/define_types'
+import AaStorageManager from '../../../basic/storage/manager'
+import AaDbLike from '../../../basic/storage/dblike'
+import {P_Logout} from '../../../aa/aconfig/const_param'
 import defaults from '../base/defaults'
-import {t_expires, t_second} from '../../aa/atype/a_define'
-import {MinutesInSecond, NO_EXPIRES, Second, Seconds} from '../../aa/atype/a_define_units'
-import Registry from '../../aa/aconfig/registry'
-import {MapObject} from '../../aa/atype/a_define_interfaces'
-import {cloneMapObject} from '../../aa/atype/clone'
-import {fillObjects} from '../../basic/maps/groups'
-import {AaMutex, E_DeadLock} from '../../aa/calls/mutex'
-import {AError} from '../../aa/aerror/error'
-import log from '../../aa/alog/log'
-import {UNAUTHORIZED_HANDLER} from '../../aa/aconfig/registry_names'
-import {CODE_UNAUTHORIZED} from '../../aa/aerror/code'
-import {aerror} from '../../aa/aerror/fn'
-import {TRUE} from '../../aa/atype/a_server_consts'
+import {t_expires, t_second} from '../../../aa/atype/a_define'
+import {MinutesInSecond, NO_EXPIRES, Second, Seconds} from '../../../aa/atype/a_define_units'
+import Registry from '../../../aa/aconfig/registry'
+import {MapObject} from '../../../aa/atype/a_define_interfaces'
+import {cloneMapObject} from '../../../aa/atype/clone'
+import {fillObjects} from '../../../basic/maps/groups'
+import {AaMutex, E_DeadLock} from '../../../aa/calls/mutex'
+import {AError} from '../../../aa/aerror/error'
+import log from '../../../aa/alog/log'
+import {UNAUTHORIZED_HANDLER} from '../../../aa/aconfig/registry_names'
+import {CODE_UNAUTHORIZED} from '../../../aa/aerror/code'
+import {aerror} from '../../../aa/aerror/fn'
+import {TRUE} from '../../../aa/atype/a_server_consts'
 
 export const E_MissingUserToken = new AError(CODE_UNAUTHORIZED, 'missing user token').lock()
 export const E_InvalidUserToken = new AError(CODE_UNAUTHORIZED, 'invalid user token').lock()
@@ -28,7 +28,7 @@ export default class AaAuth {
     readonly sessionCollection: AaCollection
     readonly localCollection: AaCollection
     readonly cookie: StorageImpl
-    readonly request: RequestInterface
+    readonly request: RequestImpl
     customPackAuthorization?: (token: NormalizedUserToken) => BaseRequestOptions | null
     enableCookie: boolean = true
     defaultCookieOptions: CookieOptions = {
@@ -42,7 +42,7 @@ export default class AaAuth {
     #authTime: t_second = 0
     #validated: boolean
 
-    constructor(registry: Registry, storageManager: AaStorageManager, r?: RequestInterface) {
+    constructor(registry: Registry, storageManager: AaStorageManager, r?: RequestImpl) {
         this.registry = registry
         this.cookie = storageManager.cookie
         this.sessionCollection = new AaCollection(this.tableName, new AaDbLike(storageManager.session))
@@ -312,12 +312,12 @@ export default class AaAuth {
         if (data && key in data) {
             return data[key] as T
         }
-        const userToken = defaults.http.userToken
+        const userToken = defaults.userToken
         return key in userToken ? userToken[key] as T : defaultValue
     }
 
     private mergeDefault<T = MapObject>(data: UserToken, key: t_usertoken_key): T | null {
-        const defaultValue = key in defaults.http.userToken ? cloneMapObject(defaults.http.userToken) : null
+        const defaultValue = key in defaults.userToken ? cloneMapObject(defaults.userToken) : null
         if (!data || !(key in data)) {
             return defaultValue ? defaultValue as T : null
         }

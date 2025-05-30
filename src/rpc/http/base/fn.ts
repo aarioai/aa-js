@@ -1,13 +1,13 @@
-import {t_api_pattern} from '../../basic/urls/base'
+import {t_api_pattern} from '../../../basic/urls/base'
 import {BaseRequestOptions, BasicRequestStruct, RequestOptions, RequestStruct} from './define_interfaces'
-import AaURL from '../../basic/urls/url'
+import AaURL from '../../../basic/urls/url'
 import defaults from './defaults'
 import {BaseOptions, FetchBaseOptions} from './define_fetch'
 import {normalizeHeaders} from './fn_fetch'
-import {t_httpmethod} from '../../aa/atype/a_define_enums'
-import {ResponseBody} from '../../aa/atype/a_server_dto'
-import {AError} from '../../aa/aerror/error'
-import json from '../../aa/atype/json'
+import {t_httpmethod} from '../../../aa/atype/a_define_enums'
+import {ResponseBody} from '../../../aa/atype/a_server_dto'
+import {AError} from '../../../aa/aerror/error'
+import json from '../../../aa/atype/json'
 import {E_MissingResponseBody, E_ParseResponseBodyFailed} from './errors'
 
 
@@ -16,8 +16,8 @@ export function getBaseURL(opts: BaseRequestOptions): string {
     if (opts?.baseURL) {
         return opts.baseURL
     }
-    if (defaults.http.baseURL) {
-        return defaults.http.baseURL
+    if (defaults.baseURL) {
+        return defaults.baseURL
     }
     return location.origin
 }
@@ -51,7 +51,7 @@ export function normalizeBasicRequestOptions(apiPattern: t_api_pattern, opts: Ba
         ...options,
         url: url,
         timeout: opts?.timeout ?? 0,
-        debounceInterval: opts?.debounceInterval ?? defaults.http.debounceInterval,
+        debounceInterval: opts?.debounceInterval ?? defaults.debounceInterval,
     }
 }
 
@@ -67,7 +67,7 @@ export function normalizeRequestOptions(apiPattern: t_api_pattern, opts: Request
         ...options,
         url: url,
         timeout: opts?.timeout ?? 0,
-        debounceInterval: opts?.debounceInterval ?? defaults.http.debounceInterval,
+        debounceInterval: opts?.debounceInterval ?? defaults.debounceInterval,
         disableAuth: opts?.disableAuth ?? false,
         disableAuthRefresh: opts?.disableAuthRefresh ?? false,
     }

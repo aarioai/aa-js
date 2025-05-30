@@ -1,23 +1,17 @@
-import {
-    AdapterInterface,
-    RequestHooks,
-    RequestInterface,
-    RequestOptions,
-    RequestStruct
-} from '../base/define_interfaces'
+import {HttpImpl, RequestHooks, RequestImpl, RequestOptions, RequestStruct} from '../base/define_interfaces'
 import AaAuth from '../auth/auth'
-import {t_api_pattern} from '../../basic/urls/base'
-import {ResponseBodyData} from '../../aa/atype/a_server_dto'
+import {t_api_pattern} from '../../../basic/urls/base'
+import {ResponseBodyData} from '../../../aa/atype/a_server_dto'
 import {normalizeRequestOptions} from '../base/fn'
-import {fillObjects} from '../../basic/maps/groups'
-import {MapObject} from '../../aa/atype/a_define_interfaces'
-import {aerror} from '../../aa/aerror/fn'
-import {E_OK} from '../../aa/aerror/errors'
-import {t_httpmethod} from '../../aa/atype/a_define_enums'
+import {fillObjects} from '../../../basic/maps/groups'
+import {MapObject} from '../../../aa/atype/a_define_interfaces'
+import {aerror} from '../../../aa/aerror/fn'
+import {E_OK} from '../../../aa/aerror/errors'
+import {t_httpmethod} from '../../../aa/atype/a_define_enums'
 
-export class AaFetch implements AdapterInterface {
+export default class AaFetch implements HttpImpl {
     readonly auth: AaAuth
-    readonly baseRequest: RequestInterface
+    readonly baseRequest: RequestImpl
     defaultOptions: RequestOptions | null
 
     constructor(auth: AaAuth, defaultOptions: RequestOptions | null = null) {

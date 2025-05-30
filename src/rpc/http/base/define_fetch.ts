@@ -1,6 +1,6 @@
-import {t_httpmethod} from '../../aa/atype/a_define_enums'
-import {MapObject} from '../../aa/atype/a_define_interfaces'
-import {TypedArray} from '../../aa/atype/a_define'
+import {t_httpmethod} from '../../../aa/atype/a_define_enums'
+import {MapObject} from '../../../aa/atype/a_define_interfaces'
+import {TypedArray} from '../../../aa/atype/a_define'
 
 
 // https://developer.mozilla.org/en-US/docs/Web/API/RequestInit

@@ -1,20 +1,20 @@
-import {BaseRequestHooks, BaseRequestOptions, BasicRequestStruct, RequestInterface} from '../base/define_interfaces'
-import {t_api_pattern} from '../../basic/urls/base'
+import {BaseRequestHooks, BaseRequestOptions, BasicRequestStruct, RequestImpl} from '../base/define_interfaces'
+import {t_api_pattern} from '../../../basic/urls/base'
 import {normalizeBasicRequestOptions} from '../base/fn'
-import {fillObjects} from '../../basic/maps/groups'
+import {fillObjects} from '../../../basic/maps/groups'
 import AaMiddleware from './middleware'
-import {reject} from '../../basic/promises/fn'
+import {reject} from '../../../basic/promises/fn'
 import {FetchOptions} from '../base/define_fetch'
 import {normalizeFetchOptions} from '../base/fn_fetch'
-import {AError} from '../../aa/aerror/error'
-import json from '../../aa/atype/json'
-import {ResponseBody, ResponseBodyData} from '../../aa/atype/a_server_dto'
-import {isOK} from '../../aa/aerror/fn'
+import {AError} from '../../../aa/aerror/error'
+import json from '../../../aa/atype/json'
+import {ResponseBody, ResponseBodyData} from '../../../aa/atype/a_server_dto'
+import {isOK} from '../../../aa/aerror/fn'
 import {E_ParseResponseBodyFailed} from '../base/errors'
-import {MapObject} from '../../aa/atype/a_define_interfaces'
-import {t_httpmethod} from '../../aa/atype/a_define_enums'
+import {MapObject} from '../../../aa/atype/a_define_interfaces'
+import {t_httpmethod} from '../../../aa/atype/a_define_enums'
 
-export class AaRequest implements RequestInterface {
+export class AaRequest implements RequestImpl {
     defaultOptions?: BaseRequestOptions
     readonly middleware: AaMiddleware
 

@@ -3,10 +3,7 @@ import AaStorageEngine from './engine'
 import {StorageImpl} from './define_types'
 
 export default class AaStorageManager {
-    readonly name = 'AaStorageManager'
-
-    readonly length: number
-
+ 
     readonly cookie: StorageImpl
     readonly local: AaStorageEngine
     readonly session: AaStorageEngine

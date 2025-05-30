@@ -1,7 +1,7 @@
-import {floatToInt} from '../../aa/atype/t_basic'
-import {t_httpmethod} from '../../aa/atype/a_define_enums'
-import {valuesSortedByKeys} from '../../basic/maps/iterates'
-import {MapObject} from '../../aa/atype/a_define_interfaces'
+import {floatToInt} from '../../../aa/atype/t_basic'
+import {t_httpmethod} from '../../../aa/atype/a_define_enums'
+import {valuesSortedByKeys} from '../../../basic/maps/iterates'
+import {MapObject} from '../../../aa/atype/a_define_interfaces'
 import {t_fetchbody} from './define_fetch'
 
 function createFileFactor(file: File): string {
