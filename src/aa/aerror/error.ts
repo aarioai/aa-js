@@ -1,11 +1,11 @@
 import {E_ClientThrow, E_FailedAndSeeOther} from "./code";
 import {code2msg} from "./code2msg";
-import {language, matchLanguage} from "../../aa/translate/language";
+import {language, matchLanguage} from "../translate/language";
 import {AErrorDictionaries} from "./dictionaries";
-import {translate} from "../../aa/translate/dictionary";
-import {LF} from "../../aa/atype/a_define_consts";
-import {t_numeric} from '../../aa/atype/a_define'
-import {a_number} from '../../aa/atype/t_basic'
+import {translate} from "../translate/dictionary";
+import {LF} from "../atype/a_define_consts";
+import {t_numeric} from '../atype/a_define'
+import {a_number, a_string} from '../atype/t_basic'
 import {NotFoundCodes} from './base'
 import {isOK} from './fn'
 
@@ -75,9 +75,9 @@ export class AError extends Error {
         return e
     }
 
-    widthDetail(detail: string): AError {
+    widthDetail(detail: unknown): AError {
         let e = this.#locked ? this.clone() : this
-        e.#details.push(detail)
+        e.#details.push(a_string(detail))
         return e
     }
 

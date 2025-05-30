@@ -46,8 +46,7 @@ function marshalHeaders(headers?: Headers): string {
 
     const keys = Array.from(headers.keys()).sort()
     const values = new Array(keys.length)
-    for (let i = 0; i < keys.length; i++) {
-        const key = keys[i]
+    for (const key of keys) {
         values.push(headers.get(key))
     }
     return values.join('')

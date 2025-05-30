@@ -6,13 +6,13 @@ import AaMiddleware from './middleware'
 import {reject} from '../../basic/promises/fn'
 import {FetchOptions} from '../base/define_fetch'
 import {normalizeFetchOptions} from '../base/fn_fetch'
-import {AError} from '../../basic/aerror/error'
+import {AError} from '../../aa/aerror/error'
 import json from '../../aa/atype/json'
-import {E_ParseResponseBodyFailed} from '../../basic/aerror/errors'
 import {ResponseBody, ResponseBodyData} from '../../aa/atype/a_server_dto'
-import {isOK} from '../../basic/aerror/fn'
+import {isOK} from '../../aa/aerror/fn'
+import {E_ParseResponseBodyFailed} from '../base/errors'
 
-export class AaDefaultFetch implements RequestInterface {
+export class AaRequest implements RequestInterface {
     readonly defaultOptions?: RequestOptions
     readonly middleware: AaMiddleware
 
@@ -43,7 +43,7 @@ export class AaDefaultFetch implements RequestInterface {
                     bodyText = text
                     return json.Unmarshal(text) as ResponseBody
                 })
-            } catch (error) {
+            } catch {
                 throw E_ParseResponseBodyFailed.widthDetail(bodyText)
             }
         }).then(resp => {

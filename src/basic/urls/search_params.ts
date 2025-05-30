@@ -63,8 +63,8 @@ export default class SearchParams extends AaMap<string> {
 
         // Set all parameters that reference to this parameter to this value
         const refs = this.references.referrers(name)
-        for (let i = 0; i < refs.length; i++) {
-            const [key, type] = refs[i]
+        for (const ref of refs) {
+            const [key, type] = ref
             this.map.set(key, safePathParamValue(v, type))
         }
         return this
@@ -126,8 +126,7 @@ export default class SearchParams extends AaMap<string> {
         const hashName = this.getHashName()
         let s = ''
 
-        for (let i = 0; i < keys.length; i++) {
-            const key = keys[i]
+        for (const key of keys) {
             let value = ''
             // The alias overrides/prevails over the key.
             if (this.references.has(key)) {

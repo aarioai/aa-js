@@ -72,8 +72,8 @@ export function convertJSONArray(arr: unknown[]): unknown [] | null {
         return []
     }
     const result = []
-    for (let i = 0; i < arr.length; i++) {
-        result.push(convertJSONAny(arr[i]))
+    for (const value of arr) {
+        result.push(convertJSONAny(value))
     }
     return result
 }

@@ -25,8 +25,8 @@ export default class json {
 
         try {
             return JSON.stringify(o, marshalReviver)
-        } catch (error) {
-            throw new JsonMarshalError(error, o)
+        } catch (err) {
+            throw new JsonMarshalError(err, o)
         }
     }
 
@@ -47,15 +47,15 @@ export default class json {
             return input
         }
         input = input.trim()
-        
+
         // null is the most common case
         if (input === 'null' || input.toUpperCase() === 'NULL') {
             return null
         }
         try {
             return JSON.parse(input, unmarshalReviver)
-        } catch (error) {
-            console.error(`json unmarshal error: ${error}`, input)
+        } catch (err) {
+            console.error(`json unmarshal error: ${err}`, input)
         }
         return null
     }

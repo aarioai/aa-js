@@ -2,6 +2,7 @@ import AaStorageEngine from './engine'
 import {DbLikeImpl, InsertCondition, StorageOptions} from './define_types'
 import {AnyMap, MapObject} from '../../aa/atype/a_define_interfaces'
 import {matchAny} from '../arrays/fn'
+import {t_expires} from '../../aa/atype/a_define'
 
 export default class AaDbLike implements DbLikeImpl {
     readonly storage: AaStorageEngine
@@ -20,15 +21,21 @@ export default class AaDbLike implements DbLikeImpl {
         this.storage.removeItems(new RegExp(`^${tableName}\\.`))
     }
 
-    find(tableName: string, key: string): unknown {
+
+    find<T = unknown>(tableName: string, key: string): T | null {
         const filed = this.normalizeFieldKey(tableName, key)
-        return this.storage.getItem(filed)
+        return this.storage.getItem<T>(filed)
+    }
+
+    findWithTTL<T = unknown>(tableName: string, key: string): [T, t_expires] | null {
+        const filed = this.normalizeFieldKey(tableName, key)
+        return this.storage.getItemWithTTL<T>(filed)
     }
 
     findMany(tableName: string, keys: string[]): MapObject | null {
         const fields: string[] = []
-        for (let i = 0; i < keys.length; i++) {
-            fields.push(this.normalizeFieldKey(tableName, keys[i]))
+        for (const key of keys) {
+            fields.push(this.normalizeFieldKey(tableName, key))
         }
         return this.revertItems(this.storage.getItems(fields))
     }

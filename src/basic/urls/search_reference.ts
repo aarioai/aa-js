@@ -97,8 +97,7 @@ export default class SearchReference<V = [string, t_path_param]> extends AaMap<V
             keys.sort(this.sortFunc)
         }
         let s = ''
-        for (let i = 0; i < keys.length; i++) {
-            const key = keys[i]
+        for (const key of keys) {
             const value = this.get(key)
             s += `&${key}=${value}`
         }

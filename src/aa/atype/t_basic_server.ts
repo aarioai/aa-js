@@ -1,6 +1,7 @@
-import {t_lowers, t_uppers, t_weekday} from './a_define'
-import {a_string} from './t_basic'
+import {t_lowers, t_millisecond, t_second, t_uppers, t_weekday} from './a_define'
+import {a_string, floatToInt} from './t_basic'
 import {FRIDAY, INVALID_WEEKDAY, MONDAY, SATURDAY, SUNDAY, THURSDAY, TUESDAY, WEDNESDAY} from './a_define_enums'
+import {Second} from './a_define_units'
 
 export function a_lowers(value: unknown): t_lowers {
     return a_string(value).toLowerCase()
@@ -8,6 +9,10 @@ export function a_lowers(value: unknown): t_lowers {
 
 export function a_uppers(value: unknown): t_uppers {
     return a_string(value).toUpperCase()
+}
+
+export function a_second(value: t_millisecond): t_second {
+    return floatToInt(value / Second)
 }
 
 /**

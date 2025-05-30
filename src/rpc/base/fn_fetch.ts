@@ -8,7 +8,7 @@ import defaults from './defaults'
 import {FetchBaseOptions, FetchOptions, t_fetchbody} from './define_fetch'
 
 export function normalizeHeaders(method: t_httpmethod, headers?: Headers | MapObject): Headers {
-    const defaultHeaders = fillObjects<string>({}, defaults.headers[method], defaults.headers.common)
+    const defaultHeaders = fillObjects<string>({}, defaults.http.headers[method], defaults.http.headers.common)
     const newHeaders = headers ? new Headers(headers as any) : new Headers()
     for (const [key, value] of Object.entries(defaultHeaders)) {
         if (!newHeaders.has(key)) {

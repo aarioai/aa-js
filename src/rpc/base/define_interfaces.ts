@@ -3,7 +3,7 @@ import {t_api_pattern, t_params} from '../../basic/urls/base'
 import {BaseOptions, FetchBaseOptions, t_fetchbody} from './define_fetch'
 import AaURL from '../../basic/urls/url'
 import {t_millisecond} from '../../aa/atype/a_define'
-import {AError} from '../../basic/aerror/error'
+import {AError} from '../../aa/aerror/error'
 import {ResponseBodyData} from '../../aa/atype/a_server_dto'
 
 
@@ -15,12 +15,16 @@ export interface RequestOptions extends BaseOptions {
     params?: t_params
     timeout?: number
     debounceInterval?: t_millisecond
+    disableAuth?: boolean  // disable attach Authorization header
+    disableAuthRefresh?: boolean // disable refresh user token via refresh token
 }
 
 export interface RequestStruct extends FetchBaseOptions {
     url: AaURL  // method is in AaURL, url.method
     timeout: number
     debounceInterval: t_millisecond
+    disableAuth: boolean
+    disableAuthRefresh: boolean
 }
 
 export interface RequestInterface {

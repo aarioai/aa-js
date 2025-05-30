@@ -1,5 +1,5 @@
 import {MapObject} from '../../aa/atype/a_define_interfaces'
-import {E_MissingArgument} from '../aerror/errors'
+import {Err_MissingArgument} from '../../aa/aerror/errors'
 import {KV} from './base'
 import {forEach} from './iterates'
 import {isMeaningfulValue} from './base_fn'
@@ -67,7 +67,7 @@ export function compare(a: KV, b: KV): boolean {
  */
 export function assign<T extends KV = KV>(target: T, ...sources: (KV | undefined)[]): T {
     if (!target) {
-        throw E_MissingArgument
+        throw Err_MissingArgument
     }
     const n = sources.length
     if (n === 0) {
@@ -108,7 +108,7 @@ export function assignObjects<T = MapObject>(target: T | undefined, ...sources: 
  */
 export function fill<T extends KV = KV>(target: T, ...defaults: (KV | undefined)[]): T {
     if (!target) {
-        throw E_MissingArgument
+        throw Err_MissingArgument
     }
     const n = defaults.length
     if (n === 0) {
@@ -147,7 +147,7 @@ export function fillObjects<V = unknown, T = MapObject<V>>(target: T | undefined
  */
 export function fillIn<T extends KV = KV>(defaults: T, source: KV | undefined): T {
     if (!defaults) {
-        throw E_MissingArgument
+        throw Err_MissingArgument
     }
     if (!source) {
         return defaults
@@ -170,7 +170,7 @@ export function fillIn<T extends KV = KV>(defaults: T, source: KV | undefined): 
  */
 export function refillIn<T extends KV = KV>(defaults: T, source: KV | undefined): T {
     if (!defaults) {
-        throw E_MissingArgument
+        throw Err_MissingArgument
     }
     if (!source) {
         return defaults

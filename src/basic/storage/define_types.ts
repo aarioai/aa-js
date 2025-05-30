@@ -1,4 +1,4 @@
-import {t_millisecond, t_utc} from '../../aa/atype/a_define'
+import {t_expires, t_second, t_utc} from '../../aa/atype/a_define'
 import {AnyMap, MapObject} from '../../aa/atype/a_define_interfaces'
 
 export const STORAGE_SEPARATOR = ' `'
@@ -10,7 +10,9 @@ export interface StorageImpl {
 
     clear(options?: StorageOptions): void
 
-    getItem(key: string): unknown | null
+    getItem<T = unknown>(key: string): T | null
+
+    getItemWithTTL<T = unknown>(key: string): [T | null, t_expires]
 
     getItems(key: (RegExp | string)[] | RegExp | string, ...keys: (RegExp | string)[]): MapObject | null
 
@@ -22,18 +24,18 @@ export interface StorageImpl {
 }
 
 
-export type t_storage_expires = t_millisecond | Date | t_utc
+export type t_storage_expires = t_expires | Date | t_utc
 
 export interface StorageOptions {
-    expires?: t_storage_expires
+    expiresIn?: t_storage_expires
     unclearable?: boolean
-    timeDiff?: t_millisecond
+    timeDiff?: t_second
 }
 
 export interface NormalizedStorageOptions {
-    expires: t_millisecond | null
+    expiresIn: t_expires | null
     unclearable: boolean
-    timeDiff: t_millisecond
+    timeDiff: t_second
 }
 
 export interface CookieOptions extends StorageOptions {
@@ -53,7 +55,9 @@ export interface DbLikeImpl {
 
     drop(tableName: string): void
 
-    find(tableName: string, key: string): unknown
+    find<T = unknown>(tableName: string, key: string): T | null
+
+    findWithTTL<T = unknown>(tableName: string, key: string): [T, t_expires] | null
 
     findMany(tableName: string, keys: string[]): MapObject | null
 

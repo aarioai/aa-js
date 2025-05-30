@@ -77,8 +77,7 @@ export const AErrorMessages: [number, string][] = [
 
 
 export function code2msg(code: number): string {
-    for (let i = 0; i < AErrorMessages.length; i++) {
-        let p = AErrorMessages[i]
+    for (const p of AErrorMessages) {
         if (p[0] === code) {
             return p[1]
         }

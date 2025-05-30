@@ -29,19 +29,20 @@ export type t_int16 = number
 export type t_int24 = number
 export type t_int32 = number
 export type t_int = t_int32
-export type t_int64b = bigint   // js number only support int53
+export type t_int64b = bigint   // JS number only supports int53
 export type t_uint8 = number
 export type t_uint16 = number
 export type t_uint24 = number
 export type t_uint32 = number
 export type t_uint = t_uint32
-export type t_uint64b = bigint   // js number only support uint53
+export type t_uint64b = bigint   // JS number only supports uint53
 export type t_bin = string  // binary string
 export type t_bitpos = t_uint8
 export type t_bitposition = t_uint16
 
 export type t_millisecond = t_safeint
 export type t_second = t_safeint
+export type t_expires = t_second
 
 export const PATH_PARAMS_RAW = [
     ':bool',

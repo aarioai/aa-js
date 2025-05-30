@@ -1,4 +1,4 @@
-import {Dictionaries} from '../../aa/translate/dictionary'
+import {Dictionaries} from '../translate/dictionary'
 
 export const AErrorDictionaries: Dictionaries = {
     'zh-CN': {

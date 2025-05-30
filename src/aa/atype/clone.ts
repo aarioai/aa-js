@@ -103,7 +103,7 @@ export function cloneMap<K = unknown, V = unknown, T extends Map<K, V> = Map<K, 
     return target
 }
 
-export function cloneObjectMap(source: MapObject): MapObject {
+export function cloneMapObject(source: MapObject): MapObject {
     if (!source) {
         return {}
     }

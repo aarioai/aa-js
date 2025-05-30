@@ -2,9 +2,9 @@ import {MapCallbackFn} from '../maps/base'
 import {BREAK} from '../../aa/atype/a_define_enums'
 import {decodeStorageValue, encodeStorageValue} from './fn'
 import {StorageImpl, StorageOptions} from './define_types'
-import {Second} from '../../aa/atype/a_define_units'
+import {NO_EXPIRES, Second} from '../../aa/atype/a_define_units'
 import {floatToInt} from '../../aa/atype/t_basic'
-import {t_millisecond, t_second} from '../../aa/atype/a_define'
+import {t_expires, t_second} from '../../aa/atype/a_define'
 import {matchAny, normalizeArrayArguments} from '../arrays/fn'
 import {MapObject} from '../../aa/atype/a_define_interfaces'
 
@@ -53,18 +53,25 @@ export default class AaStorageEngine implements StorageImpl {
         }
     }
 
-    getItem(key: string): unknown | null {
+    getItemWithTTL<T = unknown>(key: string): [T, t_expires] | null {
         let encodedValue = this.storage.getItem(key)
         if (!encodedValue) {
-            return encodedValue
+            return null
         }
         const {value, options} = decodeStorageValue(encodedValue)
-        if (options?.expires) {
-            const timeDiff = this.timeDiff()
-            if (timeDiff > options.expires) {
-                this.removeItem(key)  // remove expired
-            }
+        if (!options?.expiresIn) {
+            return [value as T, NO_EXPIRES]
         }
+
+        const ttl = options.expiresIn - this.timeDiff()
+        if (ttl < 0) {
+            this.removeItem(key)  // remove expired
+        }
+        return [value as T, ttl]
+    }
+
+    getItem<T = unknown>(key: string): T | null {
+        const [value, _] = this.getItemWithTTL<T>(key)
         return value
     }
 
@@ -126,7 +133,7 @@ export default class AaStorageEngine implements StorageImpl {
         this.storage.setItem(key, encodedValue)
     }
 
-    private timeDiff(): t_millisecond {
+    private timeDiff(): t_second {
         const now = floatToInt(Date.now() / Second)
         let diff: t_second = 0
         let startTime = Number(this.storage.getItem(this.startTimeKey) ?? 0)
@@ -137,7 +144,7 @@ export default class AaStorageEngine implements StorageImpl {
             diff = 0
             this.storage.setItem(this.startTimeKey, String(now))
         }
-        return diff * Second
+        return diff
     }
 
 }

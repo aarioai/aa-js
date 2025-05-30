@@ -1,20 +1,20 @@
-import {AError} from "../aerror/error";
-import {aerror} from "../aerror/fn";
+import {AError} from "../../aa/aerror/error";
+import {aerror} from "../../aa/aerror/fn";
 
 export function asleep(delay: number, ...args: unknown[]) {
     return new Promise(resolve => setTimeout(resolve, delay, ...args))
 }
 
 export function asleepx(p: Promise<unknown>, delay: number, ...args: unknown[]): Promise<unknown> {
-    return p.then((...params) => asleep(delay, ...args));
+    return p.then((...params) => asleep(delay, ...args))
 }
 
 
-export function resolve(value: unknown) {
+export function resolve<T = unknown>(value: T): Promise<T> {
     return Promise.resolve(value)
 }
 
-export function reject(err: string | Error | AError) {
+export function reject(err: string | Error | AError): Promise<never> {
     let reason: AError
     if (err instanceof AError) {
         reason = err

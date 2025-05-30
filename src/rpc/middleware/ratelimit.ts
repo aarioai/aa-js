@@ -3,8 +3,10 @@ import {AnyMap} from '../../aa/atype/a_define_interfaces'
 import {createRequestFactor} from '../base/fn_checksum'
 import {Millisecond, Second} from '../../aa/atype/a_define_units'
 import {RequestStruct} from '../base/define_interfaces'
-import {AError} from '../../basic/aerror/error'
-import {E_ClientDenyDebounce} from '../base/errors'
+import {AError} from '../../aa/aerror/error'
+
+
+export const E_ClientDenyDebounce = new AError('request denied due to debounce').lock()
 
 export default class AaRateLimit {
     readonly debounceInterval: number
@@ -19,7 +21,7 @@ export default class AaRateLimit {
     denied(r: RequestStruct): [boolean, AError?] {
         this.activeAutoClean()
 
-        const now = new Date().getTime()
+        const now = Date.now()
         const factor = createRequestFactor(r.url.method, r.url.href, r.headers, r.body)
         const prevTime = this.records.get(factor) ?? 0
 
@@ -31,7 +33,7 @@ export default class AaRateLimit {
     }
 
     private cleanExpiredRecords(): void {
-        const now = new Date().getTime()
+        const now = Date.now()
         this.records.forEach((time, factor) => {
             if (this.debounceInterval + time >= now) {
                 this.records.delete(factor)

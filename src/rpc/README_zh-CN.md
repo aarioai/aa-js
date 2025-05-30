@@ -56,8 +56,8 @@ axios.interceptors.request.use(config=>{
 // 响应拦截器
 axios.interceptors.response.use(response=>{
     return response.data
-}, err=>{
-    return Promise.reject(err)
+}, error => {
+    return Promise.reject(error)
 )
 
 // 取消请求

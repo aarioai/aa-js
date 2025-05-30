@@ -1,7 +1,7 @@
 import {Millisecond} from '../../aa/atype/a_define_units'
 import AaRateLimit from './ratelimit'
 import {RequestStruct} from '../base/define_interfaces'
-import {AError} from '../../basic/aerror/error'
+import {AError} from '../../aa/aerror/error'
 
 export default class AaMiddleware {
     readonly rateLimit: AaRateLimit

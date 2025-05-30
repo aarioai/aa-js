@@ -49,22 +49,29 @@ function findLargestLesser(values: number[], target: number): number {
 }
 
 function findSmallestGreater(values: number[], target: number): number {
-    for (let i = 0; i < values.length; i++) {
-        if (values[i] > target) return values[i];
+    for (const value of values) {
+        if (value > target) {
+            return value
+        }
     }
     throw new Error('No value greater than target');
 }
 
 function findLargestLesserOrEqual(values: number[], target: number): number {
     for (let i = values.length - 1; i >= 0; i--) {
-        if (values[i] <= target) return values[i];
+        const value = values[i]
+        if (value <= target) {
+            return value
+        }
     }
     throw new Error('No value less than or equal to target');
 }
 
 function findSmallestGreaterOrEqual(values: number[], target: number): number {
-    for (let i = 0; i < values.length; i++) {
-        if (values[i] >= target) return values[i];
+    for (const value of values) {
+        if (value >= target) {
+            return value
+        }
     }
     throw new Error('No value greater than or equal to target');
 }

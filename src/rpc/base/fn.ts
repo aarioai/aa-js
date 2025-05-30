@@ -6,9 +6,9 @@ import {BaseOptions, FetchBaseOptions} from './define_fetch'
 import {normalizeHeaders} from './fn_fetch'
 import {t_httpmethod} from '../../aa/atype/a_define_enums'
 import {ResponseBody} from '../../aa/atype/a_server_dto'
-import {AError} from '../../basic/aerror/error'
-import {E_MissingResponseBody, E_ParseResponseBodyFailed} from '../../basic/aerror/errors'
+import {AError} from '../../aa/aerror/error'
 import json from '../../aa/atype/json'
+import {E_MissingResponseBody, E_ParseResponseBodyFailed} from './errors'
 
 
 // Determines the base URL for API requests based on priority: options > defaults > location.origin
@@ -16,8 +16,8 @@ export function getBaseURL(opts: RequestOptions): string {
     if (opts?.baseURL) {
         return opts.baseURL
     }
-    if (defaults.baseURL) {
-        return defaults.baseURL
+    if (defaults.http.baseURL) {
+        return defaults.http.baseURL
     }
     return location.origin
 }
@@ -48,10 +48,12 @@ export function normalizeRequestOptions(apiPattern: t_api_pattern, opts: Request
     const options = extractFetchOptions(url.method, opts)
 
     return {
+        ...options,
         url: url,
         timeout: opts?.timeout ?? 0,
-        debounceInterval: opts?.debounceInterval ?? defaults.debounceInterval,
-        ...options
+        debounceInterval: opts?.debounceInterval ?? defaults.http.debounceInterval,
+        disableAuth: opts?.disableAuth ?? false,
+        disableAuthRefresh: opts.disableAuthRefresh ?? false,
     }
 }
 
@@ -63,7 +65,7 @@ export function parseResponseAError(resp: undefined | string | ResponseBody): AE
         const s = resp.trim()
         try {
             resp = json.Unmarshal(s) as ResponseBody
-        } catch (err) {
+        } catch {
             return E_ParseResponseBodyFailed.widthDetail(s)
         }
     }

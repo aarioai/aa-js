@@ -2,13 +2,14 @@ import {NormalizedStorageOptions, STORAGE_SEPARATOR, StorageOptions, t_storage_e
 import {aliasToAtype, ATYPE_PREFIX, detectAtypeAlias} from '../../aa/atype/t_atype'
 import {a_string, floatToInt} from '../../aa/atype/t_basic'
 import {atypeize} from '../../aa/dynamics/atype'
-import {t_millisecond} from '../../aa/atype/a_define'
-import {Hour, Minute, NO_EXPIRES} from '../../aa/atype/a_define_units'
+import {t_expires, t_second} from '../../aa/atype/a_define'
+import {DaysInSecond, MinuteInSecond, MinutesInSecond, NO_EXPIRES} from '../../aa/atype/a_define_units'
+import {a_second} from '../../aa/atype/t_basic_server'
 
 
-function normalizeStorageExpires(expires: t_storage_expires, timeDiff: t_millisecond): t_millisecond {
+function normalizeStorageExpires(expires: t_storage_expires, timeDiff: t_second): t_expires {
     if (expires === undefined || expires === null) {
-        return 72 * Hour     // default expires, 3 days
+        return 3 * DaysInSecond // default expires, 3 days
     }
     if (!expires) {
         return 0   // expired
@@ -25,12 +26,12 @@ function normalizeStorageExpires(expires: t_storage_expires, timeDiff: t_millise
         return 0
     }
 
-    return Date.now() - expires.getTime() + timeDiff
+    return a_second(Date.now() - expires.getTime()) + timeDiff
 }
 
 function normalizeStorageOptions(options: StorageOptions): NormalizedStorageOptions {
     return {
-        expires: normalizeStorageExpires(options.expires, options.timeDiff),
+        expiresIn: normalizeStorageExpires(options.expiresIn, options.timeDiff),
         unclearable: options.unclearable ?? false,
         timeDiff: options.timeDiff ?? 0,
     }
@@ -40,14 +41,14 @@ function encodeStorageOptions(options: NormalizedStorageOptions): string {
     if (!options) {
         return ''
     }
-    const expires = options.expires ? ('-' + floatToInt(options.expires / Minute)) : ''
+    const expires = options.expiresIn ? ('-' + floatToInt(options.expiresIn / MinuteInSecond)) : ''
     const unclearable = options?.unclearable ? ':' : ''
     return `${expires}${unclearable}`
 }
 
 export function encodeStorageValue(value: unknown, options?: StorageOptions): string | null {
     const normalizedOptions = normalizeStorageOptions(options)
-    if (!normalizedOptions.expires) {
+    if (!normalizedOptions.expiresIn) {
         return null  // expired
     }
 
@@ -57,7 +58,7 @@ export function encodeStorageValue(value: unknown, options?: StorageOptions): st
     return `${s}${STORAGE_SEPARATOR}${typeAlias}${opts}`
 }
 
-export function decodeStorageValue(s: string): { value: unknown, options?: NormalizedStorageOptions } {
+export function decodeStorageValue<T = unknown>(s: string): { value: T, options?: NormalizedStorageOptions } {
     if (!s) {
         return {value: null}
     }
@@ -65,26 +66,26 @@ export function decodeStorageValue(s: string): { value: unknown, options?: Norma
     const parts = s.split(sep)
     const last = parts.pop()
     if (parts.length < 1 || !last) {
-        return {value: s}
+        return {value: s as T}
     }
     if (!/^[a-z](-\d+)?:?$/.test(last)) {
-        return {value: s}
+        return {value: s as T}
     }
 
     const typeAlias = ATYPE_PREFIX + last[0]
     const type = aliasToAtype(typeAlias)
     if (!type) {
-        return {value: s}
+        return {value: s as T}
     }
-    const value = atypeize(parts.join(sep), type)
+    const value = atypeize(parts.join(sep), type) as T
     if (last.length === 1) {
         return {value: value}
     }
     const unclearable = last.endsWith(':')
     const exp = last.substring(2, unclearable ? last.length - 1 : last.length)
-    let expires: t_millisecond | null = NO_EXPIRES
+    let expires: t_expires = NO_EXPIRES
     if (exp) {
-        expires = Number(exp) * Minute
+        expires = Number(exp) * MinutesInSecond
     }
-    return {value: value, options: {unclearable, expires, timeDiff: 0}}
+    return {value: value, options: {unclearable, expiresIn: expires, timeDiff: 0}}
 }

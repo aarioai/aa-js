@@ -38,7 +38,7 @@ aa <- aa/translate <-- aa/format
 
 aa <- aa/browser   
 aa <- aa/env <-- aa/brower
-aa <-- aa/atype <- aa/env
+aa <-- aa/atype <- aa/aconfig
 aa <- aa/base    
 
 

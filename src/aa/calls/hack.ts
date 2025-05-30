@@ -44,7 +44,7 @@ export function hasStaticMethod(className: string, methodName: string): boolean 
     try {
         let c = instantiateClass(className)
         return typeof c[methodName] === 'function'
-    } catch (err) {
+    } catch {
         return false
     }
 }

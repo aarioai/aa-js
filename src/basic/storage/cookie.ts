@@ -4,11 +4,13 @@ import {MapCallbackFn} from '../maps/base'
 import {BREAK} from '../../aa/atype/a_define_enums'
 import {a_string} from '../../aa/atype/t_basic'
 import {unsafeExtractDomain} from '../urls/fn'
-import {Millisecond} from '../../aa/atype/a_define_units'
+import {NO_EXPIRES, Seconds} from '../../aa/atype/a_define_units'
 import {matchAny, normalizeArrayArguments} from '../arrays/fn'
+import {t_expires} from '../../aa/atype/a_define'
 
 export default class AaCookie implements StorageImpl {
     readonly name: 'AaCookie'
+    domainExtractor: (hostname: string) => string = unsafeExtractDomain
     private cachedCookie: string = ''  // no need share
     private cached: StringMap = new Map()
 
@@ -38,8 +40,17 @@ export default class AaCookie implements StorageImpl {
         }
     }
 
-    getItem(key: string): string | null {
-        return this.getAll().get(key)
+    getItem<T = string>(key: string): T | null {
+        return this.getAll().get(key) as T | null
+    }
+
+    // @TODO
+    getItemWithTTL<T = string>(key: string): [T | null, t_expires] | null {
+        const value = this.getItem<T>(key)
+        if (value === null) {
+            return null
+        }
+        return [value, NO_EXPIRES]
     }
 
     getItems(key: (RegExp | string)[] | RegExp | string, ...rest: (RegExp | string)[]): MapObject<string> | null {
@@ -70,7 +81,7 @@ export default class AaCookie implements StorageImpl {
     removeItem(key: string, options?: CookieOptions): void {
         this.setItem(key, '', {
             ...options,
-            expires: options?.expires ?? new Date(0), // 1970-01-01
+            expiresIn: new Date(0), // 1970-01-01
         })
     }
 
@@ -87,16 +98,16 @@ export default class AaCookie implements StorageImpl {
 
     normalizeOptions(options?: CookieOptions | undefined): CookieOptions {
         let expires = null
-        if (options?.expires) {
-            if (typeof options.expires === 'string') {
-                expires = options.expires
+        if (options?.expiresIn) {
+            if (typeof options.expiresIn === 'string') {
+                expires = options.expiresIn
             } else {
                 let expiresDate: Date = null
-                if (typeof options.expires === 'number') {
+                if (typeof options.expiresIn === 'number') {
                     expiresDate = new Date()
-                    expiresDate.setTime(expiresDate.getTime() + options.expires * Millisecond)
-                } else if (options.expires instanceof Date) {
-                    expiresDate = options.expires
+                    expiresDate.setTime(expiresDate.getTime() + options.expiresIn * Seconds)
+                } else if (options.expiresIn instanceof Date) {
+                    expiresDate = options.expiresIn
                 }
                 if (expiresDate) {
                     expires = expiresDate.toUTCString()
@@ -104,8 +115,8 @@ export default class AaCookie implements StorageImpl {
             }
         }
         return {
-            domain: options?.domain ?? unsafeExtractDomain(location.hostname),
-            expires: expires,
+            domain: options?.domain ?? this.domainExtractor(location.hostname),
+            expiresIn: expires,
             unclearable: options?.unclearable ?? false,
             path: options?.path ?? '/',
             secure: options?.secure ?? location.protocol === 'https',
@@ -121,8 +132,8 @@ export default class AaCookie implements StorageImpl {
         if (options.domain) {
             s += `; domain='${options.domain}'`
         }
-        if (options.expires) {
-            s += `; expires=${options.expires}`
+        if (options.expiresIn) {
+            s += `; expires=${options.expiresIn}`
         }
         if (options.path) {
             s += `; path='${options.path}'`
