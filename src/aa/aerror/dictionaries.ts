@@ -69,7 +69,7 @@ export const AErrorDictionaries: Dictionaries = {
         "Precondition Required": "缺少先决条件",
         "Too Many Requests": "请求过于频繁",
 
-        "Request Header Fields Too Large": "",
+        "Request Header Fields Too Large": "请求头过大",
         "Login Time-out": "登录状态已过期",
         "No Response": "拒绝响应",
         "Unavailable For Legal Reasons": "内容违反规定", // 451

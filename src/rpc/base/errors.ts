@@ -1,6 +1,6 @@
 import {AError} from '../../aa/aerror/error'
-import {E_ClientThrow} from '../../aa/aerror/code'
+import {CODE_CLIENT_THROWING} from '../../aa/aerror/code'
 
-export const E_MissingResponseBody = new AError(E_ClientThrow, "missing response body").lock()
+export const E_MissingResponseBody = new AError(CODE_CLIENT_THROWING, "missing response body").lock()
 
-export const E_ParseResponseBodyFailed = new AError(E_ClientThrow, "parse response body failed").lock()
+export const E_ParseResponseBodyFailed = new AError(CODE_CLIENT_THROWING, "parse response body failed").lock()

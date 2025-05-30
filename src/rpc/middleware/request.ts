@@ -1,6 +1,6 @@
-import {RequestHooks, RequestInterface, RequestOptions, RequestStruct} from '../base/define_interfaces'
+import {BaseRequestHooks, BaseRequestOptions, BasicRequestStruct, RequestInterface} from '../base/define_interfaces'
 import {t_api_pattern} from '../../basic/urls/base'
-import {normalizeRequestOptions} from '../base/fn'
+import {normalizeBasicRequestOptions} from '../base/fn'
 import {fillObjects} from '../../basic/maps/groups'
 import AaMiddleware from './middleware'
 import {reject} from '../../basic/promises/fn'
@@ -11,19 +11,21 @@ import json from '../../aa/atype/json'
 import {ResponseBody, ResponseBodyData} from '../../aa/atype/a_server_dto'
 import {isOK} from '../../aa/aerror/fn'
 import {E_ParseResponseBodyFailed} from '../base/errors'
+import {MapObject} from '../../aa/atype/a_define_interfaces'
+import {t_httpmethod} from '../../aa/atype/a_define_enums'
 
 export class AaRequest implements RequestInterface {
-    readonly defaultOptions?: RequestOptions
+    defaultOptions?: BaseRequestOptions
     readonly middleware: AaMiddleware
 
 
-    constructor(defaults?: RequestOptions, middleware: AaMiddleware = new AaMiddleware()) {
+    constructor(defaults?: BaseRequestOptions, middleware: AaMiddleware = new AaMiddleware()) {
         this.defaultOptions = defaults
         this.middleware = middleware
     }
 
 
-    fetch(url: string, options: FetchOptions): Promise<ResponseBodyData> {
+    fetch<T = ResponseBodyData>(url: string, options: FetchOptions): Promise<T> {
         return window.fetch(url, options).then(resp => {
             let err = new AError(resp.status)
             if (!err.isOK()) {
@@ -31,54 +33,52 @@ export class AaRequest implements RequestInterface {
             }
             // Handle HEAD
             if (!options.method || options.method === 'HEAD') {
-                return {
-                    code: err.code,
-                    msg: err.toString(),
-                    data: null,
-                } as ResponseBody
+                return null
             }
             let bodyText = ''
             try {
                 return resp.text().then(text => {
                     bodyText = text
-                    return json.Unmarshal(text) as ResponseBody
+                    const result = json.Unmarshal(text) as ResponseBody
+                    if (isOK(result.code)) {
+                        return result.data as T
+                    }
+                    throw new AError(result.code, result.msg)
                 })
-            } catch {
-                throw E_ParseResponseBodyFailed.widthDetail(bodyText)
+            } catch (err) {
+                throw err instanceof AError ? err : E_ParseResponseBodyFailed.widthDetail(bodyText)
             }
-        }).then(resp => {
-            if (isOK(resp.code)) {
-                return resp.data
-            }
-            throw new AError(resp.code, resp.msg)
         })
     }
 
-    request(r: RequestStruct, hooks?: RequestHooks): Promise<ResponseBodyData> {
-        if (hooks?.preHook) {
-            r = hooks.preHook(r)
+    request<T = ResponseBodyData>(r: BasicRequestStruct, hooks?: BaseRequestHooks): Promise<T> {
+        if (hooks?.beforeFetch) {
+            r = hooks.beforeFetch(r)
         }
         const [denied, err] = this.middleware.denied(r)
         if (denied) {
-            return hooks?.deniedHook ? hooks.deniedHook(err, r) : reject(err.widthDetail(`${r.url.method} ${r.url.href} is denied`))
+            return reject(err.widthDetail(`${r.url.method} ${r.url.href} is denied`))
         }
-        if (hooks?.beforeFetchHook) {
-            return hooks.beforeFetchHook(r).then((r: RequestStruct) => {
+        if (hooks?.onFetch) {
+            return hooks.onFetch(r).then((r: BasicRequestStruct) => {
                 return this.fetch(r.url.href, normalizeFetchOptions(r))
             })
         }
         return this.fetch(r.url.href, normalizeFetchOptions(r))
     }
 
-    Request(api: t_api_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<ResponseBodyData> {
+    Request<T = ResponseBodyData>(api: t_api_pattern, options?: BaseRequestOptions, hooks?: BaseRequestHooks): Promise<T> {
         return this.request(this.normalizeOptions(api, options), hooks)
     }
 
 
-    private normalizeOptions(api: t_api_pattern, options?: RequestOptions): RequestStruct {
+    private normalizeOptions(api: t_api_pattern, options?: BaseRequestOptions, method?: t_httpmethod): BasicRequestStruct {
         if (this.defaultOptions) {
-            options = fillObjects(options, this.defaultOptions as any)
+            options = fillObjects(options, this.defaultOptions as MapObject)
         }
-        return normalizeRequestOptions(api, options)
+        if (method && options.method !== method) {
+            options.method = method
+        }
+        return normalizeBasicRequestOptions(api, options)
     }
 }

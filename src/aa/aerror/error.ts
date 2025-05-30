@@ -1,4 +1,4 @@
-import {E_ClientThrow, E_FailedAndSeeOther} from "./code";
+import {CODE_CLIENT_THROWING, CODE_FAILED_AND_SEE_OTHER} from "./code";
 import {code2msg} from "./code2msg";
 import {language, matchLanguage} from "../translate/language";
 import {AErrorDictionaries} from "./dictionaries";
@@ -23,7 +23,7 @@ export class AError extends Error {
      * new AError("something wrong happened")
      */
     constructor(code: number | string, msg?: string) {
-        let c: number = E_ClientThrow
+        let c: number = CODE_CLIENT_THROWING
         if (typeof code === "number") {
             c = code
         } else if (/^\d+$/.test(code)) {
@@ -110,7 +110,7 @@ export class AError extends Error {
     }
 
     isFailedAndSeeOther(): boolean {
-        return this.code === E_FailedAndSeeOther && this.message !== ''
+        return this.code === CODE_FAILED_AND_SEE_OTHER && this.message !== ''
     }
 
     isServerError(): boolean {

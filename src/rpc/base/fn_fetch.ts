@@ -1,5 +1,4 @@
 // https://developer.mozilla.org/en-US/docs/Web/API/RequestInit
-import {t_requestdata} from './define_interfaces'
 import json from '../../aa/atype/json'
 import {t_httpmethod} from '../../aa/atype/a_define_enums'
 import {MapObject} from '../../aa/atype/a_define_interfaces'
@@ -24,26 +23,21 @@ export function normalizeHeaders(method: t_httpmethod, headers?: Headers | MapOb
     return newHeaders
 }
 
-
-export function buildFetchBody(data: t_requestdata): t_fetchbody {
-    if (!data) {
-        return null
+export function normalizeFetchOptions(source: FetchBaseOptions, method?: t_httpmethod): FetchOptions {
+    if (method && source.method !== method) {
+        source.method = method
     }
-    if (typeof data === 'string'
-        || data instanceof Blob
-        || data instanceof File
-        || data instanceof FormData
-    ) {
-        return data
-    }
-    return json.Marshal(data)
-}
-
-export function normalizeFetchOptions(source: FetchBaseOptions): FetchOptions {
     const result: FetchOptions = {}
+    const body: t_fetchbody | null = source.body ?? (source.data ? json.Marshal(source.data) : null)
+    if (body) {
+        result.body = body
+    }
     for (const [key, value] of Object.entries(source)) {
+        if (key === 'body' || key === 'data') {
+            continue
+        }
         if (value !== null && value !== undefined && value !== '') {
-            result[key] = key === 'body' ? buildFetchBody(value) : value
+            result[key] = value
         }
     }
     return result

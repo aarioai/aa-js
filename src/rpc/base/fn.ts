@@ -1,5 +1,5 @@
 import {t_api_pattern} from '../../basic/urls/base'
-import {RequestOptions, RequestStruct} from './define_interfaces'
+import {BaseRequestOptions, BasicRequestStruct, RequestOptions, RequestStruct} from './define_interfaces'
 import AaURL from '../../basic/urls/url'
 import defaults from './defaults'
 import {BaseOptions, FetchBaseOptions} from './define_fetch'
@@ -12,7 +12,7 @@ import {E_MissingResponseBody, E_ParseResponseBodyFailed} from './errors'
 
 
 // Determines the base URL for API requests based on priority: options > defaults > location.origin
-export function getBaseURL(opts: RequestOptions): string {
+export function getBaseURL(opts: BaseRequestOptions): string {
     if (opts?.baseURL) {
         return opts.baseURL
     }
@@ -39,6 +39,22 @@ export function extractFetchOptions(method: t_httpmethod, source: BaseOptions): 
     return result
 }
 
+export function normalizeBasicRequestOptions(apiPattern: t_api_pattern, opts: BaseRequestOptions): BasicRequestStruct {
+    const url = new AaURL(apiPattern, {
+        method: opts?.method ?? 'GET',
+        baseURL: getBaseURL(opts),
+        params: opts?.params,
+    })
+    const options = extractFetchOptions(url.method, opts)
+
+    return {
+        ...options,
+        url: url,
+        timeout: opts?.timeout ?? 0,
+        debounceInterval: opts?.debounceInterval ?? defaults.http.debounceInterval,
+    }
+}
+
 export function normalizeRequestOptions(apiPattern: t_api_pattern, opts: RequestOptions): RequestStruct {
     const url = new AaURL(apiPattern, {
         method: opts?.method ?? 'GET',
@@ -53,7 +69,7 @@ export function normalizeRequestOptions(apiPattern: t_api_pattern, opts: Request
         timeout: opts?.timeout ?? 0,
         debounceInterval: opts?.debounceInterval ?? defaults.http.debounceInterval,
         disableAuth: opts?.disableAuth ?? false,
-        disableAuthRefresh: opts.disableAuthRefresh ?? false,
+        disableAuthRefresh: opts?.disableAuthRefresh ?? false,
     }
 }
 

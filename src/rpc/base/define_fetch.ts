@@ -1,21 +1,22 @@
 import {t_httpmethod} from '../../aa/atype/a_define_enums'
 import {MapObject} from '../../aa/atype/a_define_interfaces'
-import {t_requestdata} from './define_interfaces'
+import {TypedArray} from '../../aa/atype/a_define'
 
 
 // https://developer.mozilla.org/en-US/docs/Web/API/RequestInit
 export type t_fetchbody = string
-//  | ArrayBuffer
+    | ArrayBuffer   // file to array buffer
     | Blob
-    // | DataView
+    | DataView  // array buffer with self-defined protocol header
     | File
     | FormData
-//| ReadableStream
-//  | TypedArray
+    | ReadableStream  // big file stream
+    | TypedArray  // file segment, e.g., new Uint8Array(file.arrayBuffer(),0,1024)   1KB file buffer
 
 export interface BaseOptions {
     attributionReporting?: boolean
-    body?: t_requestdata
+    data?: MapObject            // self-defined
+    body?: t_fetchbody
     browsingTopics?: boolean
     cache?: RequestCache
     credentials?: RequestCredentials // `omit` no send cookie; `same-origin` only send cookie with same-origin; `include` send cookie

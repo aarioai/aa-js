@@ -1,4 +1,4 @@
-import {RequestInterface, RequestOptions} from '../base/define_interfaces'
+import {BaseRequestOptions, RequestInterface} from '../base/define_interfaces'
 import {AaRequest} from '../middleware/request'
 import AaCollection from '../../basic/storage/collection'
 import {NormalizedUserToken, t_usertoken_key, UserToken, UserTokenAttach} from '../../aa/atype/a_server_dto'
@@ -17,18 +17,19 @@ import {AaMutex, E_DeadLock} from '../../aa/calls/mutex'
 import {AError} from '../../aa/aerror/error'
 import log from '../../aa/alog/log'
 import {UNAUTHORIZED_HANDLER} from '../../aa/aconfig/registry_names'
-import {E_Unauthorized} from '../../aa/aerror/code'
+import {CODE_UNAUTHORIZED} from '../../aa/aerror/code'
 import {aerror} from '../../aa/aerror/fn'
 import {TRUE} from '../../aa/atype/a_server_consts'
 
-export const E_MissingUserToken = new AError(E_Unauthorized, 'missing user token').lock()
-export const E_InvalidUserToken = new AError(E_Unauthorized, 'invalid user token').lock()
-export default class Auth {
+export const E_MissingUserToken = new AError(CODE_UNAUTHORIZED, 'missing user token').lock()
+export const E_InvalidUserToken = new AError(CODE_UNAUTHORIZED, 'invalid user token').lock()
+export default class AaAuth {
     readonly tableName = 'auth'
     readonly sessionCollection: AaCollection
     readonly localCollection: AaCollection
     readonly cookie: StorageImpl
     readonly request: RequestInterface
+    customPackAuthorization?: (token: NormalizedUserToken) => BaseRequestOptions | null
     enableCookie: boolean = true
     defaultCookieOptions: CookieOptions = {
         path: '/',
@@ -46,7 +47,7 @@ export default class Auth {
         this.cookie = storageManager.cookie
         this.sessionCollection = new AaCollection(this.tableName, new AaDbLike(storageManager.session))
         this.localCollection = new AaCollection(this.tableName, new AaDbLike(storageManager.local))
-        this.request = r ? r : new AaRequest()
+        this.request = r ?? new AaRequest()
     }
 
     private get validated(): boolean {
@@ -96,10 +97,8 @@ export default class Auth {
             return [null, E_DeadLock]
         }
         try {
-            const data = await this.request.Request(refreshAPI, {
-                disableAuth: true,
-                disableAuthRefresh: true,
-                body: {
+            const data = await this.request.Request<UserToken>(refreshAPI, {
+                data: {
                     'grant_type': 'refresh_token',
                     'code': refreshToken,
                 }
@@ -133,14 +132,32 @@ export default class Auth {
         return await this.refresh(refreshToken, api)
     }
 
-    packAuthorization(token: NormalizedUserToken): RequestOptions {
+    packAuthorization(token: NormalizedUserToken): BaseRequestOptions | null {
+        if (this.customPackAuthorization) {
+            return this.customPackAuthorization(token)
+        }
         const accessToken = token['access_token']
         const tokenType = token['token_type']
+        if (!accessToken) {
+            return null
+        }
         return {
             headers: {
                 'Authorization': tokenType ? `${tokenType} ${accessToken}` : accessToken,
             }
         }
+    }
+
+    async getAuthorizationOptions(): Promise<[BaseRequestOptions | null, AError | null]> {
+        const [userToken, err] = await this.getOrRefreshUserToken()
+        if (err !== null) {
+            return [null, aerror(err)]
+        }
+        const options = this.packAuthorization(userToken)
+        if (!options) {
+            return [null, E_MissingUserToken]
+        }
+        return [options, null]
     }
 
     async validateUserToken(userToken: NormalizedUserToken): Promise<boolean> {
@@ -150,6 +167,10 @@ export default class Auth {
         if (!(userToken.attach && 'validate_api' in userToken.attach)) {
             return true  // no validate-api regards as success
         }
+        const options = this.packAuthorization(userToken)
+        if (!options) {
+            return false
+        }
         const api = userToken.attach['validate_api']
         if (!await this.tx.awaitLock(5 * Seconds)) {
             log.warn('validate user token: dead lock')
@@ -157,7 +178,7 @@ export default class Auth {
         }
         try {
             this.validated = false
-            await this.request.Request(api, this.packAuthorization(userToken))
+            await this.request.Request(api, options)
             this.validated = true
         } catch (err) {
             err = aerror(err)

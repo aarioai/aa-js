@@ -2,7 +2,7 @@ import {t_timestamp_ms} from '../../aa/atype/a_define'
 import {AnyMap} from '../../aa/atype/a_define_interfaces'
 import {createRequestFactor} from '../base/fn_checksum'
 import {Millisecond, Second} from '../../aa/atype/a_define_units'
-import {RequestStruct} from '../base/define_interfaces'
+import {BasicRequestStruct} from '../base/define_interfaces'
 import {AError} from '../../aa/aerror/error'
 
 
@@ -18,11 +18,14 @@ export default class AaRateLimit {
         this.activeAutoClean()
     }
 
-    denied(r: RequestStruct): [boolean, AError?] {
+    denied(r: BasicRequestStruct): [boolean, AError?] {
         this.activeAutoClean()
 
         const now = Date.now()
-        const factor = createRequestFactor(r.url.method, r.url.href, r.headers, r.body)
+        const factor = createRequestFactor(r.url.method, r.url.href, r.headers, r.data, r.body)
+        if (!factor) {
+            return [false]
+        }
         const prevTime = this.records.get(factor) ?? 0
 
         if (prevTime + this.debounceInterval < now) {

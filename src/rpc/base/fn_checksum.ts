@@ -1,7 +1,8 @@
 import {floatToInt} from '../../aa/atype/t_basic'
 import {t_httpmethod} from '../../aa/atype/a_define_enums'
 import {valuesSortedByKeys} from '../../basic/maps/iterates'
-import {t_requestdata} from './define_interfaces'
+import {MapObject} from '../../aa/atype/a_define_interfaces'
+import {t_fetchbody} from './define_fetch'
 
 function createFileFactor(file: File): string {
     const {size, type, lastModified, name, webkitRelativePath} = file
@@ -55,9 +56,13 @@ function marshalHeaders(headers?: Headers): string {
 /**
  * Creates a request checksum factor
  */
-export function createRequestFactor(method: t_httpmethod, url: string, headers?: Headers, body?: t_requestdata): string {
+export function createRequestFactor(method: t_httpmethod, url: string, headers?: Headers, data?: MapObject, body?: t_fetchbody | null): string | null {
 
     let checksum = `${method} ${url}${marshalHeaders(headers)}`
+    if (data) {
+        return `${method} ${url} {${valuesSortedByKeys(data).join('')}}`
+    }
+
     if (!body) {
         return checksum
     }
@@ -65,14 +70,22 @@ export function createRequestFactor(method: t_httpmethod, url: string, headers?:
     let content = ''
     if (typeof body === "string") {
         content = createStringFactor(body)
+    } else if (body instanceof ArrayBuffer) {
+        return null
     } else if (body instanceof Blob) {
         content = createBlobFactor(body)
+    } else if (body instanceof DataView) {
+        return null
     } else if (body instanceof File) {
         content = createFileFactor(body)
     } else if (body instanceof FormData) {
         content = createFormDataFactor(body)
+    } else if (body instanceof ReadableStream) {
+        return null
+    } else if (ArrayBuffer.isView(body)) {
+        return null
     } else {
-        content = valuesSortedByKeys(body).join('')
+        content = body
     }
     return `${method} ${url} {${content}}`
 }

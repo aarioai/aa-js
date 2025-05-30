@@ -1,5 +1,5 @@
-import {E_Gone, E_NoRowsAvailable, E_NotFound} from './code'
+import {CODE_GONE, CODE_NO_ROWS_AVAILABLE, CODE_NOT_FOUND} from './code'
 
 const Separator = ' - '  // server error message separator
 
-export const NotFoundCodes = new Set([E_NotFound, E_Gone, E_NoRowsAvailable])
+export const NotFoundCodes = new Set([CODE_NOT_FOUND, CODE_GONE, CODE_NO_ROWS_AVAILABLE])
