@@ -1,6 +1,6 @@
 import {PATH_PARAMS_RAW, t_path_param, t_weekday} from './a_define'
 
-export type t_loopsignal = '-.../.-././.-/-.-' | undefined
+export type t_loopsignal = '-.../.-././.-/-.-' | undefined | void
 // a signal from callback function to break forEach((value,key)) iterator
 export const BREAK: t_loopsignal = '-.../.-././.-/-.-'  // Morse code of BREAK
 export const CONTINUE: t_loopsignal = undefined // return Continue in a loop is not important, but better for people to read
