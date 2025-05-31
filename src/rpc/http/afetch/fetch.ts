@@ -46,9 +46,7 @@ export default class AaFetch implements HttpImpl {
     }
 
     head(r: RequestStruct, hooks?: RequestHooks): Promise<null> {
-        if (r.method !== 'HEAD') {
-            r.method = 'HEAD'
-        }
+        r.method = 'HEAD'
         return this.request(r, hooks)
     }
 
@@ -57,9 +55,7 @@ export default class AaFetch implements HttpImpl {
     }
 
     get<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T> {
-        if (r.method !== 'GET') {
-            r.method = 'GET'
-        }
+        r.method = 'GET'
         return this.request<T>(r, hooks)
     }
 
@@ -68,9 +64,7 @@ export default class AaFetch implements HttpImpl {
     }
 
     delete<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T> {
-        if (r.method !== 'DELETE') {
-            r.method = 'DELETE'
-        }
+        r.method = 'DELETE'
         return this.request<T>(r, hooks)
     }
 
@@ -79,9 +73,7 @@ export default class AaFetch implements HttpImpl {
     }
 
     post<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T> {
-        if (r.method !== 'POST') {
-            r.method = 'POST'
-        }
+        r.method = 'POST'
         return this.request<T>(r, hooks)
     }
 
@@ -90,9 +82,7 @@ export default class AaFetch implements HttpImpl {
     }
 
     put<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T> {
-        if (r.method !== 'PUT') {
-            r.method = 'PUT'
-        }
+        r.method = 'PUT'
         return this.request<T>(r, hooks)
     }
 
@@ -101,9 +91,7 @@ export default class AaFetch implements HttpImpl {
     }
 
     patch<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T> {
-        if (r.method !== 'PATCH') {
-            r.method = 'PATCH'
-        }
+        r.method = 'PATCH'
         return this.request<T>(r, hooks)
     }
 

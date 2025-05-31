@@ -1,6 +1,6 @@
-import {t_percent} from "../atype/a_define";
-import {Panic} from "../atype/panic";
-import {HUNDRED_PERCENT} from '../atype/a_server_consts'
+import {t_percent} from "../aa/atype/a_define";
+import {Panic} from "../aa/atype/panic";
+import {HUNDRED_PERCENT} from '../aa/atype/a_server_consts'
 
 export const MAX_TABLET_WIDTH = 768
 

@@ -41,8 +41,9 @@ export function compare(a: KV, b: KV): boolean {
     if (!a || !b) {
         return false
     }
-    const sizeA = a.size
-    const sizeB = b.size
+
+    const sizeA = Array.isArray(a) ? a.length : a.size
+    const sizeB = Array.isArray(a) ? a.length : a.size
     if (typeof sizeA === 'number' && typeof sizeB === 'number' && sizeA !== sizeB) {
         return false
     }

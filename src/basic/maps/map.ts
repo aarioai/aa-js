@@ -4,19 +4,25 @@ import {BREAK, CONTINUE} from '../../aa/atype/a_define_enums'
 import {compareAny} from './groups'
 import json from '../../aa/atype/json'
 import {forEach} from './iterates'
+import Serializable, {AnyMap} from '../../aa/atype/a_define_interfaces'
 
-export default class AaMap<V = unknown> implements AaMapImpl<V> {
+export default class AaMap<V = unknown> extends Serializable implements AaMapImpl<V> {
     [Symbol.toStringTag] = 'AaMap'
     readonly isAaMap = true
-    readonly map: Map<string, V>
+    readonly map: AnyMap<V>
     cast?: (value: unknown) => V
 
-    constructor(source?: KV) {
+    constructor(source?: KV<V>) {
+        super()
         this.map = mapizeKV(source)
     }
 
     get size(): number {
         return this.map.size
+    }
+
+    static deserialize<V>(s: string): AaMap<V> {
+        return new AaMap<V>(json.Unmarshal(s) as KV<V>)
     }
 
     entries(): MapIterator<[string, V]> {
@@ -98,6 +104,10 @@ export default class AaMap<V = unknown> implements AaMapImpl<V> {
         this.map.clear()
         this.setMany(source)
         return this
+    }
+
+    serialize(): string {
+        return json.Marshal(Array.from(this.map))
     }
 
     set(key: string, value: unknown): this {

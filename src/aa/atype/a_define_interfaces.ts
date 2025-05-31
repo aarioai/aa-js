@@ -49,12 +49,11 @@ export type Builder<T> = new(...args: any[]) => T
  *  }
  */
 export default abstract class Serializable {
-    static deserialize<T extends Serializable>(s: string): T {
-        throw new Error("Not Implemented")
+    static deserialize(serialized: string): Serializable {
+        throw new Error(`${this.name} deserialization not implemented`)
     }
 
     abstract serialize(): string
-
 }
 
 

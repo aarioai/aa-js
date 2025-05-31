@@ -21,6 +21,6 @@ export interface AaMapImpl<V = unknown> extends AnyMap, Marshallable<string> {
 }
 
 
-export type KV = MapObject | AaMapImpl | AnyMap
+export type KV<V = unknown, K = string> = MapObject | AaMapImpl | AnyMap | Array<[K, V]>
 
 export type IterableKV = KV | ForEachIterable

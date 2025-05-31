@@ -9,7 +9,7 @@ export function forEach(obj: IterableKV, callbackfn: MapCallbackFn<unknown, stri
     if (!obj) {
         return
     }
-
+    
     // Handle Map-like objects that have their own forEach
     if (typeof obj.forEach === 'function') {
         let stop = false
@@ -28,7 +28,18 @@ export function forEach(obj: IterableKV, callbackfn: MapCallbackFn<unknown, stri
 
     // Fallback handle plain objects
     for (const [key, value] of Object.entries(obj)) {
-        const result = thisArg ? callbackfn.call(thisArg, value, key, obj) : callbackfn(value, key, obj)
+        let k: string
+        let v: unknown
+        // Handle Array<[K, V]>
+        if (typeof key === 'number' && Array.isArray(value) && value.length === 2) {
+            k = value[0]
+            v = value[1]
+        } else {
+            k = key
+            v = value
+        }
+
+        const result = thisArg ? callbackfn.call(thisArg, v, k, obj) : callbackfn(v, k, obj)
         if (result === BREAK) {
             return
         }
