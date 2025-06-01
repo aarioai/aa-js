@@ -18,8 +18,11 @@ export type TypedArray =
     | BigInt64Array
     | BigUint64Array
 
+export type t_nonzero_uint = number  // an uint greater than 0
+
 /****************************************** types from server *********************************************************/
 
+export type t_base64 = string
 export type t_booln = 0 | 1
 export type t_char = string  // single character in ASCII characters [32, 126]
 export type t_float64 = number

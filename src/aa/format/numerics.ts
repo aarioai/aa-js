@@ -3,7 +3,7 @@ import {t_numeric} from '../atype/a_define'
 
 /**
  * Formats a number or numeric string by trimming unnecessary trailing decimal zeros.
- * Optionally rounds to specified decimal places before trimming.
+ * Optional rounds to specified decimal places before trimming.
  *
  * @param {number|string} value - The numeric value to format (can be number or string)
  * @param {number} [digits] - Optional number of decimal places to round to before trimming

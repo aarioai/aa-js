@@ -1,4 +1,4 @@
-import {t_percent} from "../aa/atype/a_define";
+import {t_float64, t_percent} from "../aa/atype/a_define";
 import {Panic} from "../aa/atype/panic";
 import {HUNDRED_PERCENT} from '../aa/atype/a_server_consts'
 
@@ -8,7 +8,7 @@ export const MAX_TABLET_WIDTH = 768
 /**
  * Gets the main width of tablet devices, e.g. phones, pads
  */
-export function tabletMainWidth(proportion: t_percent = HUNDRED_PERCENT): number {
+export function tabletMainWidth(proportion: t_percent = HUNDRED_PERCENT): t_float64 {
     Panic.assertLessThanZero(proportion)
     let bodyWidth = document.querySelector('body')?.offsetWidth || MAX_TABLET_WIDTH
     if (proportion === HUNDRED_PERCENT) {
@@ -60,7 +60,7 @@ export function isIPhone(): boolean {
     return /iPhone/i.test(navigator.userAgent)
 }
 
-export function isApplePortable(): boolean {
+export function isAppleTablet(): boolean {
     const ua = navigator.userAgent.toLowerCase()
     return ua.includes(" edgios/") || isIPhone() || isIPad()
 }
@@ -76,8 +76,8 @@ export function isAndroid(): boolean {
     return navigator.userAgent.toLowerCase().includes(" edga/")
 }
 
-export function isDesktop(): boolean {
-    return documentWidth() >= MAX_TABLET_WIDTH
+export function isTablet(): boolean {
+    return documentWidth() <= MAX_TABLET_WIDTH
 }
 
 export function isSafari(): boolean {

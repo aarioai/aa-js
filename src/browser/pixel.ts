@@ -1,10 +1,12 @@
-import {t_safeint} from '../aa/atype/a_define'
+import {t_float64, t_safeint, t_uint} from '../aa/atype/a_define'
+
+export type t_css_size = t_uint | string  // 100, '100px', '1rem', '100vw', '100 PX'
 
 /**
  * Converts rem to pixels
  * @return number float
  */
-export function remToPx(rem: number): number {
+export function remToPx(rem: number): t_float64 {
     const style = window.getComputedStyle(document.documentElement)
     const unit = parseFloat(style?.fontSize) || 16 // default 1rem=16px
     return rem * unit
@@ -14,7 +16,7 @@ export function remToPx(rem: number): number {
  * Converts vw to pixels
  * @return number float
  */
-export function vwToPx(vw: number): number {
+export function vwToPx(vw: number): t_float64 {
     const innerWidth = window.innerWidth
     if (vw === 100) {
         return innerWidth
@@ -26,7 +28,7 @@ export function vwToPx(vw: number): number {
  * Converts vh to pixels
  * @return number float
  */
-export function vhToPx(vh: number): number {
+export function vhToPx(vh: number): t_float64 {
     const innerHeight = window.innerHeight
     if (vh === 100) {
         return innerHeight
@@ -45,7 +47,7 @@ export function vhToPx(vh: number): number {
  * px('100vw') // convert 100vw to pixel
  * px('100vh') // convert 100vh to pixel
  */
-export function px(size: number | string): number {
+export function px(size: t_css_size): t_float64 {
     if (!size) {
         return 0
     }
@@ -75,6 +77,6 @@ export function px(size: number | string): number {
     throw new Error(`Unsupported size unit: "${size}". Supported units: px, rem, vw, vh, or unit-less numbers.`)
 }
 
-export function pxInt(size: number | string): t_safeint {
-    return px(size) | 0
+export function pxInt(size: t_css_size): t_safeint {
+    return px(size) | 0  // float to int
 }

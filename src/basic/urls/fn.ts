@@ -7,7 +7,7 @@ import {
     PATH_PARAMS_MATCHER,
     t_httpmethod
 } from "../../aa/atype/a_define_enums"
-import {HASH_REF_NAME, PathParamMap, safePathParamValue, t_api_pattern, t_params, URLBase, URLPathError} from './base'
+import {HASH_REF_NAME, PathParamMap, safePathParamValue, t_params, t_url_pattern, URLBase, URLPathError} from './base'
 import {t_path_param} from '../../aa/atype/a_define'
 import {AnyMap, MapObject} from '../../aa/atype/a_define_interfaces'
 import SearchParams from './search_params'
@@ -443,7 +443,7 @@ export function splitURLSearch(urlPattern: string): URLBase {
  * revertURLPathParams('/api/{version}/users/{uid:uint64}#{hash}?work={work}', {version:'v1', uid:100n, age:10,})
  * // Returns {base:"/api/v1/users/100", hash:'', search:{age:"10", work=""}}
  */
-export function revertURLPathParams(urlPattern: t_api_pattern, params: t_params): URLBase {
+export function revertURLPathParams(urlPattern: t_url_pattern, params: t_params): URLBase {
     if (!urlPattern) {
         throw new URLPathError(`url is empty`)
     }

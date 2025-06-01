@@ -1,4 +1,5 @@
-import {a_string} from "../atype/t_basic";
+import {a_string} from "../../aa/atype/t_basic";
+import {MapObject} from '../../aa/atype/a_define_interfaces'
 
 /**
  * Splits a string at the first occurrence of a separator, returning the parts and a success flag.
@@ -22,10 +23,11 @@ import {a_string} from "../atype/t_basic";
  */
 export function splitFirst(s: string, separator: string | number = ','): [string, string, boolean] {
     const sep = String(separator)
-    const index = s.indexOf(sep);
+    const index = s.indexOf(sep)
     return index >= 0
         ? [s.slice(0, index), s.slice(index + sep.length), true]
-        : [s, "", false];
+        : [s, "", false]
+
 }
 
 /**
@@ -60,14 +62,15 @@ export function joinWith(separator: string, ...args: unknown[]): string {
  * Joins non-empty values with a whitespace
  */
 export function joinWithSpace(...args: string[]): string {
-    return joinWith(' ', ...args);
+    return joinWith(' ', ...args)
+
 }
 
 
 type replacements =
-    | Array<[string | RegExp, string | number]>
-    | Array<[string | RegExp, string | number]>[]
-    | { [key: string]: string | number }
+    | Array<[string | RegExp, unknown]>
+    | Array<[string | RegExp, unknown]>[]
+    | MapObject
 
 /**
  * Normalizes different replacement value formats into a consistent array of [search, replace] tuples.
@@ -94,23 +97,24 @@ function normalizeReplacements(reps: replacements): [string | RegExp, string][] 
     if (Array.isArray(reps)) {
         // Array<[string|RegExp, string|number]>
         if (!Array.isArray(reps[0])) {
-            return [[reps[0], String(reps[1])]]
+            return [[reps[0], a_string(reps[1])]]
         }
 
         // Array<[string|RegExp, string|number]>[]
-        let result: [string | RegExp, string][] = new Array(reps.length);
+        let result: [string | RegExp, string][] = new Array(reps.length)
+
         for (let i = 0; i < reps.length; i++) {
             const v = reps[i] as [string | RegExp, string | number]
-            result[i] = [v[0], String(v[1])]
+            result[i] = [v[0], a_string(v[1])]
         }
         return result
     }
     // {k:string|RegExp; v:string|number}
     const arr = Object.entries(reps)
-    let result: [string | RegExp, string][] = new Array(arr.length);
+    let result: [string | RegExp, string][] = new Array(arr.length)
     for (let i = 0; i < arr.length; i++) {
         const v = arr[i]
-        result[i] = [v[0], String(v[1])]
+        result[i] = [v[0], a_string(v[1])]
     }
     return result
 }
@@ -126,16 +130,24 @@ function normalizeReplacements(reps: replacements): [string | RegExp, string][] 
  *  replaceAll("I'm Aario. Hi, Aario!", [["Aario", "Tom"],["Hi","Hello"]])  ====>  I'm Tom. Hello, Tom!
  *  replaceAll("I'm Aario. Hi, Aario!", [["Aario", "Tom"],["Hi","Hello"]])  ====>  I'm Tom. Hello, Tom!
  */
-export function replace(s: string, reps: replacements, all: boolean = true): string {
-    const replacements = normalizeReplacements(reps);
-    for (let [search, replace] of replacements) {
-        if (all && typeof search === 'string') {
-            s = s.replaceAll(search, replace);
+export function replace(s: string, reps: replacements): string {
+    const replacements = normalizeReplacements(reps)
+    for (const [search, replace] of replacements) {
+        s = s.replace(search, a_string(replace))
+    }
+    return s
+}
+
+export function replaceAll(s: string, reps: replacements): string {
+    const replacements = normalizeReplacements(reps)
+    for (const [search, replace] of replacements) {
+        if (search instanceof RegExp) {
+            s = s.replace(search, a_string(replace))
         } else {
-            s = s.replace(search, replace)
+            s = s.replaceAll(search, a_string(replace))
         }
     }
-    return s;
+    return s
 }
 
 /**
@@ -154,43 +166,43 @@ export function tidySplit(s: string, separator: string | RegExp = ',', limit?: n
 
 export function trimRight(s: string, cut: string | number = ' ', cutLen?: number) {
     const cutstr = String(cut)
-    const cutLength = cutstr.length;
+    const cutLength = cutstr.length
 
     if (!s || s.length < cutLength) {
-        return s;
+        return s
     }
 
-    cutLen = cutLen || s.length;
-    let endIndex = s.length;
+    cutLen = cutLen || s.length
+    let endIndex = s.length
 
     while (cutLen > 0 && endIndex >= cutLength &&
     s.substring(endIndex - cutLength, endIndex) === cutstr) {
-        cutLen--;
-        endIndex -= cutLength;
+        cutLen--
+        endIndex -= cutLength
     }
 
-    return endIndex < 1 ? '' : s.substring(0, endIndex);
+    return endIndex < 1 ? '' : s.substring(0, endIndex)
 }
 
 
 export function trimLeft(s: string, cut: string | number = ' ', cutLen?: number) {
     const cutstr = String(cut)
-    const cutLength = cutstr.length;
+    const cutLength = cutstr.length
 
     if (!s || s.length < cutLength) {
-        return s;
+        return s
     }
 
-    cutLen = cutLen > 0 ? cutLen : s.length;
-    let startIndex = 0;
+    cutLen = cutLen > 0 ? cutLen : s.length
+    let startIndex = 0
 
     while (cutLen > 0 && startIndex <= s.length - cutLength &&
     s.substring(startIndex, startIndex + cutLength) === cut) {
-        cutLen--;
-        startIndex += cutLength;
+        cutLen--
+        startIndex += cutLength
     }
 
-    return startIndex > s.length - 1 ? '' : s.substring(startIndex);
+    return startIndex > s.length - 1 ? '' : s.substring(startIndex)
 }
 
 export function trim(s: string, cut: string | number = ' ', cutLen?: number) {

@@ -1,6 +1,6 @@
 import {HttpImpl, RequestHooks, RequestImpl, RequestOptions, RequestStruct} from '../base/define_interfaces'
 import AaAuth from '../auth/auth'
-import {t_api_pattern} from '../../../basic/urls/base'
+import {t_url_pattern} from '../../../basic/urls/base'
 import {ResponseBodyData} from '../../../aa/atype/a_server_dto'
 import {normalizeRequestOptions} from '../base/fn'
 import {fillObjects} from '../../../basic/maps/groups'
@@ -41,7 +41,7 @@ export default class AaFetch implements HttpImpl {
         })
     }
 
-    Request<T = ResponseBodyData>(api: t_api_pattern, options?: RequestOptions): Promise<T> {
+    Request<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions): Promise<T> {
         return this.request<T>(this.normalizeOptions(api, options))
     }
 
@@ -50,7 +50,7 @@ export default class AaFetch implements HttpImpl {
         return this.request(r, hooks)
     }
 
-    Head(api: t_api_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<null> {
+    Head(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<null> {
         return this.head(this.normalizeOptions(api, options, 'HEAD'), hooks)
     }
 
@@ -59,7 +59,7 @@ export default class AaFetch implements HttpImpl {
         return this.request<T>(r, hooks)
     }
 
-    Get<T = ResponseBodyData>(api: t_api_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {
+    Get<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {
         return this.get<T>(this.normalizeOptions(api, options, 'GET'), hooks)
     }
 
@@ -68,7 +68,7 @@ export default class AaFetch implements HttpImpl {
         return this.request<T>(r, hooks)
     }
 
-    Delete<T = ResponseBodyData>(api: t_api_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {
+    Delete<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {
         return this.delete<T>(this.normalizeOptions(api, options, 'GET'), hooks)
     }
 
@@ -77,7 +77,7 @@ export default class AaFetch implements HttpImpl {
         return this.request<T>(r, hooks)
     }
 
-    Post<T = ResponseBodyData>(api: t_api_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {
+    Post<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {
         return this.post<T>(this.normalizeOptions(api, options, 'POST'), hooks)
     }
 
@@ -86,7 +86,7 @@ export default class AaFetch implements HttpImpl {
         return this.request<T>(r, hooks)
     }
 
-    Put<T = ResponseBodyData>(api: t_api_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {
+    Put<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {
         return this.put<T>(this.normalizeOptions(api, options, 'POST'), hooks)
     }
 
@@ -95,11 +95,11 @@ export default class AaFetch implements HttpImpl {
         return this.request<T>(r, hooks)
     }
 
-    Patch<T = ResponseBodyData>(api: t_api_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {
+    Patch<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {
         return this.patch<T>(this.normalizeOptions(api, options, 'PATCH'), hooks)
     }
 
-    private normalizeOptions(api: t_api_pattern, options?: RequestOptions, method?: t_httpmethod): RequestStruct {
+    private normalizeOptions(api: t_url_pattern, options?: RequestOptions, method?: t_httpmethod): RequestStruct {
         if (this.defaultOptions) {
             options = fillObjects(options, this.defaultOptions as MapObject)
         }

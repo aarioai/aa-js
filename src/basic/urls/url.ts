@@ -38,7 +38,7 @@ import {
     uint64b,
     uint8
 } from "../../aa/atype/t_basic";
-import {t_api_pattern, t_params, t_searchparam, URLOptions} from './base'
+import {t_params, t_searchparam, t_url_pattern, URLOptions} from './base'
 import {a_weekday} from '../../aa/atype/t_basic_server'
 import SearchParams from './search_params'
 import {t_httpmethod} from '../../aa/atype/a_define_enums'
@@ -58,8 +58,8 @@ export default class AaURL {
     #protocol: string   // e.g. https:, or blob:https:
     #hostname: string   // e.g. test.luexu.com
     #port: t_uint16       // e.g. 8080
-    #hashPattern: t_api_pattern = ''  // #<hash>, e.g. #head, #{hash}
-    #pathnamePattern: t_api_pattern   // e.g. /a/chat/x
+    #hashPattern: t_url_pattern = ''  // #<hash>, e.g. #head, #{hash}
+    #pathnamePattern: t_url_pattern   // e.g. /a/chat/x
     #password: string = ''
     #username: string = ''
 
@@ -74,7 +74,7 @@ export default class AaURL {
      *
      * method priority: url pattern > options
      */
-    constructor(urlPattern: t_api_pattern, options?: URLOptions) {
+    constructor(urlPattern: t_url_pattern, options?: URLOptions) {
         const {method, url} = normalizeURLWithMethod(urlPattern, options?.baseURL)
         const u = new URL(url)
         this.method = method ? method : (options?.method ? options.method : null)

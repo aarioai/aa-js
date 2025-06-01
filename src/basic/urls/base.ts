@@ -22,7 +22,7 @@ export type URLBase = {
  * usersAPI: t_api_pattern = '/api/v1/groups/{group}/users/page/{page:uint}
  * hash: t_api_pattern = '{hash}'
  */
-export type t_api_pattern = string
+export type t_url_pattern = string
 
 export type PathParamMap = Map<string, t_path_param>
 export const HASH_REF_NAME = '#HASH'

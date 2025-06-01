@@ -1,5 +1,5 @@
 import aconfig from '../aconfig/aconfig'
-import {joinWith} from '../format/strings'
+import {joinWith} from '../../basic/strings/strings'
 import {ALogStyle} from './style'
 import {AError} from '../aerror/error'
 

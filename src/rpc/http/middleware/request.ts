@@ -1,5 +1,5 @@
 import {BaseRequestHooks, BaseRequestOptions, BasicRequestStruct, RequestImpl} from '../base/define_interfaces'
-import {t_api_pattern} from '../../../basic/urls/base'
+import {t_url_pattern} from '../../../basic/urls/base'
 import {normalizeBasicRequestOptions} from '../base/fn'
 import {fillObjects} from '../../../basic/maps/groups'
 import AaMiddleware from './middleware'
@@ -67,12 +67,12 @@ export class AaRequest implements RequestImpl {
         return this.fetch(r.url.href, normalizeFetchOptions(r))
     }
 
-    Request<T = ResponseBodyData>(api: t_api_pattern, options?: BaseRequestOptions, hooks?: BaseRequestHooks): Promise<T> {
+    Request<T = ResponseBodyData>(api: t_url_pattern, options?: BaseRequestOptions, hooks?: BaseRequestHooks): Promise<T> {
         return this.request(this.normalizeOptions(api, options), hooks)
     }
 
 
-    private normalizeOptions(api: t_api_pattern, options?: BaseRequestOptions, method?: t_httpmethod): BasicRequestStruct {
+    private normalizeOptions(api: t_url_pattern, options?: BaseRequestOptions, method?: t_httpmethod): BasicRequestStruct {
         if (this.defaultOptions) {
             options = fillObjects(options, this.defaultOptions as MapObject)
         }

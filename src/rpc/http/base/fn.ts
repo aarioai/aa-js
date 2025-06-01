@@ -1,4 +1,4 @@
-import {t_api_pattern} from '../../../basic/urls/base'
+import {t_url_pattern} from '../../../basic/urls/base'
 import {BaseRequestOptions, BasicRequestStruct, RequestOptions, RequestStruct} from './define_interfaces'
 import AaURL from '../../../basic/urls/url'
 import defaults from './defaults'
@@ -39,7 +39,7 @@ export function extractFetchOptions(method: t_httpmethod, source: BaseOptions): 
     return result
 }
 
-export function normalizeBasicRequestOptions(apiPattern: t_api_pattern, opts: BaseRequestOptions): BasicRequestStruct {
+export function normalizeBasicRequestOptions(apiPattern: t_url_pattern, opts: BaseRequestOptions): BasicRequestStruct {
     const url = new AaURL(apiPattern, {
         method: opts?.method ?? 'GET',
         baseURL: getBaseURL(opts),
@@ -55,7 +55,7 @@ export function normalizeBasicRequestOptions(apiPattern: t_api_pattern, opts: Ba
     }
 }
 
-export function normalizeRequestOptions(apiPattern: t_api_pattern, opts: RequestOptions): RequestStruct {
+export function normalizeRequestOptions(apiPattern: t_url_pattern, opts: RequestOptions): RequestStruct {
     const url = new AaURL(apiPattern, {
         method: opts?.method ?? 'GET',
         baseURL: getBaseURL(opts),

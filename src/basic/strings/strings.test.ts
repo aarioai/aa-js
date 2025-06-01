@@ -1,5 +1,15 @@
 import {describe, expect, test} from "@jest/globals";
-import {joinWith, joinWithSpace, replace, splitFirst, tidySplit, trim, trimLeft, trimRight} from "./strings";
+import {
+    joinWith,
+    joinWithSpace,
+    replace,
+    replaceAll,
+    splitFirst,
+    tidySplit,
+    trim,
+    trimLeft,
+    trimRight
+} from "./strings";
 
 
 describe('strings', () => {
@@ -18,9 +28,9 @@ describe('strings', () => {
         expect(replace('I\'m Aario. Hi, Aario!', {
             "Aario": "Tom",
             "Hi": "Hello",
-        })).toBe('I\'m Tom. Hello, Tom!')
+        })).toBe('I\'m Tom. Hello, Aario!')
 
-        expect(replace('I\'m Aario. Hi, Aario!', [
+        expect(replaceAll('I\'m Aario. Hi, Aario!', [
             ["Aario", "Tom"],
             ["Hi", "Hello"],
         ])).toBe('I\'m Tom. Hello, Tom!')
