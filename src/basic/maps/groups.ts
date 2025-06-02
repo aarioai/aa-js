@@ -1,10 +1,10 @@
-import {MapObject} from '../../aa/atype/a_define_interfaces'
+import {Dict} from '../../aa/atype/a_define_interfaces'
 import {Err_MissingArgument} from '../../aa/aerror/errors'
 import {KV} from './base'
 import {forEach} from './iterates'
 import {isMeaningfulValue} from './base_fn'
 import {getKV, setKV} from './kv'
-import {coerceType, zeroize} from '../../aa/atype/t_basic'
+import {syncType, zeroize} from '../../aa/atype/t_basic'
 import {BREAK} from '../../aa/atype/a_define_enums'
 
 
@@ -93,7 +93,7 @@ export function assign<T extends KV = KV>(target: T, ...sources: (KV | undefined
  *  assignObjects({age:18}, {name:'Aario'})    // {name:'Aario', age:18}
  *  assignObjects(null, {name:'Aario'}         // {name:'Aario'}
  */
-export function assignObjects<T = MapObject>(target: T | undefined, ...sources: (KV | undefined)[]): T {
+export function assignObjects<T = Dict>(target: T | undefined, ...sources: (KV | undefined)[]): T {
     if (!target) {
         target = {} as T
     }
@@ -132,7 +132,7 @@ export function fill<T extends KV = KV>(target: T, ...defaults: (KV | undefined)
  * @example
  *  fillObjects({}, defaults.headers.POST, defaults.headers.common)
  */
-export function fillObjects<V = unknown, T = MapObject<V>>(target: T | undefined, ...defaults: (KV | undefined)[]): T {
+export function fillObjects<V = unknown, T = Dict<V>>(target: T | undefined, ...defaults: (KV | undefined)[]): T {
     if (!target) {
         target = {} as T
     }
@@ -156,7 +156,7 @@ export function fillIn<T extends KV = KV>(defaults: T, source: KV | undefined): 
     forEach(defaults, (old, key) => {
         const sourceValue = getKV(source, key)
         if (isMeaningfulValue(sourceValue)) {
-            setKV(defaults, key, coerceType(sourceValue, old))
+            setKV(defaults, key, syncType(sourceValue, old))
         }
     })
     return defaults
@@ -179,7 +179,7 @@ export function refillIn<T extends KV = KV>(defaults: T, source: KV | undefined)
     forEach(defaults, (old, key) => {
         const sourceValue = getKV(source, key)
         if (isMeaningfulValue(sourceValue)) {
-            setKV(defaults, key, coerceType(sourceValue, old))
+            setKV(defaults, key, syncType(sourceValue, old))
         } else {
             setKV(defaults, key, zeroize(old))
         }

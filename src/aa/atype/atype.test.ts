@@ -8,9 +8,9 @@ import {
     class_t,
     date_t,
     detectAtype,
+    dict_t,
     function_t,
     map_t,
-    mapobject_t,
     null_t,
     number_t,
     objectAtype,
@@ -39,7 +39,7 @@ describe('objectAtype', () => {
     })
 
     test('objectAtype {a: 1, b: 2n}', () => {
-        expect(objectAtype({a: 1, b: 2n})).toBe(mapobject_t)
+        expect(objectAtype({a: 1, b: 2n})).toBe(dict_t)
     })
 })
 
@@ -68,7 +68,7 @@ describe('atype', () => {
         expect(detectAtype(new Date())).toBe(date_t)
         expect(detectAtype(new Map())).toBe(map_t)
         expect(detectAtype(new Set())).toBe(set_t)
-        expect(detectAtype({a: 1, b: 2n})).toBe(mapobject_t)
+        expect(detectAtype({a: 1, b: 2n})).toBe(dict_t)
     })
 
     test('atypeAlias', () => {
@@ -82,7 +82,7 @@ describe('atype', () => {
         expect(atypeAlias(A)).toBe(ATYPES_ALIAS_MAP[class_t])
         expect(atypeAlias(Date)).toBe(ATYPES_ALIAS_MAP[function_t])
         expect(atypeAlias(new Date())).toBe(ATYPES_ALIAS_MAP[date_t])
-        expect(atypeAlias({})).toBe(ATYPES_ALIAS_MAP[mapobject_t])
+        expect(atypeAlias({})).toBe(ATYPES_ALIAS_MAP[dict_t])
         expect(atypeAlias(0)).toBe(ATYPES_ALIAS_MAP[number_t])
 
         function f() {

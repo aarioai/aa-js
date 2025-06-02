@@ -1,5 +1,5 @@
 import {CookieOptions, StorageImpl} from './define_types'
-import {MapObject, StringMap} from '../../aa/atype/a_define_interfaces'
+import {Dict, StringMap} from '../../aa/atype/a_define_interfaces'
 import {MapCallbackFn} from '../maps/base'
 import {BREAK} from '../../aa/atype/a_define_enums'
 import {a_string} from '../../aa/atype/t_basic'
@@ -53,9 +53,9 @@ export default class AaCookie implements StorageImpl {
         return [value, NO_EXPIRES]
     }
 
-    getItems(key: (RegExp | string)[] | RegExp | string, ...rest: (RegExp | string)[]): MapObject<string> | null {
+    getItems(key: (RegExp | string)[] | RegExp | string, ...rest: (RegExp | string)[]): Dict<string> | null {
         const keys = normalizeArrayArguments(key, ...rest)
-        let result: MapObject<string> = {}
+        let result: Dict<string> = {}
         let has = false
         this.forEach((_, key) => {
             if (matchAny(key, keys)) {

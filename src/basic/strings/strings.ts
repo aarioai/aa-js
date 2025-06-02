@@ -1,5 +1,5 @@
 import {a_string} from "../../aa/atype/t_basic";
-import {MapObject} from '../../aa/atype/a_define_interfaces'
+import {Dict} from '../../aa/atype/a_define_interfaces'
 
 /**
  * Splits a string at the first occurrence of a separator, returning the parts and a success flag.
@@ -70,7 +70,7 @@ export function joinWithSpace(...args: string[]): string {
 type replacements =
     | Array<[string | RegExp, unknown]>
     | Array<[string | RegExp, unknown]>[]
-    | MapObject
+    | Dict
 
 /**
  * Normalizes different replacement value formats into a consistent array of [search, replace] tuples.

@@ -1,4 +1,4 @@
-import {AnyMap, ForEachIterable, MapObject, Marshallable} from '../../aa/atype/a_define_interfaces'
+import {AnyMap, Dict, ForEachIterable, Marshallable} from '../../aa/atype/a_define_interfaces'
 import {t_loopsignal} from '../../aa/atype/a_define_enums'
 
 
@@ -21,6 +21,6 @@ export interface AaMapImpl<V = unknown> extends AnyMap, Marshallable<string> {
 }
 
 
-export type KV<V = unknown, K = string> = MapObject | AaMapImpl | AnyMap | Array<[K, V]>
+export type KV<V = unknown, K = string> = Dict | AaMapImpl | AnyMap | Array<[K, V]>
 
 export type IterableKV = KV | ForEachIterable

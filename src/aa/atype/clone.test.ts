@@ -1,5 +1,5 @@
 import {describe, expect, test} from '@jest/globals'
-import {cloneMap, cloneMapObject, structuredCloneUnsafe} from './clone'
+import {cloneDict, cloneMap, structuredCloneUnsafe} from './clone'
 
 
 describe('structuredCloneUnsafe on structuredClone enabled', () => {
@@ -68,7 +68,7 @@ describe('clone', () => {
 
     test('cloneObjectMap', () => {
         let source = {"name": "Aario"}
-        let target = cloneMapObject(source)
+        let target = cloneDict(source)
         source.name = "Tom"
         expect(target).toEqual({"name": "Aario"})
         expect(source).toEqual({"name": "Tom"})

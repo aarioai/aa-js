@@ -10,8 +10,8 @@ import defaults from '../base/defaults'
 import {t_expires, t_second} from '../../../aa/atype/a_define'
 import {MinutesInSecond, NO_EXPIRES, Second, Seconds} from '../../../aa/atype/a_define_units'
 import Registry from '../../../aa/aconfig/registry'
-import {MapObject} from '../../../aa/atype/a_define_interfaces'
-import {cloneMapObject} from '../../../aa/atype/clone'
+import {Dict} from '../../../aa/atype/a_define_interfaces'
+import {cloneDict} from '../../../aa/atype/clone'
 import {fillObjects} from '../../../basic/maps/groups'
 import {AaMutex, E_DeadLock} from '../../../aa/calls/mutex'
 import {AError} from '../../../aa/aerror/error'
@@ -316,15 +316,15 @@ export default class AaAuth {
         return key in userToken ? userToken[key] as T : defaultValue
     }
 
-    private mergeDefault<T = MapObject>(data: UserToken, key: t_usertoken_key): T | null {
-        const defaultValue = key in defaults.userToken ? cloneMapObject(defaults.userToken) : null
+    private mergeDefault<T = Dict>(data: UserToken, key: t_usertoken_key): T | null {
+        const defaultValue = key in defaults.userToken ? cloneDict(defaults.userToken) : null
         if (!data || !(key in data)) {
             return defaultValue ? defaultValue as T : null
         }
         if (!defaultValue) {
             return data[key] ? data[key] as T : null
         }
-        const value = cloneMapObject(data[key] as MapObject)
+        const value = cloneDict(data[key] as Dict)
         return fillObjects(value, defaultValue) as T
     }
 
@@ -366,7 +366,7 @@ export default class AaAuth {
             access_token: this.loadStorage('access_token'),
             expires_in: this.loadStorage<t_expires>('expires_in'),
             refresh_token: this.loadStorage('refresh_token'),
-            scope: this.loadStorage<MapObject>('scope'),
+            scope: this.loadStorage<Dict>('scope'),
             state: this.loadStorage('state'),
             token_type: this.loadStorage('token_type'),
             attach: this.loadStorage<UserTokenAttach>('attach') ?? {},

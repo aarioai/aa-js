@@ -5,10 +5,10 @@ import {
     bool_t,
     class_t,
     date_t,
+    dict_t,
     function_t,
     isAtype,
     map_t,
-    mapobject_t,
     node_t,
     nodelist_t,
     null_t,
@@ -54,7 +54,7 @@ export function atypeize(value: unknown, type: t_atype): unknown {
             return value
         case map_t:
             return value instanceof Map ? value : new Map(value as any)
-        case mapobject_t:
+        case dict_t:
             return typeof value === 'string' ? json.Unmarshal(value) : value
         case node_t:
             return value

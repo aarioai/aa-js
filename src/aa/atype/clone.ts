@@ -1,4 +1,4 @@
-import {Builder, MapObject} from './a_define_interfaces'
+import {Builder, Dict} from './a_define_interfaces'
 import {isIterable} from './type_check'
 import json from './json'
 
@@ -103,7 +103,7 @@ export function cloneMap<K = unknown, V = unknown, T extends Map<K, V> = Map<K, 
     return target
 }
 
-export function cloneMapObject(source: MapObject): MapObject {
+export function cloneDict(source: Dict): Dict {
     if (!source) {
         return {}
     }

@@ -5,17 +5,17 @@ export const ATYPE_PREFIX = ':'
 
 export const ATYPES_ALIAS_MAP = {
     ':array': ':a',
-    ':bigint': ':i',
+    ':bigint': ':g',
     ':boolean': ':b',
     ':class': ':c',
     ':date': ':d',
+    ':dict': ':e',
     ':function': ':f',
     ':map': ':m',
-    ':mapobject': ':o',
-    ':node': ':p',
-    ':nodelist': ':q',
-    ':null': ':l',
-    ':number': ':n',
+    ':node': ':n',
+    ':nodelist': ':l',
+    ':null': ':o',
+    ':number': ':i',
     ':serializable': ':z',
     ':set': ':t',
     ':symbol': ':y',
@@ -34,9 +34,9 @@ export const bigint_t: t_atype = ':bigint'
 export const bool_t: t_atype = ':bool'
 export const class_t: t_atype = ':class' // Non-instantiated class. e.g.  A is a :class, but (new A{}()) is :undefined
 export const date_t: t_atype = ':date'// Date is :function, but (new Date()) is :date
+export const dict_t: t_atype = ':dict'  // Dict<unknown>
 export const function_t: t_atype = ':function'  // function, not include Non-instantiated class
 export const map_t: t_atype = ':map'   // new Map()
-export const mapobject_t: t_atype = ':mapobject'  // {}  map object
 export const node_t: t_atype = ':node'          // e.g. document.querySelector('div')
 export const nodelist_t: t_atype = ':nodelist'  // e.g. document.querySelector('body').childNodes
 export const null_t: t_atype = ':null'
@@ -78,7 +78,7 @@ export function objectAtype(v: object): t_atype {
         case 'Set':
             return set_t
         case 'Object':
-            return mapobject_t
+            return dict_t
     }
 
     // html element

@@ -1,6 +1,6 @@
 import {ElementSelector} from './define'
 import {a_element} from './doms'
-import {MapObject} from '../../aa/atype/a_define_interfaces'
+import {Dict} from '../../aa/atype/a_define_interfaces'
 
 export function classListRemove(selector: ElementSelector, ...patterns: (RegExp | string)[]) {
     const ele = a_element(selector)
@@ -16,7 +16,7 @@ export function classListRemove(selector: ElementSelector, ...patterns: (RegExp 
     })
 }
 
-export function parseAttrStyle(eleOrStyle: Element | string, keyHandler?: (key: string) => string): MapObject<string> {
+export function parseAttrStyle(eleOrStyle: Element | string, keyHandler?: (key: string) => string): Dict<string> {
     let style = eleOrStyle instanceof Element ? eleOrStyle.getAttribute('style') : eleOrStyle
     if (!style || typeof style !== 'string') {
         return {}

@@ -11,7 +11,7 @@ import json from '../../../aa/atype/json'
 import {ResponseBody, ResponseBodyData} from '../../../aa/atype/a_server_dto'
 import {isOK} from '../../../aa/aerror/fn'
 import {E_ParseResponseBodyFailed} from '../base/errors'
-import {MapObject} from '../../../aa/atype/a_define_interfaces'
+import {Dict} from '../../../aa/atype/a_define_interfaces'
 import {t_httpmethod} from '../../../aa/atype/a_define_enums'
 
 export class AaRequest implements RequestImpl {
@@ -74,7 +74,7 @@ export class AaRequest implements RequestImpl {
 
     private normalizeOptions(api: t_url_pattern, options?: BaseRequestOptions, method?: t_httpmethod): BasicRequestStruct {
         if (this.defaultOptions) {
-            options = fillObjects(options, this.defaultOptions as MapObject)
+            options = fillObjects(options, this.defaultOptions as Dict)
         }
         if (method && options.method !== method) {
             options.method = method

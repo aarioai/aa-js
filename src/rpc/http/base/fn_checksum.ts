@@ -1,7 +1,7 @@
 import {floatToInt} from '../../../aa/atype/t_basic'
 import {t_httpmethod} from '../../../aa/atype/a_define_enums'
 import {valuesSortedByKeys} from '../../../basic/maps/iterates'
-import {MapObject} from '../../../aa/atype/a_define_interfaces'
+import {Dict} from '../../../aa/atype/a_define_interfaces'
 import {t_fetchbody} from './define_fetch'
 
 function createFileFactor(file: File): string {
@@ -56,7 +56,7 @@ function marshalHeaders(headers?: Headers): string {
 /**
  * Creates a request checksum factor
  */
-export function createRequestFactor(method: t_httpmethod, url: string, headers?: Headers, data?: MapObject, body?: t_fetchbody | null): string | null {
+export function createRequestFactor(method: t_httpmethod, url: string, headers?: Headers, data?: Dict, body?: t_fetchbody | null): string | null {
 
     let checksum = `${method} ${url}${marshalHeaders(headers)}`
     if (data) {

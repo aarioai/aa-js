@@ -1,4 +1,4 @@
-import {MapObject} from '../../aa/atype/a_define_interfaces'
+import {Dict} from '../../aa/atype/a_define_interfaces'
 import {KV} from './base'
 import {zeroValues} from '../../aa/dynamics/fn'
 
@@ -18,7 +18,7 @@ export function mapizeKV<V = unknown, K = string>(source: KV<V, K>): Map<K, V> {
     if (Array.isArray(source)) {
         return new Map<K, V>(source)
     }
-    
+
     // Fallback to plain object
     return new Map<K, V>(Object.entries(source) as any)
 }
@@ -148,7 +148,7 @@ export function deleteKV(target: KV, key: string, value?: unknown): boolean {
  * // Auto-create target
  * setNX(null, 'a', 1); // { a: 1 }
  */
-export function setNX<V = unknown, T = MapObject<V>>(target: T, key: string, value: V, excludes?: Set<unknown>): T {
+export function setNX<V = unknown, T = Dict<V>>(target: T, key: string, value: V, excludes?: Set<unknown>): T {
     if (!target) {
         target = {} as T
         target[key] = value

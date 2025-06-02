@@ -9,7 +9,7 @@ import {floatToInt, safeInt} from '../../aa/atype/t_basic'
 import {KB} from '../../aa/atype/a_define_units'
 import {findClosestResolution} from '../base/fn'
 import {replaceAll} from '../../basic/strings/strings'
-import {MapObject} from '../../aa/atype/a_define_interfaces'
+import {Dict} from '../../aa/atype/a_define_interfaces'
 
 export class ImgSrc extends FileSrc {
     dpr: number = defaults.imageDPR
@@ -142,7 +142,7 @@ export class ImgSrc extends FileSrc {
         }
     }
 
-    private patternReplacement(resolution: t_resolution, isCrop: boolean = false, isAlter: boolean = false): MapObject {
+    private patternReplacement(resolution: t_resolution, isCrop: boolean = false, isAlter: boolean = false): Dict {
         return {
             '{width:int}': resolution[0],
             '{height:int}': resolution[1],

@@ -1,4 +1,4 @@
-import {mapobject_t, node_t, nodelist_t, objectAtype} from './t_atype'
+import {dict_t, node_t, nodelist_t, objectAtype} from './t_atype'
 import {APX_MAX_SAFE_INT_LEN} from './a_define_consts'
 
 
@@ -47,7 +47,7 @@ export function isJQueryDom(value: object): boolean {
 }
 
 export function isMapObject(v: unknown): boolean {
-    return typeof v === 'object' && objectAtype(v) === mapobject_t
+    return typeof v === 'object' && objectAtype(v) === dict_t
 }
 
 /**

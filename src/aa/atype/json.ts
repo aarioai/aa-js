@@ -1,4 +1,4 @@
-import {MapObject, Marshallable} from "./a_define_interfaces";
+import {Dict, Marshallable} from "./a_define_interfaces";
 import {convertJSONMap, JsonMarshalError, marshalReviver, unmarshalReviver} from './json_base'
 
 
@@ -39,7 +39,7 @@ export default class json {
      *  Unmarshal(null)         // null
      *  Unmarshal('invalid')    // null
      */
-    static Unmarshal(input: string | undefined | MapObject | Array<unknown>): object {
+    static Unmarshal(input: string | undefined | Dict | Array<unknown>): object {
         if (!input) {
             return null
         }

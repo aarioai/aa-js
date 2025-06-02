@@ -35,12 +35,13 @@ import {
     t_uint64b,
     t_uint8,
 } from "./a_define";
-import Serializable, {MapObject} from './a_define_interfaces'
+import Serializable, {Dict} from './a_define_interfaces'
 import {typeArray} from './func'
 
 import json from './json'
 import {NIF} from './a_define_funcs'
 import {SERIALIZE_SEPARATOR} from './a_define_consts'
+
 
 function inRange(value: number, min: number, max: number, name: string): number {
     if ((typeof min !== 'undefined' && value < min) || (typeof max !== 'undefined' && value > max)) {
@@ -76,13 +77,7 @@ export function a_func(value: Function | undefined) {
     return typeof value === "function" ? value : NIF
 }
 
-export function record<T = unknown>(key: string, value: T): MapObject<T> {
-    const result: MapObject<T> = {}
-    result[key] = value
-    return result
-}
-
-export function a_maps(value: MapObject | unknown[] | undefined): MapObject {
+export function a_maps(value: Dict | unknown[] | undefined): Dict {
     if (!value) {
         return {}
     }
@@ -305,15 +300,24 @@ export function zeroize<T = unknown>(value: T): T {
 }
 
 /**
- * Coerces a value to match the type of the source reference value
- * @see https://developer.mozilla.org/en-US/docs/Glossary/Type_coercion
+ * Safely casts a meaningful value, filtering out undefined/null/NaN values
+ */
+export function safeCast<V = unknown>(value: unknown, cast?: (v: unknown) => V): V | null {
+    if (value === undefined || value === null || (typeof value === 'number' && isNaN(value))) {
+        return null
+    }
+    return cast ? cast(value) : (value as V)
+}
+
+/**
+ * Synchronizes the type of the source reference value to the target value
  *
  * @example
- *  coerceType(1, '200')        // '1'
- *  coerceType(1n, 20)          // 1
- *  coerceType(undefined, 100)  // 0
+ *  syncType(1, '200')        // '1'
+ *  syncType(1n, 20)          // 1
+ *  syncType(undefined, 100)  // 0
  */
-export function coerceType<T = unknown>(target: unknown, source: T): T {
+export function syncType<T = unknown>(target: unknown, source: T): T {
     if (typeof target === typeof source) {
         return target as T
     }

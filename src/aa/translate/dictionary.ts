@@ -1,7 +1,8 @@
 import {escapeRegExp} from "../format/regexp";
+import {Dict} from '../atype/a_define_interfaces'
 
-export type Dictionary = Record<string, string>
-export type Dictionaries = Record<string, Dictionary>
+export type Dictionary = Dict<string>
+export type Dictionaries = Dict<Dictionary>
 
 export const NumberPattern = /(\d+(?:\.\d+)?)/.source
 export const WordPattern = /([^\s　'"`“”‘’]+)/.source

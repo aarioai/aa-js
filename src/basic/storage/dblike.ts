@@ -1,6 +1,6 @@
 import AaStorageEngine from './engine'
 import {DbLikeImpl, InsertCondition, StorageOptions} from './define_types'
-import {AnyMap, MapObject} from '../../aa/atype/a_define_interfaces'
+import {AnyMap, Dict} from '../../aa/atype/a_define_interfaces'
 import {matchAny} from '../arrays/fn'
 import {t_expires} from '../../aa/atype/a_define'
 
@@ -32,7 +32,7 @@ export default class AaDbLike implements DbLikeImpl {
         return this.storage.getItemWithTTL<T>(filed)
     }
 
-    findMany(tableName: string, keys: string[]): MapObject | null {
+    findMany(tableName: string, keys: string[]): Dict | null {
         const fields: string[] = []
         for (const key of keys) {
             fields.push(this.normalizeFieldKey(tableName, key))
@@ -40,7 +40,7 @@ export default class AaDbLike implements DbLikeImpl {
         return this.revertItems(this.storage.getItems(fields))
     }
 
-    findAll(tableName: string): MapObject | null {
+    findAll(tableName: string): Dict | null {
         tableName = this.normalizeTableName(tableName)
         return this.revertItems(this.storage.getItems(new RegExp(`^${tableName}\\.`)))
     }
@@ -91,11 +91,11 @@ export default class AaDbLike implements DbLikeImpl {
         return [tableName, key]
     }
 
-    private revertItems(items: MapObject | null): MapObject | null {
+    private revertItems(items: Dict | null): Dict | null {
         if (!items) {
             return null
         }
-        const result: MapObject = {}
+        const result: Dict = {}
         for (const [field, value] of Object.entries(items)) {
             const [_, key] = this.extractFieldName(field)
             result[key] = value

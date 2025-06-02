@@ -6,7 +6,7 @@ import {NO_EXPIRES, Second} from '../../aa/atype/a_define_units'
 import {floatToInt} from '../../aa/atype/t_basic'
 import {t_expires, t_second} from '../../aa/atype/a_define'
 import {matchAny, normalizeArrayArguments} from '../arrays/fn'
-import {MapObject} from '../../aa/atype/a_define_interfaces'
+import {Dict} from '../../aa/atype/a_define_interfaces'
 
 export default class AaStorageEngine implements StorageImpl {
     readonly name = 'AaStorageEngine'
@@ -75,9 +75,9 @@ export default class AaStorageEngine implements StorageImpl {
         return value
     }
 
-    getItems(key: (RegExp | string)[] | RegExp | string, ...rest: (RegExp | string)[]): MapObject | null {
+    getItems(key: (RegExp | string)[] | RegExp | string, ...rest: (RegExp | string)[]): Dict | null {
         const keys = normalizeArrayArguments(key, ...rest)
-        let result: MapObject = {}
+        let result: Dict = {}
         let has = false
         this.forEach((_, key) => {
             if (matchAny(key, keys)) {

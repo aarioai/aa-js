@@ -1,7 +1,7 @@
 import {t_expires, t_float64, t_uint, t_uint16, t_uint8, t_versiontag} from './a_define'
-import {MapObject} from './a_define_interfaces'
+import {Dict} from './a_define_interfaces'
 
-export type ResponseBodyData = MapObject | string | null
+export type ResponseBodyData = Dict | string | null
 export type ResponseBody = {
     code: number,
     msg: string,
@@ -30,7 +30,7 @@ export type UserToken = {
     access_token?: string
     expires_in?: t_expires
     refresh_token?: string
-    scope?: MapObject
+    scope?: Dict
     state?: string
     token_type?: string
 
@@ -41,7 +41,7 @@ export type NormalizedUserToken = {
     access_token: string | null
     expires_in: t_expires | null
     refresh_token: string | null
-    scope: MapObject | null
+    scope: Dict | null
     state: string | null
     token_type: string | null
 

@@ -9,7 +9,7 @@ import {
 } from "../../aa/atype/a_define_enums"
 import {HASH_REF_NAME, PathParamMap, safePathParamValue, t_params, t_url_pattern, URLBase, URLPathError} from './base'
 import {t_path_param} from '../../aa/atype/a_define'
-import {AnyMap, MapObject} from '../../aa/atype/a_define_interfaces'
+import {AnyMap, Dict} from '../../aa/atype/a_define_interfaces'
 import SearchParams from './search_params'
 import {LOCALHOST_DOMAINS} from '../../aa/aconfig/detect'
 import {DOMAIN_GTLDS} from './consts'
@@ -266,7 +266,7 @@ export function joinURL(start: string, ...parts: (number | string)[]): string {
 }
 
 
-export function searchParam(params: SearchParams | URLSearchParams | MapObject | AnyMap, name: string): unknown {
+export function searchParam(params: SearchParams | URLSearchParams | Dict | AnyMap, name: string): unknown {
     if (!name || !params) {
         return undefined
     }
@@ -339,12 +339,12 @@ export function normalizeSearchParams<T extends SearchParams = SearchParams>(tar
  */
 export function parseURLSearch(s: string): {
     valid: boolean,
-    search: MapObject<string>
+    search: Dict<string>
 } {
     if (!s) {
         return {valid: true, search: {}}
     }
-    let search: MapObject<string> = {}
+    let search: Dict<string> = {}
     const pairs = s.split('&')
     for (let pair of pairs) {
         pair = pair.trim()

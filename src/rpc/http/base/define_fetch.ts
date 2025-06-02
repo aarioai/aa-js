@@ -1,5 +1,5 @@
 import {t_httpmethod} from '../../../aa/atype/a_define_enums'
-import {MapObject} from '../../../aa/atype/a_define_interfaces'
+import {Dict} from '../../../aa/atype/a_define_interfaces'
 import {TypedArray} from '../../../aa/atype/a_define'
 
 
@@ -15,12 +15,12 @@ export type t_fetchbody = string
 
 export interface BaseOptions {
     attributionReporting?: boolean
-    data?: MapObject            // self-defined
+    data?: Dict            // self-defined
     body?: t_fetchbody
     browsingTopics?: boolean
     cache?: RequestCache
     credentials?: RequestCredentials // `omit` no send cookie; `same-origin` only send cookie with same-origin; `include` send cookie
-    headers?: Headers | MapObject
+    headers?: Headers | Dict
     integrity?: string
     keepalive?: boolean
     method?: t_httpmethod

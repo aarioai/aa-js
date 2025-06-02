@@ -1,5 +1,5 @@
 import {isSafeInt} from './type_check'
-import {AnyMap, MapObject} from './a_define_interfaces'
+import {AnyMap, Dict} from './a_define_interfaces'
 
 export interface JsonReviverCtx {
     source: string
@@ -79,11 +79,11 @@ export function convertJSONArray(arr: unknown[]): unknown [] | null {
 }
 
 // JSON stringify hasn't supported Map yet
-export function convertJSONMap(o: AnyMap): MapObject {
+export function convertJSONMap(o: AnyMap): Dict {
     if (!o) {
         return {}
     }
-    const data: MapObject = {}
+    const data: Dict = {}
     o.forEach((value: unknown, key: string) => {
         data[key] = convertJSONAny(value)
     })

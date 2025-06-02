@@ -18,7 +18,7 @@ export type TypedArray =
     | BigInt64Array
     | BigUint64Array
 
-export type t_nonzero_uint = number  // an uint greater than 0
+export type t_gt_zero = number  // an uint greater than 0
 
 /****************************************** types from server *********************************************************/
 

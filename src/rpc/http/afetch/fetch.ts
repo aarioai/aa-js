@@ -4,7 +4,7 @@ import {t_url_pattern} from '../../../basic/urls/base'
 import {ResponseBodyData} from '../../../aa/atype/a_server_dto'
 import {normalizeRequestOptions} from '../base/fn'
 import {fillObjects} from '../../../basic/maps/groups'
-import {MapObject} from '../../../aa/atype/a_define_interfaces'
+import {Dict} from '../../../aa/atype/a_define_interfaces'
 import {aerror} from '../../../aa/aerror/fn'
 import {E_OK} from '../../../aa/aerror/errors'
 import {t_httpmethod} from '../../../aa/atype/a_define_enums'
@@ -101,7 +101,7 @@ export default class AaFetch implements HttpImpl {
 
     private normalizeOptions(api: t_url_pattern, options?: RequestOptions, method?: t_httpmethod): RequestStruct {
         if (this.defaultOptions) {
-            options = fillObjects(options, this.defaultOptions as MapObject)
+            options = fillObjects(options, this.defaultOptions as Dict)
         }
         if (method && options.method !== method) {
             options.method = method

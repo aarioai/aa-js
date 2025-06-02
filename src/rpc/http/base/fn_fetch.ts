@@ -1,12 +1,12 @@
 // https://developer.mozilla.org/en-US/docs/Web/API/RequestInit
 import json from '../../../aa/atype/json'
 import {t_httpmethod} from '../../../aa/atype/a_define_enums'
-import {MapObject} from '../../../aa/atype/a_define_interfaces'
+import {Dict} from '../../../aa/atype/a_define_interfaces'
 import {fillObjects} from '../../../basic/maps/groups'
 import defaults from './defaults'
 import {FetchBaseOptions, FetchOptions, t_fetchbody} from './define_fetch'
 
-export function normalizeHeaders(method: t_httpmethod, headers?: Headers | MapObject): Headers {
+export function normalizeHeaders(method: t_httpmethod, headers?: Headers | Dict): Headers {
     const defaultHeaders = fillObjects<string>({}, defaults.headers[method], defaults.headers.common)
     const newHeaders = headers ? new Headers(headers as any) : new Headers()
     for (const [key, value] of Object.entries(defaultHeaders)) {

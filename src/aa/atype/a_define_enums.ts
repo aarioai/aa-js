@@ -1,9 +1,9 @@
 import {PATH_PARAMS_RAW, t_path_param, t_weekday} from './a_define'
 
-export type t_loopsignal = '-.../.-././.-/-.-' | undefined | void
+export type t_loopsignal = Symbol | void
 // a signal from callback function to break forEach((value,key)) iterator
-export const BREAK: t_loopsignal = '-.../.-././.-/-.-'  // Morse code of BREAK
-export const CONTINUE: t_loopsignal = undefined // return Continue in a loop is not important, but better for people to read
+export const BREAK: t_loopsignal = Symbol.for('BREAK')  // Morse code of BREAK
+export const CONTINUE: t_loopsignal = Symbol.for('CONTINUE')  // return Continue in a loop is not important, but better for people to read
 
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods
 export const HTTP_METHODS_RAW = ['CONNECT', 'DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'TRACE']

@@ -1,5 +1,5 @@
 import {t_expires, t_second, t_utc} from '../../aa/atype/a_define'
-import {AnyMap, MapObject} from '../../aa/atype/a_define_interfaces'
+import {AnyMap, Dict} from '../../aa/atype/a_define_interfaces'
 
 export const STORAGE_SEPARATOR = ' `'
 
@@ -14,7 +14,7 @@ export interface StorageImpl {
 
     getItemWithTTL<T = unknown>(key: string): [T | null, t_expires]
 
-    getItems(key: (RegExp | string)[] | RegExp | string, ...keys: (RegExp | string)[]): MapObject | null
+    getItems(key: (RegExp | string)[] | RegExp | string, ...keys: (RegExp | string)[]): Dict | null
 
     removeItem(key: string): void
 
@@ -59,9 +59,9 @@ export interface DbLikeImpl {
 
     findWithTTL<T = unknown>(tableName: string, key: string): [T, t_expires] | null
 
-    findMany(tableName: string, keys: string[]): MapObject | null
+    findMany(tableName: string, keys: string[]): Dict | null
 
-    findAll(tableName: string): MapObject | null
+    findAll(tableName: string): Dict | null
 
     insert(tableName: string, key: string, value: unknown, options?: StorageOptions): void
 
