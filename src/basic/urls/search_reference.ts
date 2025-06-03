@@ -1,9 +1,8 @@
-import {t_path_param} from '../../aa/atype/a_define'
+import {path_param_string_t, t_path_param} from '../../aa/atype/enums/path_param'
 import AaMap from '../maps/map'
 import {t_params} from './base'
 import {parseURLSearch} from './fn'
 import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
-import {path_param_string_t} from '../../aa/atype/a_define_enums'
 
 export default class SearchReference<V = [string, t_path_param]> extends AaMap<V> {
     [Symbol.toStringTag] = 'SearchReference'

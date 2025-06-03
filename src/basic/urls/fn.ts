@@ -1,18 +1,18 @@
 import {joinPath, parseBaseName, splitPath} from "../strings/path_func"
-import {
-    CONTINUE,
-    HTTP_METHODS,
-    path_param_string_t,
-    PATH_PARAM_TESTER,
-    PATH_PARAMS_MATCHER,
-    t_httpmethod
-} from "../../aa/atype/a_define_enums"
-import {HASH_REF_NAME, PathParamMap, safePathParamValue, t_params, t_url_pattern, URLBase, URLPathError} from './base'
-import {t_path_param} from '../../aa/atype/a_define'
+import {CONTINUE} from "../../aa/atype/a_define_signals"
+import {HASH_REF_NAME, PathParamMap, safePathParamValue, t_params, URLBase, URLPathError} from './base'
+import {t_url_pattern} from '../../aa/atype/a_define'
 import {AnyMap, Dict} from '../../aa/atype/a_define_interfaces'
 import SearchParams from './search_params'
 import {LOCALHOST_DOMAINS} from '../../aa/aconfig/detect'
 import {DOMAIN_GTLDS} from './consts'
+import {HttpMethods, t_httpmethod} from '../../aa/atype/enums/http_method'
+import {
+    path_param_string_t,
+    PATH_PARAM_TESTER,
+    PATH_PARAMS_MATCHER,
+    t_path_param
+} from '../../aa/atype/enums/path_param'
 
 
 /**
@@ -104,7 +104,7 @@ export function splitURLMethod(url: string): { method: t_httpmethod | '', url: s
         return {method: '', url: url}
     }
     const uppercaseMethod = url.slice(0, spaceIndex).toUpperCase() as t_httpmethod
-    if (!HTTP_METHODS.has(uppercaseMethod)) {
+    if (!HttpMethods.has(uppercaseMethod)) {
         return {method: '', url: url}
     }
     return {
@@ -114,7 +114,7 @@ export function splitURLMethod(url: string): { method: t_httpmethod | '', url: s
 }
 
 /**
- * Split a URLs into host and path
+ * Split a URL string into host and path
  *
  * @example
  *  splitURLHost('https://luexu.com/m')     // {host:'https://luexu.com', path:'/m'}
@@ -301,9 +301,9 @@ export function normalizeSearchParams<T extends SearchParams = SearchParams>(tar
         }
         const [, , name, paramType,] = match
         set.push(key)
-        const v = safePathParamValue(searchParam(typedSource, name), paramType)
+        const v = safePathParamValue(searchParam(typedSource, name), paramType as any)
         if (key !== name) {
-            target.references.set(key, [name, paramType])
+            target.references.set(key, [name, paramType as any])
             set.push(name)
             target.set(name, v)  // set reference will sync to all its referrers
         } else {
@@ -455,11 +455,11 @@ export function revertURLPathParams(urlPattern: t_url_pattern, params: t_params)
         const match = hash.slice(1).match(PATH_PARAM_TESTER)
         if (match) {
             const [, , name, paramType,] = match
-            hash = safePathParamValue(search.get(name), paramType)
+            hash = safePathParamValue(search.get(name), paramType as any)
             if (hash) {
                 hash = '#' + hash
             }
-            search.references.set(HASH_REF_NAME, [name, paramType])
+            search.references.set(HASH_REF_NAME, [name, paramType as any])
             hashAlias = name
         }
     }
@@ -471,7 +471,7 @@ export function revertURLPathParams(urlPattern: t_url_pattern, params: t_params)
     const matches = base.matchAll(PATH_PARAMS_MATCHER)
     for (const match of matches) {
         const [pattern, , name, paramType,] = match
-        let type = paramType ? paramType : path_param_string_t
+        let type = paramType ? paramType as any : path_param_string_t
         const simple = '{' + name + '}'
         if (pattern !== simple) {
             base = base.replace(pattern, simple)     // format to {<key>}

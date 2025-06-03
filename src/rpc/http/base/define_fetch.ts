@@ -1,4 +1,4 @@
-import {t_httpmethod} from '../../../aa/atype/a_define_enums'
+import {t_httpmethod} from '../../../aa/atype/enums/http_method'
 import {Dict} from '../../../aa/atype/a_define_interfaces'
 import {TypedArray} from '../../../aa/atype/a_define'
 

@@ -1,13 +1,13 @@
 import {HttpImpl, RequestHooks, RequestImpl, RequestOptions, RequestStruct} from '../base/define_interfaces'
 import AaAuth from '../auth/auth'
-import {t_url_pattern} from '../../../basic/urls/base'
 import {ResponseBodyData} from '../../../aa/atype/a_server_dto'
 import {normalizeRequestOptions} from '../base/fn'
-import {fillObjects} from '../../../basic/maps/groups'
+import {fillDict, union} from '../../../basic/maps/groups'
 import {Dict} from '../../../aa/atype/a_define_interfaces'
 import {aerror} from '../../../aa/aerror/fn'
-import {E_OK} from '../../../aa/aerror/errors'
-import {t_httpmethod} from '../../../aa/atype/a_define_enums'
+import {E_OK, E_Unauthorized} from '../../../aa/aerror/errors'
+import {t_httpmethod} from '../../../aa/atype/enums/http_method'
+import {t_url_pattern} from '../../../aa/atype/a_define'
 
 export default class AaFetch implements HttpImpl {
     readonly auth: AaAuth
@@ -42,7 +42,7 @@ export default class AaFetch implements HttpImpl {
     }
 
     Request<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions): Promise<T> {
-        return this.request<T>(this.normalizeOptions(api, options))
+        return this.normalizeOptions(api, options).then(r => this.request<T>(r))
     }
 
     head(r: RequestStruct, hooks?: RequestHooks): Promise<null> {
@@ -51,7 +51,7 @@ export default class AaFetch implements HttpImpl {
     }
 
     Head(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<null> {
-        return this.head(this.normalizeOptions(api, options, 'HEAD'), hooks)
+        return this.normalizeOptions(api, options, 'HEAD').then(r => this.head(r, hooks))
     }
 
     get<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T> {
@@ -60,7 +60,7 @@ export default class AaFetch implements HttpImpl {
     }
 
     Get<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {
-        return this.get<T>(this.normalizeOptions(api, options, 'GET'), hooks)
+        return this.normalizeOptions(api, options, 'GET').then(r => this.get<T>(r, hooks))
     }
 
     delete<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T> {
@@ -69,7 +69,7 @@ export default class AaFetch implements HttpImpl {
     }
 
     Delete<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {
-        return this.delete<T>(this.normalizeOptions(api, options, 'GET'), hooks)
+        return this.normalizeOptions(api, options, 'GET').then(r => this.delete<T>(r, hooks))
     }
 
     post<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T> {
@@ -78,7 +78,7 @@ export default class AaFetch implements HttpImpl {
     }
 
     Post<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {
-        return this.post<T>(this.normalizeOptions(api, options, 'POST'), hooks)
+        return this.normalizeOptions(api, options, 'POST').then(r => this.post<T>(r, hooks))
     }
 
     put<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T> {
@@ -87,7 +87,7 @@ export default class AaFetch implements HttpImpl {
     }
 
     Put<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {
-        return this.put<T>(this.normalizeOptions(api, options, 'POST'), hooks)
+        return this.normalizeOptions(api, options, 'PUT').then(r => this.put<T>(r, hooks))
     }
 
     patch<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T> {
@@ -96,15 +96,26 @@ export default class AaFetch implements HttpImpl {
     }
 
     Patch<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {
-        return this.patch<T>(this.normalizeOptions(api, options, 'PATCH'), hooks)
+        return this.normalizeOptions(api, options, 'PATCH').then(r => this.patch<T>(r, hooks))
     }
 
-    private normalizeOptions(api: t_url_pattern, options?: RequestOptions, method?: t_httpmethod): RequestStruct {
+    private async normalizeOptions(api: t_url_pattern, options?: RequestOptions, method?: t_httpmethod): Promise<RequestStruct> {
+        options = options ?? {}
         if (this.defaultOptions) {
-            options = fillObjects(options, this.defaultOptions as Dict)
+            options = fillDict(options, this.defaultOptions as Dict)
         }
         if (method && options.method !== method) {
             options.method = method
+        }
+
+        // Handle auth
+        if (!options.disableAuth) {
+            const [auth, err] = await this.auth.getAuthorizationOptions()
+            if (!err) {
+                options = union(options as Dict, auth as Dict)
+            } else if (options.mustAuth) {
+                throw E_Unauthorized
+            }
         }
         return normalizeRequestOptions(api, options)
     }

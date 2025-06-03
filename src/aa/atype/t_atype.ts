@@ -3,31 +3,31 @@ import Serializable from './a_define_interfaces'
 
 export const ATYPE_PREFIX = ':'
 
-export const ATYPES_ALIAS_MAP = {
-    ':array': ':a',
-    ':bigint': ':g',
-    ':boolean': ':b',
-    ':class': ':c',
-    ':date': ':d',
-    ':dict': ':e',
-    ':function': ':f',
-    ':map': ':m',
-    ':node': ':n',
-    ':nodelist': ':l',
-    ':null': ':o',
-    ':number': ':i',
-    ':serializable': ':z',
-    ':set': ':t',
-    ':symbol': ':y',
-    ':string': ':s',
-    ':regexp': ':r',
-    ':undefined': ':u',
+export enum AtypeAlias {
+    ':array' = ':a',
+    ':bigint' = ':g',
+    ':boolean' = ':b',
+    ':class' = ':c',
+    ':date' = ':d',
+    ':dict' = ':e',
+    ':function' = ':f',
+    ':map' = ':m',
+    ':node' = ':n',
+    ':nodelist' = ':l',
+    ':null' = ':o',
+    ':number' = ':i',
+    ':serializable' = ':z',
+    ':set' = ':t',
+    ':symbol' = ':y',
+    ':string' = ':s',
+    ':regexp' = ':r',
+    ':undefined' = ':u',
 }
 
-const ATYPES = Object.keys(ATYPES_ALIAS_MAP)
-const ATYPES_ALIAS = Object.values(ATYPES_ALIAS_MAP)
+const ATYPES = Object.keys(AtypeAlias)
+const ALIASED_ATYPES = Object.values(AtypeAlias)
 export type t_atype = typeof ATYPES[number]
-export type t_atype_alias = typeof ATYPES_ALIAS[number] | ''
+export type t_atype_alias = typeof ALIASED_ATYPES[number] | ''
 
 export const array_t: t_atype = ':array'
 export const bigint_t: t_atype = ':bigint'
@@ -50,7 +50,7 @@ export const undefined_t: t_atype = ':undefined'
 
 
 export function atypeAlias(value: unknown): string | unknown {
-    return ATYPES_ALIAS_MAP[detectAtype(value)]
+    return AtypeAlias[detectAtype(value)]
 }
 
 export function objectAtype(v: object): t_atype {
@@ -151,11 +151,11 @@ export function detectAtype(v: unknown): t_atype {
 
 export function detectAtypeAlias(v: unknown): [t_atype, t_atype_alias] {
     const t = detectAtype(v)
-    return [t, ATYPES_ALIAS_MAP[t] ?? undefined]
+    return [t, AtypeAlias[t] ?? undefined]
 }
 
 export function aliasToAtype(alias: t_atype_alias): t_atype {
-    for (const [t, a] of Object.entries(ATYPES_ALIAS_MAP)) {
+    for (const [t, a] of Object.entries(AtypeAlias)) {
         if (alias === a) {
             return t
         }
@@ -164,9 +164,9 @@ export function aliasToAtype(alias: t_atype_alias): t_atype {
 }
 
 export function isAtype(s: string): s is t_atype {
-    return ATYPES_ALIAS_MAP[s] !== undefined
+    return AtypeAlias[s] !== undefined
 }
 
 export function isAtypeAlias(s: string): boolean {
-    return ATYPES_ALIAS.includes(s)
+    return ALIASED_ATYPES.includes(s as any)
 }

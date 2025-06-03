@@ -1,7 +1,6 @@
-import {t_params, t_url_pattern} from '../../../basic/urls/base'
+import {t_millisecond, t_params, t_url_pattern} from '../../../aa/atype/a_define'
 import {BaseOptions, FetchBaseOptions} from './define_fetch'
 import AaURL from '../../../basic/urls/url'
-import {t_millisecond} from '../../../aa/atype/a_define'
 import {ResponseBodyData} from '../../../aa/atype/a_server_dto'
 
 export interface BaseRequestOptions extends BaseOptions {
@@ -19,6 +18,7 @@ export interface BasicRequestStruct extends FetchBaseOptions {
 }
 
 export interface RequestOptions extends BaseRequestOptions {
+    mustAuth?: boolean  // panic on missing Authorization header
     disableAuth?: boolean  // disable attach Authorization header
     disableAuthRefresh?: boolean // disable refresh user token via refresh token
 }

@@ -53,6 +53,7 @@ export class AaMutex {
             }
             await asleep(interval)
         }
+        log.warn(`#${this.id} dead lock!`)
         return false
     }
 
@@ -80,7 +81,7 @@ export class AaMutex {
 
     private log(msg: string): void {
         if (this.debug) {
-            log.debug("#" + this.id + " " + msg)
+            log.debug(`#${this.id} ${msg}`)
         }
     }
 

@@ -1,6 +1,6 @@
 import {AaMapImpl, IterableKV, KV, MapCallbackFn} from './base'
 import {mapizeKV} from './kv'
-import {BREAK, CONTINUE} from '../../aa/atype/a_define_enums'
+import {BREAK, CONTINUE} from '../../aa/atype/a_define_signals'
 import {compareAny} from './groups'
 import json from '../../aa/atype/json'
 import {forEach} from './iterates'

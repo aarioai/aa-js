@@ -1,4 +1,4 @@
-import {BREAK, t_loopsignal} from '../../aa/atype/a_define_enums'
+import {BREAK, t_loopsignal} from '../../aa/atype/a_define_signals'
 import {a_node} from './doms'
 import {NodeSelector} from './define'
 

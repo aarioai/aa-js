@@ -1,7 +1,7 @@
 import {Dict} from '../../aa/atype/a_define_interfaces'
 import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
 import {IterableKV, MapCallbackFn} from './base'
-import {BREAK, t_loopsignal} from '../../aa/atype/a_define_enums'
+import {BREAK, t_loopsignal} from '../../aa/atype/a_define_signals'
 import {a_string} from '../../aa/atype/t_basic'
 
 // Iterates over a key-value collection, executing a callback for each entry.

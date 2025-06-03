@@ -299,11 +299,16 @@ export function zeroize<T = unknown>(value: T): T {
     return null
 }
 
+export function isMeaningful(value: unknown): boolean {
+    const useless = value === undefined || (typeof value === 'number' && isNaN(value))
+    return !useless
+}
+
 /**
  * Safely casts a meaningful value, filtering out undefined/null/NaN values
  */
 export function safeCast<V = unknown>(value: unknown, cast?: (v: unknown) => V): V | null {
-    if (value === undefined || value === null || (typeof value === 'number' && isNaN(value))) {
+    if (!isMeaningful(value) || value === null) {
         return null
     }
     return cast ? cast(value) : (value as V)

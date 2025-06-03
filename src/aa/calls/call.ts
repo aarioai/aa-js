@@ -1,5 +1,5 @@
 import {Second} from "../atype/a_define_units";
-import {BREAK} from '../atype/a_define_enums'
+import {BREAK} from '../atype/a_define_signals'
 import {formatArguments} from "../format/format";
 
 /**

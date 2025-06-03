@@ -9,7 +9,6 @@ import {
     t_int64b,
     t_int8,
     t_millisecond,
-    t_path_param,
     t_safeint,
     t_second,
     t_uint16,
@@ -17,7 +16,7 @@ import {
     t_uint32,
     t_uint64b,
     t_uint8,
-    t_weekday
+    t_url_pattern
 } from "../../aa/atype/a_define";
 import {
     a_bool,
@@ -38,12 +37,13 @@ import {
     uint64b,
     uint8
 } from "../../aa/atype/t_basic";
-import {t_params, t_searchparam, t_url_pattern, URLOptions} from './base'
-import {a_weekday} from '../../aa/atype/t_basic_server'
+import {t_params, t_searchparam, URLOptions} from './base'
 import SearchParams from './search_params'
-import {t_httpmethod} from '../../aa/atype/a_define_enums'
+import {t_httpmethod} from '../../aa/atype/enums/http_method'
 import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
 import {MapCallbackFn} from '../maps/base'
+import {a_weekday, t_weekday} from '../../aa/atype/enums/weekday'
+import {t_path_param} from '../../aa/atype/enums/path_param'
 
 
 export default class AaURL {

@@ -1,6 +1,6 @@
 import AaStorageEngine from './engine'
 import {DbLikeImpl, InsertCondition, StorageOptions} from './define_types'
-import {AnyMap, Dict} from '../../aa/atype/a_define_interfaces'
+import {Dict} from '../../aa/atype/a_define_interfaces'
 import {matchAny} from '../arrays/fn'
 import {t_expires} from '../../aa/atype/a_define'
 
@@ -50,13 +50,13 @@ export default class AaDbLike implements DbLikeImpl {
         this.storage.setItem(filed, value, options)
     }
 
-    insertMany(tableName: string, data: AnyMap, options?: StorageOptions): void {
+    insertMany(tableName: string, data: Dict, options?: StorageOptions): void {
         for (const [key, value] of Object.entries(data)) {
             this.insert(tableName, key, value, options)
         }
     }
 
-    insertWhen(tableName: string, data: AnyMap, when: InsertCondition, options?: StorageOptions): void {
+    insertWhen(tableName: string, data: Dict, when: InsertCondition, options?: StorageOptions): void {
         const is = when.is ? (Array.isArray(when.is) ? when.is : [when.is]) : []
         const not = when.not ? (Array.isArray(when.not) ? when.not : [when.not]) : []
         if (!is.length && !not.length) {

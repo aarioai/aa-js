@@ -1,6 +1,6 @@
 import {DbLikeImpl, InsertCondition, StorageOptions} from './define_types'
 import AaDbLike from './dblike'
-import {AnyMap, Dict} from '../../aa/atype/a_define_interfaces'
+import {Dict} from '../../aa/atype/a_define_interfaces'
 import {normalizeArrayArguments} from '../arrays/fn'
 import {t_expires} from '../../aa/atype/a_define'
 
@@ -21,7 +21,7 @@ export default class AaCollection {
         this.db.drop(this.tableName)
     }
 
-    find<T = unknown>(key: string): T {
+    find<T = unknown>(key: string): T | null {
         return this.db.find<T>(this.tableName, key)
     }
 
@@ -42,11 +42,11 @@ export default class AaCollection {
         return this.db.insert(this.tableName, key, value, options)
     }
 
-    insertMany(data: AnyMap, options?: StorageOptions): void {
+    insertMany(data: Dict, options?: StorageOptions): void {
         return this.db.insertMany(this.tableName, data, options)
     }
 
-    insertWhen(data: AnyMap, when: InsertCondition, options?: StorageOptions): void {
+    insertWhen(data: Dict, when: InsertCondition, options?: StorageOptions): void {
         return this.db.insertWhen(this.tableName, data, when, options)
     }
 }

@@ -1,7 +1,7 @@
 import {CookieOptions, StorageImpl} from './define_types'
 import {Dict, StringMap} from '../../aa/atype/a_define_interfaces'
 import {MapCallbackFn} from '../maps/base'
-import {BREAK} from '../../aa/atype/a_define_enums'
+import {BREAK} from '../../aa/atype/a_define_signals'
 import {a_string} from '../../aa/atype/t_basic'
 import {unsafeExtractDomain} from '../urls/fn'
 import {NO_EXPIRES, Seconds} from '../../aa/atype/a_define_units'

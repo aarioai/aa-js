@@ -2,7 +2,7 @@ import {describe, expect, test} from '@jest/globals';
 import {
     array_t,
     atypeAlias,
-    ATYPES_ALIAS_MAP,
+    AtypeAlias,
     bigint_t,
     bool_t,
     class_t,
@@ -72,31 +72,31 @@ describe('atype', () => {
     })
 
     test('atypeAlias', () => {
-        expect(atypeAlias([])).toBe(ATYPES_ALIAS_MAP[array_t])
-        expect(atypeAlias(true)).toBe(ATYPES_ALIAS_MAP[bool_t])
-        expect(atypeAlias(false)).toBe(ATYPES_ALIAS_MAP[bool_t])
+        expect(atypeAlias([])).toBe(AtypeAlias[array_t])
+        expect(atypeAlias(true)).toBe(AtypeAlias[bool_t])
+        expect(atypeAlias(false)).toBe(AtypeAlias[bool_t])
 
         class A {
         }
 
-        expect(atypeAlias(A)).toBe(ATYPES_ALIAS_MAP[class_t])
-        expect(atypeAlias(Date)).toBe(ATYPES_ALIAS_MAP[function_t])
-        expect(atypeAlias(new Date())).toBe(ATYPES_ALIAS_MAP[date_t])
-        expect(atypeAlias({})).toBe(ATYPES_ALIAS_MAP[dict_t])
-        expect(atypeAlias(0)).toBe(ATYPES_ALIAS_MAP[number_t])
+        expect(atypeAlias(A)).toBe(AtypeAlias[class_t])
+        expect(atypeAlias(Date)).toBe(AtypeAlias[function_t])
+        expect(atypeAlias(new Date())).toBe(AtypeAlias[date_t])
+        expect(atypeAlias({})).toBe(AtypeAlias[dict_t])
+        expect(atypeAlias(0)).toBe(AtypeAlias[number_t])
 
         function f() {
         }
 
-        expect(atypeAlias(f)).toBe(ATYPES_ALIAS_MAP[function_t])
-        expect(atypeAlias(null)).toBe(ATYPES_ALIAS_MAP[null_t])
-        expect(atypeAlias(new Map())).toBe(ATYPES_ALIAS_MAP[map_t])
-        expect(atypeAlias(1n)).toBe(ATYPES_ALIAS_MAP[bigint_t])
-        expect(atypeAlias(new RegExp(/^\d+$/ig))).toBe(ATYPES_ALIAS_MAP[regexp_t])
-        expect(atypeAlias('')).toBe(ATYPES_ALIAS_MAP[string_t])
-        expect(atypeAlias('string')).toBe(ATYPES_ALIAS_MAP[string_t])
-        expect(atypeAlias(new Set())).toBe(ATYPES_ALIAS_MAP[set_t])
-        expect(atypeAlias(undefined)).toBe(ATYPES_ALIAS_MAP[undefined_t])
+        expect(atypeAlias(f)).toBe(AtypeAlias[function_t])
+        expect(atypeAlias(null)).toBe(AtypeAlias[null_t])
+        expect(atypeAlias(new Map())).toBe(AtypeAlias[map_t])
+        expect(atypeAlias(1n)).toBe(AtypeAlias[bigint_t])
+        expect(atypeAlias(new RegExp(/^\d+$/ig))).toBe(AtypeAlias[regexp_t])
+        expect(atypeAlias('')).toBe(AtypeAlias[string_t])
+        expect(atypeAlias('string')).toBe(AtypeAlias[string_t])
+        expect(atypeAlias(new Set())).toBe(AtypeAlias[set_t])
+        expect(atypeAlias(undefined)).toBe(AtypeAlias[undefined_t])
     })
 })
 

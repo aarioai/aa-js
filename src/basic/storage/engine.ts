@@ -1,5 +1,5 @@
 import {MapCallbackFn} from '../maps/base'
-import {BREAK} from '../../aa/atype/a_define_enums'
+import {BREAK} from '../../aa/atype/a_define_signals'
 import {decodeStorageValue, encodeStorageValue} from './fn'
 import {StorageImpl, StorageOptions} from './define_types'
 import {NO_EXPIRES, Second} from '../../aa/atype/a_define_units'
@@ -71,8 +71,11 @@ export default class AaStorageEngine implements StorageImpl {
     }
 
     getItem<T = unknown>(key: string): T | null {
-        const [value, _] = this.getItemWithTTL<T>(key)
-        return value
+        const result = this.getItemWithTTL<T>(key)
+        if (!result) {
+            return null
+        }
+        return result[0]
     }
 
     getItems(key: (RegExp | string)[] | RegExp | string, ...rest: (RegExp | string)[]): Dict | null {

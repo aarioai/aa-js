@@ -39,6 +39,7 @@ export type t_uint24 = number
 export type t_uint32 = number
 export type t_uint = t_uint32
 export type t_uint64b = bigint   // JS number only supports uint53
+
 export type t_bin = string  // binary string
 export type t_bitpos = t_uint8
 export type t_bitposition = t_uint16
@@ -47,29 +48,13 @@ export type t_millisecond = t_safeint
 export type t_second = t_safeint
 export type t_expires = t_second
 
-export const PATH_PARAMS_RAW = [
-    ':bool',
-    ':int8',
-    ':int16',  // no :int24 and :uint24, floats
-    ':int32',
-    ':int',
-    ':int64',
-    ':uint8',
-    ':uint16',
-    ':uint32',
-    ':uint',
-    ':uint64',
-    ':string',
-    ':uuid',
-    ':alphabetical',
-    ':email',
-    ':mail',     // mail is same to email, but mail without server domain validation
-    ':weekday',
-]
+
+// @see ./enums
+export type t_enum = t_uint8
+
 
 // Iris path parameter types. See https://iris-go.gitbook.io/iris/contents/routing/routing-path-parameter-types
 
-export type t_path_param = typeof PATH_PARAMS_RAW[number]
 export type t_uuid = string       // 32 or 36 bytes, 8-4-4-4-12
 export type t_digits = string  // \d+
 export type t_lowers = string // [a-z]+
@@ -78,7 +63,7 @@ export type t_alphabetical = string // [a-zA-Z]+
 export type t_alphadigits = string   // [a-zA-Z\d]+
 export type t_word = string         //  \w+
 export type t_email = string
-export type t_weekday = t_int8        // [0-6] from sunday to saturday, -1 to invalid weekday
+
 
 // @see ./t_path.ts
 
@@ -90,7 +75,7 @@ export type t_path = string // [\w-.!@#$%^&(){}~/]+ , unicode path
 export type t_url = string  // e.g. https://xxx/video.avi?quality=80
 export type t_filename_pattern = string // e.g. {name}_{size:int}.avi
 export type t_path_pattern = string   // e.g. /a/b/{name}_{size:int}.avi
-export type t_url_pattern = string // e.g. https://xxx/{user}/video.avi?quality={quality:int}
+export type t_url_pattern = string // A URL string with routing path pattern {<key>} or {<key>:<type>}, e.g. https://xxx/{user}/video.avi?quality={quality:int}
 
 // @see ./t_path_mime.ts
 
@@ -131,3 +116,7 @@ export type t_district = number  // 12 digits district code
 export type t_version = number  // Semantic Versioning https://semver.org/lang/zh-CN/
 export type t_versiontag = t_uint8
 
+
+// @see ./t_golib.ts
+
+export type t_svc = t_uint24

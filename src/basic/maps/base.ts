@@ -1,5 +1,5 @@
 import {AnyMap, Dict, ForEachIterable, Marshallable} from '../../aa/atype/a_define_interfaces'
-import {t_loopsignal} from '../../aa/atype/a_define_enums'
+import {t_loopsignal} from '../../aa/atype/a_define_signals'
 
 
 export type MapCallbackFn<V = unknown, K = string, T = Map<K, V>> = (value: V, key: K, map?: T) => void | t_loopsignal

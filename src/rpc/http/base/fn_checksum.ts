@@ -1,5 +1,5 @@
 import {floatToInt} from '../../../aa/atype/t_basic'
-import {t_httpmethod} from '../../../aa/atype/a_define_enums'
+import {t_httpmethod} from '../../../aa/atype/enums/http_method'
 import {valuesSortedByKeys} from '../../../basic/maps/iterates'
 import {Dict} from '../../../aa/atype/a_define_interfaces'
 import {t_fetchbody} from './define_fetch'

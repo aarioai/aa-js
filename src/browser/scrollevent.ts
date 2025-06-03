@@ -1,7 +1,7 @@
 import {floatToInt} from '../aa/atype/t_basic'
 import {documentHeight} from './detect_device'
 import log from '../aa/alog/log'
-import {CONTINUE} from '../aa/atype/a_define_enums'
+import {CONTINUE} from '../aa/atype/a_define_signals'
 
 type ScrollEventCallback = (scrollTop: number, prevScrollTop: number, isAuto: boolean) => void
 type ScrollEventIgnore = (scrollTop: number, prevScrollTop: number, isAuto: boolean) => boolean

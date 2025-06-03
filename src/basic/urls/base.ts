@@ -1,7 +1,7 @@
 import {a_booln, a_string, int16, int32, int64b, int8, uint16, uint32, uint64b, uint8} from '../../aa/atype/t_basic'
-import {t_path_param} from '../../aa/atype/a_define'
+import {t_path_param} from '../../aa/atype/enums/path_param'
 import SearchParams from './search_params'
-import {t_httpmethod} from '../../aa/atype/a_define_enums'
+import {t_httpmethod} from '../../aa/atype/enums/http_method'
 import {IterableKV} from '../maps/base'
 
 export type URLBase = {
@@ -10,19 +10,6 @@ export type URLBase = {
     search: SearchParams,
 }
 
-
-/**
- * A URL string or a parameter with iris-like routing path pattern {<key>} or {<key>:<type>}
- * <key> must starts with a _ or alphabet, and only contains _, alphabets or numbers
- * <type> must starts with a small-case alphabet, and only contains small-case alphabets and numbers
- *
- * @example
- * userAPI: t_api_pattern = 'https://luexu.com/api/v1/users/{uid:uint64}'
- * userAPI: t_api_pattern = 'https://luexu.com/api/v1/users/{uid}'
- * usersAPI: t_api_pattern = '/api/v1/groups/{group}/users/page/{page:uint}
- * hash: t_api_pattern = '{hash}'
- */
-export type t_url_pattern = string
 
 export type PathParamMap = Map<string, t_path_param>
 export const HASH_REF_NAME = '#HASH'

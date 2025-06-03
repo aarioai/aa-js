@@ -12,7 +12,7 @@ import {MinutesInSecond, NO_EXPIRES, Second, Seconds} from '../../../aa/atype/a_
 import Registry from '../../../aa/aconfig/registry'
 import {Dict} from '../../../aa/atype/a_define_interfaces'
 import {cloneDict} from '../../../aa/atype/clone'
-import {fillObjects} from '../../../basic/maps/groups'
+import {fillDict} from '../../../basic/maps/groups'
 import {AaMutex, E_DeadLock} from '../../../aa/calls/mutex'
 import {AError} from '../../../aa/aerror/error'
 import log from '../../../aa/alog/log'
@@ -36,7 +36,7 @@ export default class AaAuth {
         sameSite: 'Lax',
         secure: location.protocol === 'https:'
     }
-    readonly tx = new AaMutex()
+    private readonly tx = new AaMutex()
     private userToken: NormalizedUserToken
     private readonly registry: Registry
     #authTime: t_second = 0
@@ -173,7 +173,6 @@ export default class AaAuth {
         }
         const api = userToken.attach['validate_api']
         if (!await this.tx.awaitLock(5 * Seconds)) {
-            log.warn('validate user token: dead lock')
             return false
         }
         try {
@@ -325,7 +324,7 @@ export default class AaAuth {
             return data[key] ? data[key] as T : null
         }
         const value = cloneDict(data[key] as Dict)
-        return fillObjects(value, defaultValue) as T
+        return fillDict(value, defaultValue) as T
     }
 
     private checkUserToken(userToken: NormalizedUserToken): [NormalizedUserToken | null, boolean] {

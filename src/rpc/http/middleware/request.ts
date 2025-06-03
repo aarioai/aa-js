@@ -1,7 +1,7 @@
 import {BaseRequestHooks, BaseRequestOptions, BasicRequestStruct, RequestImpl} from '../base/define_interfaces'
-import {t_url_pattern} from '../../../basic/urls/base'
+import {t_url_pattern} from '../../../aa/atype/a_define'
 import {normalizeBasicRequestOptions} from '../base/fn'
-import {fillObjects} from '../../../basic/maps/groups'
+import {fillDict} from '../../../basic/maps/groups'
 import AaMiddleware from './middleware'
 import {reject} from '../../../basic/promises/fn'
 import {FetchOptions} from '../base/define_fetch'
@@ -12,7 +12,7 @@ import {ResponseBody, ResponseBodyData} from '../../../aa/atype/a_server_dto'
 import {isOK} from '../../../aa/aerror/fn'
 import {E_ParseResponseBodyFailed} from '../base/errors'
 import {Dict} from '../../../aa/atype/a_define_interfaces'
-import {t_httpmethod} from '../../../aa/atype/a_define_enums'
+import {t_httpmethod} from '../../../aa/atype/enums/http_method'
 
 export class AaRequest implements RequestImpl {
     defaultOptions?: BaseRequestOptions
@@ -74,7 +74,7 @@ export class AaRequest implements RequestImpl {
 
     private normalizeOptions(api: t_url_pattern, options?: BaseRequestOptions, method?: t_httpmethod): BasicRequestStruct {
         if (this.defaultOptions) {
-            options = fillObjects(options, this.defaultOptions as Dict)
+            options = fillDict(options, this.defaultOptions as Dict)
         }
         if (method && options.method !== method) {
             options.method = method

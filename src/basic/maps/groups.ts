@@ -2,10 +2,9 @@ import {Dict} from '../../aa/atype/a_define_interfaces'
 import {Err_MissingArgument} from '../../aa/aerror/errors'
 import {KV} from './base'
 import {forEach} from './iterates'
-import {isMeaningfulValue} from './base_fn'
 import {getKV, setKV} from './kv'
-import {syncType, zeroize} from '../../aa/atype/t_basic'
-import {BREAK} from '../../aa/atype/a_define_enums'
+import {isMeaningful, syncType, zeroize} from '../../aa/atype/t_basic'
+import {BREAK, CONTINUE} from '../../aa/atype/a_define_signals'
 
 
 export function compareAny(a: unknown, b: unknown): boolean {
@@ -76,7 +75,7 @@ export function assign<T extends KV = KV>(target: T, ...sources: (KV | undefined
     }
     for (let i = 0; i < n; i++) {
         forEach(sources[i], (value, key) => {
-            if (isMeaningfulValue(value)) {
+            if (isMeaningful(value)) {
                 setKV(target, key, value)
             }
         })
@@ -88,12 +87,12 @@ export function assign<T extends KV = KV>(target: T, ...sources: (KV | undefined
  * Safely assigns from one or many source KV objects to a target map object.
  *
  * @example
- *  assignObjects({}, {name:'Aario', sex: 'male'}, {name:'Tom'})           // {name:'Tom', sex:'male'}
- *  assignObjects({age:18}, undefined)         // {age:18}
- *  assignObjects({age:18}, {name:'Aario'})    // {name:'Aario', age:18}
- *  assignObjects(null, {name:'Aario'}         // {name:'Aario'}
+ *  assignDict({}, {name:'Aario', sex: 'male'}, {name:'Tom'})           // {name:'Tom', sex:'male'}
+ *  assignDict({age:18}, undefined)         // {age:18}
+ *  assignDict({age:18}, {name:'Aario'})    // {name:'Aario', age:18}
+ *  assignDict(null, {name:'Aario'}         // {name:'Aario'}
  */
-export function assignObjects<T = Dict>(target: T | undefined, ...sources: (KV | undefined)[]): T {
+export function assignDict<T = Dict>(target: T | undefined, ...sources: (KV | undefined)[]): T {
     if (!target) {
         target = {} as T
     }
@@ -118,7 +117,7 @@ export function fill<T extends KV = KV>(target: T, ...defaults: (KV | undefined)
     for (let i = 0; i < n; i++) {
         forEach(defaults[i], (defaultValue, key) => {
             const value = getKV(target, key)
-            if (!isMeaningfulValue(value)) {
+            if (!isMeaningful(value)) {
                 setKV(target, key, defaultValue)
             }
         })
@@ -130,9 +129,9 @@ export function fill<T extends KV = KV>(target: T, ...defaults: (KV | undefined)
  * Fills non-existing properties in a target KV object with default values
  *
  * @example
- *  fillObjects({}, defaults.headers.POST, defaults.headers.common)
+ *  fillDict({}, defaults.headers.POST, defaults.headers.common)
  */
-export function fillObjects<V = unknown, T = Dict<V>>(target: T | undefined, ...defaults: (KV | undefined)[]): T {
+export function fillDict<V = unknown, T = Dict<V>>(target: T | undefined, ...defaults: (KV | undefined)[]): T {
     if (!target) {
         target = {} as T
     }
@@ -155,7 +154,7 @@ export function fillIn<T extends KV = KV>(defaults: T, source: KV | undefined): 
     }
     forEach(defaults, (old, key) => {
         const sourceValue = getKV(source, key)
-        if (isMeaningfulValue(sourceValue)) {
+        if (isMeaningful(sourceValue)) {
             setKV(defaults, key, syncType(sourceValue, old))
         }
     })
@@ -178,11 +177,50 @@ export function refillIn<T extends KV = KV>(defaults: T, source: KV | undefined)
     }
     forEach(defaults, (old, key) => {
         const sourceValue = getKV(source, key)
-        if (isMeaningfulValue(sourceValue)) {
+        if (isMeaningful(sourceValue)) {
             setKV(defaults, key, syncType(sourceValue, old))
         } else {
             setKV(defaults, key, zeroize(old))
         }
     })
     return defaults
+}
+
+/**
+ * Deeply unions two objects recursively
+ *
+ * @example
+ *  union({a:100, b:200}, {b:1, c:2})                       // {a:100, b:1, c:2}
+ *  union({a:{aa:{aaa:1}}}, {a:{aa:{bbb:2}, ab:2}})         // {a:{aa:{aaa:1, bbb:2}, ab:2}}
+ *  union({a:[100]}, {a:[200]})                             // {a:[100, 200]}
+ *  union({a:[100]}, {a:[200]}, false)                      // {a:[200]}
+ */
+export function union<T extends KV = KV>(base: T, partial: T, unionArrays: boolean = true): T {
+    if (!base || Object.keys(base).length === 0) {
+        return partial
+    }
+
+    forEach(partial, (value, key) => {
+        if (!isMeaningful(base[key]) || !isMeaningful(value)) {
+            base[key] = value
+            return CONTINUE
+        }
+
+        if (typeof value !== 'object') {
+            base[key] = value
+        } else if (Array.isArray(value)) {
+            if (!unionArrays) {
+                base[key] = value
+            } else {
+                if (!Array.isArray(base[key])) {
+                    throw new TypeError(`cannot merge array with non-array value at key '${key}'`);
+                }
+                base[key] = [...base[key], ...value]
+            }
+        } else {
+            base[key] = union(base[key] as Dict, value as Dict)
+        }
+    })
+
+    return base
 }

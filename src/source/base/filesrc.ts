@@ -1,7 +1,6 @@
 import AaMap from '../../basic/maps/map'
 import {Provider, t_filesrc} from './define'
-import {t_url_pattern} from '../../basic/urls/base'
-import {t_int, t_url} from '../../aa/atype/a_define'
+import {t_int, t_url, t_url_pattern} from '../../aa/atype/a_define'
 import {safeInt} from '../../aa/atype/t_basic'
 
 export default class FileSrc extends AaMap {

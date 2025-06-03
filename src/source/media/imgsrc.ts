@@ -1,7 +1,6 @@
 import FileSrc from '../base/filesrc'
-import {t_url_pattern} from '../../basic/urls/base'
+import {t_float64, t_int, t_url_pattern} from '../../aa/atype/a_define'
 import {Image, t_imgsrc, t_resolution} from '../base/define'
-import {t_float64, t_int} from '../../aa/atype/a_define'
 import {tabletMainWidth} from '../../browser/detect_device'
 import {pxInt, t_css_size} from '../../browser/pixel'
 import defaults from '../base/defaults'

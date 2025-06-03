@@ -1,6 +1,6 @@
 import {typeArray} from "../../aa/atype/func"
 import {floatToInt} from "../../aa/atype/t_basic"
-import {BREAK} from '../../aa/atype/a_define_enums'
+import {BREAK} from '../../aa/atype/a_define_signals'
 
 
 /**

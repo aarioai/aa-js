@@ -73,7 +73,7 @@ export function decodeStorageValue<T = unknown>(s: string): { value: T, options?
     }
 
     const typeAlias = ATYPE_PREFIX + last[0]
-    const type = aliasToAtype(typeAlias)
+    const type = aliasToAtype(typeAlias as any)
     if (!type) {
         return {value: s as T}
     }

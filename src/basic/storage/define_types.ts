@@ -1,5 +1,5 @@
 import {t_expires, t_second, t_utc} from '../../aa/atype/a_define'
-import {AnyMap, Dict} from '../../aa/atype/a_define_interfaces'
+import {Dict} from '../../aa/atype/a_define_interfaces'
 
 export const STORAGE_SEPARATOR = ' `'
 
@@ -65,7 +65,7 @@ export interface DbLikeImpl {
 
     insert(tableName: string, key: string, value: unknown, options?: StorageOptions): void
 
-    insertMany(tableName: string, data: AnyMap, options?: StorageOptions): void
+    insertMany(tableName: string, data: Dict, options?: StorageOptions): void
 
-    insertWhen(tableName: string, data: AnyMap, when: InsertCondition, options?: StorageOptions): void
+    insertWhen(tableName: string, data: Dict, when: InsertCondition, options?: StorageOptions): void
 }

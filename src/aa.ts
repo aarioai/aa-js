@@ -10,8 +10,9 @@ import {Err_MissingArgument} from './aa/aerror/errors'
 
 export class Aa {
     readonly config = aconfig
-    readonly registry = new Registry()
     readonly httpDefaults = httpDefaults
+
+    readonly registry = new Registry()
     #storageManager: AaStorageManager = new AaStorageManager()
     #http: HttpImpl
 
