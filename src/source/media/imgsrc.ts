@@ -1,12 +1,12 @@
 import FileSrc from '../base/filesrc'
 import {t_float64, t_int, t_url_pattern} from '../../aa/atype/a_define'
-import {Image, t_imgsrc, t_resolution} from '../base/define'
+import {Image, t_imgsrc, t_size_value} from '../base/define'
 import {tabletMainWidth} from '../../browser/detect_device'
 import {pxInt, t_css_size} from '../../browser/pixel'
 import defaults from '../base/defaults'
 import {floatToInt, safeInt} from '../../aa/atype/t_basic'
 import {KB} from '../../aa/atype/a_define_units'
-import {findClosestResolution} from '../base/fn'
+import {findClosestSize} from '../base/fn'
 import {replaceAll} from '../../basic/strings/strings'
 import {Dict} from '../../aa/atype/a_define_interfaces'
 
@@ -24,8 +24,8 @@ export class ImgSrc extends FileSrc {
         this.aspectRatio = src.width / src.height   // panic on missing height
     }
 
-    get allowed(): t_resolution[] | null {
-        return this.get('allowed') as (t_resolution[] | null)
+    get allowed(): t_size_value[] | null {
+        return this.get('allowed') as (t_size_value[] | null)
     }
 
     // e.g.  https://xxx/img.jpg?width={width:int}&height={height:int}
@@ -69,21 +69,21 @@ export class ImgSrc extends FileSrc {
         if (this.isSmall(realWidth, realHeight, true)) {
             return {
                 url: this.url,
-                alterURL: replaceAll(this.alterUrlPattern, this.patternReplacement([this.width, this.height], true, true)),
+                alterURL: replaceAll(this.alterUrlPattern, this.patternReplacement(this.width, this.height, true, true)),
                 aspectRatio: this.aspectRatio,
-                css: [cssWidth, cssHeight],
-                real: [this.width, this.height],
+                css: {width: cssWidth, height: cssHeight},
+                real: {width: this.width, height: this.height},
             }
         }
 
 
-        const resolution = findClosestResolution(this.allowed, realWidth, realHeight)
+        const real = findClosestSize(this.allowed, realWidth, realHeight)
         return {
-            url: replaceAll(this.urlPattern, this.patternReplacement(resolution, true)),
-            alterURL: replaceAll(this.alterUrlPattern, this.patternReplacement(resolution, true, true)),
+            url: replaceAll(this.urlPattern, this.patternReplacement(real.width, real.height, true)),
+            alterURL: replaceAll(this.alterUrlPattern, this.patternReplacement(real.width, real.height, true, true)),
             aspectRatio: this.aspectRatio,
-            css: [cssWidth, cssHeight],
-            real: resolution,
+            css: {width: cssWidth, height: cssHeight},
+            real: real,
         }
     }
 
@@ -125,34 +125,31 @@ export class ImgSrc extends FileSrc {
         if (this.isSmall(realWidth, realHeight, false)) {
             return {
                 url: this.url,
-                alterURL: replaceAll(this.alterUrlPattern, this.patternReplacement([this.width, this.height], false, true)),
+                alterURL: replaceAll(this.alterUrlPattern, this.patternReplacement(this.width, this.height, false, true)),
                 aspectRatio: this.aspectRatio,
-                css: [cssWidth, cssHeight],
-                real: [this.width, this.height],
+                css: {width: cssWidth, height: cssHeight},
+                real: {width: this.width, height: this.height},
             }
         }
-        const resolution = findClosestResolution(this.allowed, realWidth, realHeight)
+        const real = findClosestSize(this.allowed, realWidth, realHeight)
         return {
-            url: replaceAll(this.urlPattern, this.patternReplacement(resolution)),
-            alterURL: replaceAll(this.alterUrlPattern, this.patternReplacement(resolution, false, true)),
+            url: replaceAll(this.urlPattern, this.patternReplacement(real.width, real.height)),
+            alterURL: replaceAll(this.alterUrlPattern, this.patternReplacement(real.width, real.height, false, true)),
             aspectRatio: this.aspectRatio,
-            css: [cssWidth, cssHeight],
-            real: resolution,
+            css: {width: cssWidth, height: cssHeight},
+            real: real,
         }
     }
 
-    private patternReplacement(resolution: t_resolution, isCrop: boolean = false, isAlter: boolean = false): Dict {
+    private patternReplacement(width: t_int, height: t_int, isCrop: boolean = false, isAlter: boolean = false): Dict {
         return {
-            '{width:int}': resolution[0],
-            '{height:int}': resolution[1],
-            '{max_width: int}': resolution[0],
-            '{max_height: int}': resolution[1],
+            '{width:int}': width,
+            '{height:int}': height,
+            '{max_width: int}': width,
+            '{max_height: int}': height,
         }
     }
-
-    private handleAllowedResolutions() {
-
-    }
+ 
 }
 
 export default function imgsrc(src: t_imgsrc | ImgSrc): ImgSrc | null {

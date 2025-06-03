@@ -1,6 +1,6 @@
 export type NodeSelector = Node | string
 export type ElementSelector = Element | string
-
+ 
 // React.BaseSyntheticEvent
 export interface BaseSyntheticEvent<E = object, C = any, T = any> {
     nativeEvent: E;

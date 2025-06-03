@@ -28,7 +28,7 @@ export function a_element(selector: ElementSelector): Element | null {
     return document.querySelector(selector)
 }
 
-export function parseDomFrom(s: HTMLElement | string, type: DOMParserSupportedType = 'text/html'): HTMLElement | null {
+export function parseHTMLBody(s: HTMLElement | string, type: DOMParserSupportedType = 'text/html'): HTMLElement | null {
     if (!s) {
         return null
     }

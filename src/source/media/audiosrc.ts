@@ -1,6 +1,6 @@
 import FileSrc from '../base/filesrc'
 import {t_audiosrc} from '../base/define'
-import {t_int, t_second} from '../../aa/atype/a_define'
+import {t_int, t_second, t_url} from '../../aa/atype/a_define'
 import {safeInt} from '../../aa/atype/t_basic'
 
 export class AudioSrc extends FileSrc {
@@ -21,6 +21,11 @@ export class AudioSrc extends FileSrc {
 
     get sampleRate(): t_int {
         return this.get('sample_rate') as t_int
+    }
+
+    // @TODO
+    getURL(): t_url {
+        return this.url
     }
 }
 

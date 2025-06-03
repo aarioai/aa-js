@@ -1,7 +1,7 @@
 import FileSrc from '../base/filesrc'
-import {t_resolution, t_videosrc} from '../base/define'
+import {t_size_value, t_videosrc} from '../base/define'
 import {safeInt} from '../../aa/atype/t_basic'
-import {t_int, t_second} from '../../aa/atype/a_define'
+import {t_int, t_second, t_url} from '../../aa/atype/a_define'
 import {ImgSrc} from './imgsrc'
 
 export class VideoSrc extends FileSrc {
@@ -18,8 +18,8 @@ export class VideoSrc extends FileSrc {
         this.set('width', safeInt(src['width']))
     }
 
-    get allowed(): t_resolution[] | null {
-        return this.get('allowed') as (t_resolution[] | null)
+    get allowed(): t_size_value[] | null {
+        return this.get('allowed') as (t_size_value[] | null)
     }
 
     get bitrate(): t_int {
@@ -52,6 +52,11 @@ export class VideoSrc extends FileSrc {
 
     get width(): t_int {
         return this.get('width') as t_int
+    }
+
+    // @TODO
+    getURL(): t_url {
+        return this.url
     }
 
 }

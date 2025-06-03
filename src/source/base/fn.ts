@@ -1,9 +1,9 @@
 import {t_int} from '../../aa/atype/a_define'
-import {t_resolution} from './define'
+import {t_size, t_size_value} from './define'
 
-export function findClosestResolution(allowed: t_resolution[] | null, width: t_int, height: t_int): t_resolution {
+export function findClosestSize(allowed: t_size_value[] | null, width: t_int, height: t_int): t_size {
     if (!allowed?.length) {
-        return [width, height]
+        return {width, height}
     }
     let maxWidth = 0
     let maxHeight = 0
@@ -11,7 +11,7 @@ export function findClosestResolution(allowed: t_resolution[] | null, width: t_i
     let closestHeight = 0
     for (const [w, h] of allowed) {
         if (w === width && h === height) {
-            return [w, h]
+            return {width, height}
         }
 
         // Track maxWidth and maxHeight
@@ -28,5 +28,5 @@ export function findClosestResolution(allowed: t_resolution[] | null, width: t_i
             closestHeight = h
         }
     }
-    return closestWidth === 0 ? [maxWidth, maxHeight] : [closestWidth, closestHeight]
+    return closestWidth === 0 ? {width: maxWidth, height: maxHeight} : {width: closestWidth, height: closestHeight}
 }
