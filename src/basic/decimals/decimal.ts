@@ -19,9 +19,13 @@ export class Decimal implements ValueOf<t_decimal> {
         return this
     }
 
-    minus(d: t_decimal | Decimal): Decimal {
+    subtract(d: t_decimal | Decimal): Decimal {
         this.#value -= a_decimal(d)
         return this
+    }
+
+    sub(d: t_decimal | Decimal): Decimal {
+        return this.subtract(d)
     }
 
     multiply(d: t_decimal | Decimal): Decimal {
@@ -29,9 +33,17 @@ export class Decimal implements ValueOf<t_decimal> {
         return this
     }
 
+    mul(d: t_decimal | Decimal): Decimal {
+        return this.multiply(d)
+    }
+
     divide(d: t_decimal | Decimal): Decimal {
         this.#value = this.#value * X_DECIMAL / a_decimal(d)
         return this
+    }
+
+    div(d: t_decimal | Decimal): Decimal {
+        return this.divide(d)
     }
 
     addX(n: number): Decimal {
@@ -39,9 +51,13 @@ export class Decimal implements ValueOf<t_decimal> {
         return this
     }
 
-    minusX(n: number): Decimal {
+    subtractX(n: number): Decimal {
         this.#value *= BigInt(n) * X_DECIMAL
         return this
+    }
+
+    subX(n: number): Decimal {
+        return this.subtractX(n)
     }
 
     multiplyX(n: number): Decimal {
@@ -49,9 +65,17 @@ export class Decimal implements ValueOf<t_decimal> {
         return this
     }
 
+    mulX(n: number): Decimal {
+        return this.multiplyX(n)
+    }
+
     divideX(n: number): Decimal {
         this.#value /= BigInt(n)
         return this
+    }
+
+    divX(n: number): Decimal {
+        return this.divideX(n)
     }
 
     // convert to real number

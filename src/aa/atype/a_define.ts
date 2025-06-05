@@ -21,7 +21,8 @@ export type TypedArray =
 export type t_gt_zero = number  // an uint greater than 0
 
 /****************************************** types from server *********************************************************/
-
+export type t_sid = string // unique string format id, empty string is for null
+export type t_nullable_sid = t_sid | null
 export type t_base64 = string
 export type t_booln = 0 | 1
 export type t_char = string  // single character in ASCII characters [32, 126]
@@ -44,10 +45,6 @@ export type t_bin = string  // binary string
 export type t_bitpos = t_uint8
 export type t_bitposition = t_uint16
 
-export type t_millisecond = t_safeint
-export type t_second = t_safeint
-export type t_expires = t_second
-
 
 // @see ./enums
 export type t_enum = t_uint8
@@ -67,6 +64,8 @@ export type t_email = string
 
 // @see ./t_path.ts
 
+export type t_ext = string   // extension name, e.g., jpg
+export type t_extension = string // extension name starts with a dot, e.g., .jpg
 export type t_filetype = string
 export type t_std_filename = string         // [\w-.]+ // standard file name
 export type t_filename = string// [\w-.!@#$%^&(){}~]+ , unicode filename
@@ -103,6 +102,9 @@ export type t_date = string // format YYYY-MM-DD
 export type t_datetime = string // format YYYY-MM-DD HH:II:SS
 export type t_timestamp = t_safeint  // unix timestamp in seconds
 export type t_timestamp_ms = t_safeint // unix timestamp in milliseconds
+export type t_millisecond = t_safeint
+export type t_second = t_safeint
+export type t_expires = t_second
 
 // @see ./t_district.ts
 

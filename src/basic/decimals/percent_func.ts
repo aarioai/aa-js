@@ -12,7 +12,7 @@ export function percentAddX(addend: number, ...adders: number[]): Percent {
     return new Percent(v * PERCENT_X)
 }
 
-export function percentMinusX(minuend: number, ...subtrahends: number[]): Percent {
+export function percentSubX(minuend: number, ...subtrahends: number[]): Percent {
     let v = minuend
     for (const sub of subtrahends) {
         v -= sub
@@ -20,7 +20,7 @@ export function percentMinusX(minuend: number, ...subtrahends: number[]): Percen
     return new Percent(v * PERCENT_X)
 }
 
-export function percentMultiplyX(multiplicand: number, ...multipliers: number[]): Percent {
+export function percentMulX(multiplicand: number, ...multipliers: number[]): Percent {
     let v = multiplicand * PERCENT_X
     for (const m of multipliers) {
         v *= m
@@ -31,7 +31,7 @@ export function percentMultiplyX(multiplicand: number, ...multipliers: number[])
 /**
  * Instances Percent by performing precise division of real numbers
  */
-export function percentDivideX(dividend: number, ...divisors: number[]): Percent {
+export function percentDivX(dividend: number, ...divisors: number[]): Percent {
     let v = dividend * PERCENT_X
     for (const divisor of divisors) {
         v /= divisor

@@ -13,7 +13,7 @@ export function addX(addend: number, ...adders: number[]): Decimal {
     return new Decimal(BigInt(v) * X_DECIMAL)
 }
 
-export function minusX(minuend: number, ...subtrahends: number[]): Decimal {
+export function subX(minuend: number, ...subtrahends: number[]): Decimal {
     let v = minuend
     for (const sub of subtrahends) {
         v -= sub
@@ -21,7 +21,7 @@ export function minusX(minuend: number, ...subtrahends: number[]): Decimal {
     return new Decimal(BigInt(v) * X_DECIMAL)
 }
 
-export function multiplyX(multiplicand: number, ...multipliers: number[]): Decimal {
+export function mulX(multiplicand: number, ...multipliers: number[]): Decimal {
     let v = BigInt(multiplicand) * X_DECIMAL
     for (const m of multipliers) {
         v *= BigInt(m)
@@ -32,7 +32,7 @@ export function multiplyX(multiplicand: number, ...multipliers: number[]): Decim
 /**
  * New a Decimal by performing precise division of real numbers
  */
-export function divideX(dividend: number, ...divisors: number[]): Decimal {
+export function divX(dividend: number, ...divisors: number[]): Decimal {
     let v = BigInt(dividend) * X_DECIMAL
     for (const divisor of divisors) {
         v /= BigInt(divisor)

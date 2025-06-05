@@ -20,9 +20,13 @@ export class VMoney implements ValueOf<t_vmoney> {
         return this
     }
 
-    minus(d: t_vmoney | VMoney): VMoney {
+    subtract(d: t_vmoney | VMoney): VMoney {
         this.#value -= a_money(d)
         return this
+    }
+
+    sub(d: t_vmoney | VMoney): VMoney {
+        return this.subtract(d)
     }
 
     multiply(d: t_vmoney | VMoney): VMoney {
@@ -30,9 +34,17 @@ export class VMoney implements ValueOf<t_vmoney> {
         return this
     }
 
+    mul(d: t_vmoney | VMoney): VMoney {
+        return this.multiply(d)
+    }
+
     divide(d: t_vmoney | VMoney): VMoney {
         this.#value = this.#value * X_VMONEY / a_money(d)
         return this
+    }
+
+    div(d: t_vmoney | VMoney): VMoney {
+        return this.divide(d)
     }
 
     addX(n: number): VMoney {
@@ -40,9 +52,13 @@ export class VMoney implements ValueOf<t_vmoney> {
         return this
     }
 
-    minusX(n: number): VMoney {
+    subtractX(n: number): VMoney {
         this.#value *= BigInt(n) * X_VMONEY
         return this
+    }
+
+    subX(n: number): VMoney {
+        return this.subtractX(n)
     }
 
     multiplyX(n: number): VMoney {
@@ -50,9 +66,17 @@ export class VMoney implements ValueOf<t_vmoney> {
         return this
     }
 
+    mulX(n: number): VMoney {
+        return this.multiplyX(n)
+    }
+
     divideX(n: number): VMoney {
         this.#value /= BigInt(n)
         return this
+    }
+
+    divX(n: number): VMoney {
+        return this.divideX(n)
     }
 
     // convert to real number

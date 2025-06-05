@@ -20,9 +20,13 @@ export class Percent implements ValueOf<t_percent> {
         return this
     }
 
-    minus(d: t_percent | Percent): Percent {
+    subtract(d: t_percent | Percent): Percent {
         this.#value -= a_percent(d)
         return this
+    }
+
+    sub(d: t_percent | Percent): Percent {
+        return this.subtract(d)
     }
 
     multiply(d: t_percent | Percent): Percent {
@@ -30,9 +34,17 @@ export class Percent implements ValueOf<t_percent> {
         return this
     }
 
+    mul(d: t_percent | Percent): Percent {
+        return this.multiply(d)
+    }
+
     divide(d: t_percent | Percent): Percent {
         this.#value = this.#value * PERCENT_X / a_percent(d)
         return this
+    }
+
+    div(d: t_percent | Percent): Percent {
+        return this.divide(d)
     }
 
     addX(n: number): Percent {
@@ -40,9 +52,13 @@ export class Percent implements ValueOf<t_percent> {
         return this
     }
 
-    minusX(n: number): Percent {
+    subtractX(n: number): Percent {
         this.#value *= n * PERCENT_X
         return this
+    }
+
+    subX(n: number): Percent {
+        return this.subtractX(n)
     }
 
     multiplyX(n: number): Percent {
@@ -50,16 +66,23 @@ export class Percent implements ValueOf<t_percent> {
         return this
     }
 
+    mulX(n: number): Percent {
+        return this.multiplyX(n)
+    }
+
     divideX(n: number): Percent {
         this.#value /= n
         return this
+    }
+
+    divX(n: number): Percent {
+        return this.divideX(n)
     }
 
     // convert to real number
     toReal(): t_float64 {
         return this.#value / PERCENT_X
     }
-
 
     toDecimal(): Decimal {
         return new Decimal(BigInt(this.#value / 100))
