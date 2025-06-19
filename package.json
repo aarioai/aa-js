@@ -2,7 +2,7 @@
   "name": "aa-js",
   "version": "0.0.1",
   "author": "Aario",
-  "description": "a javascript SDK for airis Golang restful APIs",
+  "description": "a javascript SDK for calling restful APIs",
   "type": "module",
   "scripts": {
     "test": "jest",
