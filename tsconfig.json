@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    /* Lib should be more compatible */
     "target": "ES2023",
     "useDefineForClassFields": true,
     "lib": [
@@ -7,11 +8,11 @@
       "DOM",
       "DOM.Iterable"
     ],
-    "esModuleInterop": true,
-    "module": "ESNext",
     /* Bundler mode */
+    "module": "ESNext",
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
+    "esModuleInterop": true,
     "verbatimModuleSyntax": false,
     "moduleDetection": "force",
     "noEmit": true,
@@ -21,9 +22,24 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": false,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    /* Output */
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    /* Browser */
+    "allowSyntheticDefaultImports": true,
+    "noLib": false,
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true
   },
   "include": [
     "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/__tests__/*",
+    "**/*.node.ts"
   ]
 }
