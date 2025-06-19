@@ -1,7 +1,7 @@
 import type {HttpImpl, RequestHooks, RequestImpl, RequestOptions, RequestStruct} from '../base/define_interfaces'
 import AaAuth from '../auth/auth'
 import type {ResponseBodyData} from '../../../aa/atype/a_server_dto'
-import {normalizeRequestOptions} from '../base/fn'
+import {normalizeBasicRequestOptions, normalizeRequestOptions} from '../base/fn'
 import {fillDict, union} from '../../../basic/maps/groups'
 import type {Dict} from '../../../aa/atype/a_define_interfaces'
 import {aerror} from '../../../aa/aerror/fn'
@@ -20,12 +20,21 @@ export default class AaFetch implements HttpImpl {
         this.defaultOptions = defaultOptions
     }
 
-    handleRedirect(path: string) {
+    handleRedirect(path: string): unknown {
         location.href = path
+        return
     }
 
+    fetch(r: RequestStruct, hooks?: RequestHooks): Promise<string> {
+        return this.baseRequest.Fetch(r.url.href, normalizeBasicRequestOptions(r.url.href, r), hooks)
+    }
 
-    request<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T | null> {
+    Fetch(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<string> {
+        return this.normalizeOptions(api, options).then(r => this.fetch(r, hooks)
+        )
+    }
+
+    request<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T> {
         return this.baseRequest.request<T>(r, hooks).catch(err => {
             err = aerror(err)
             if (err.isFailedAndSeeOther()) {
@@ -41,16 +50,16 @@ export default class AaFetch implements HttpImpl {
         })
     }
 
-    Request<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions): Promise<T | null> {
+    Request<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions): Promise<T> {
         return this.normalizeOptions(api, options).then(r => this.request<T>(r))
     }
 
-    head(r: RequestStruct, hooks?: RequestHooks): Promise<null> {
+    head(r: RequestStruct, hooks?: RequestHooks): Promise<void> {
         r.method = 'HEAD'
-        return this.request(r, hooks)
+        return this.baseRequest.head(r, hooks)
     }
 
-    Head(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<null> {
+    Head(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<void> {
         return this.normalizeOptions(api, options, 'HEAD').then(r => this.head(r, hooks))
     }
 

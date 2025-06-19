@@ -7,12 +7,12 @@ import {reject} from '../../../basic/promises/fn'
 import type {FetchOptions} from '../base/define_fetch'
 import {normalizeFetchOptions} from '../base/fn_fetch'
 import {AError} from '../../../aa/aerror/error'
-import json from '../../../aa/atype/json'
 import type {ResponseBody, ResponseBodyData} from '../../../aa/atype/a_server_dto'
-import {isOK} from '../../../aa/aerror/fn'
-import {E_ParseResponseBodyFailed} from '../base/errors'
 import type {Dict} from '../../../aa/atype/a_define_interfaces'
 import type {t_httpmethod} from '../../../aa/atype/enums/http_method'
+import json from '../../../aa/atype/json.ts'
+import {E_ParseResponseBodyFailed} from '../base/errors.ts'
+import {isOK} from '../../../aa/aerror/fn.ts'
 
 export class AaRequest implements RequestImpl {
     defaultOptions?: BaseRequestOptions
@@ -24,34 +24,88 @@ export class AaRequest implements RequestImpl {
         this.middleware = middleware
     }
 
-
-    fetch<T = ResponseBodyData>(url: string, options: FetchOptions): Promise<T | null> {
-        return window.fetch(url, options).then(resp => {
-            let err = new AError(resp.status)
-            if (!err.isOK()) {
-                throw err
-            }
-            // Handle HEAD
-            if (!options.method || options.method === 'HEAD') {
-                return null
-            }
-            let bodyText = ''
-            try {
-                return resp.text().then(text => {
-                    bodyText = text
-                    const result = json.Unmarshal(text) as ResponseBody
-                    if (isOK(result.code)) {
-                        return result.data as T
+    head(r: BasicRequestStruct, hooks?: BaseRequestHooks): Promise<void> {
+        if (hooks?.beforeFetch) {
+            r = hooks.beforeFetch(r)
+        }
+        const denied = this.middleware.denied(r)
+        if (denied) {
+            return reject(denied.widthDetail(`${r.url.method} ${r.url.href} is denied`))
+        }
+        if (hooks?.onFetch) {
+            return hooks.onFetch(r).then((r: BasicRequestStruct) => {
+                return window.fetch(r.url.href, normalizeFetchOptions(r)).then(resp => {
+                    let e = new AError(resp.status)
+                    if (!e.isOK()) {
+                        throw e
                     }
-                    throw new AError(result.code, result.msg)
                 })
-            } catch (err) {
-                throw err instanceof AError ? err : E_ParseResponseBodyFailed.widthDetail(bodyText)
+            })
+        }
+        return window.fetch(r.url.href, normalizeFetchOptions(r)).then(resp => {
+            let e = new AError(resp.status)
+            if (!e.isOK()) {
+                throw e
             }
         })
     }
 
-    request<T = ResponseBodyData>(r: BasicRequestStruct, hooks?: BaseRequestHooks): Promise<T | null> {
+    Head(api: t_url_pattern, options?: FetchOptions, hooks?: BaseRequestHooks): Promise<void> {
+        if (!options) {
+            options = {}
+        }
+        options.method = 'HEAD'
+
+        let r = this.normalizeOptions(api, options)
+        return this.head(r, hooks)
+    }
+
+    fetchRaw(url: string, options?: FetchOptions): Promise<string> {
+        return window.fetch(url, options).then(resp => {
+            let e = new AError(resp.status)
+            if (!e.isOK()) {
+                throw e
+            }
+            return resp.text()
+        })
+    }
+
+    fetch<T = ResponseBodyData>(url: string, options?: FetchOptions): Promise<T> {
+        return this.fetchRaw(url, options).then(body => {
+            if (options?.method === 'HEAD') {
+                return null as T
+            }
+            let result: ResponseBody
+            try {
+                result = json.Unmarshal(body) as ResponseBody
+            } catch (err) {
+                throw E_ParseResponseBodyFailed.widthDetail(body)
+            }
+            if (!isOK(result.code)) {
+                throw new AError(result.code, result.msg)
+            }
+            return result.data as T
+        })
+    }
+
+    Fetch(api: t_url_pattern, options?: BaseRequestOptions, hooks?: BaseRequestHooks): Promise<string> {
+        let r = this.normalizeOptions(api, options)
+        if (hooks?.beforeFetch) {
+            r = hooks.beforeFetch(r)
+        }
+        const denied = this.middleware.denied(r)
+        if (denied) {
+            return reject(denied.widthDetail(`${r.url.method} ${r.url.href} is denied`))
+        }
+        if (hooks?.onFetch) {
+            return hooks.onFetch(r).then((r: BasicRequestStruct) => {
+                return this.fetchRaw(r.url.href, normalizeFetchOptions(r))
+            })
+        }
+        return this.fetchRaw(r.url.href, normalizeFetchOptions(r))
+    }
+
+    request<T = ResponseBodyData>(r: BasicRequestStruct, hooks?: BaseRequestHooks): Promise<T> {
         if (hooks?.beforeFetch) {
             r = hooks.beforeFetch(r)
         }
@@ -67,7 +121,8 @@ export class AaRequest implements RequestImpl {
         return this.fetch(r.url.href, normalizeFetchOptions(r))
     }
 
-    Request<T = ResponseBodyData>(api: t_url_pattern, options?: BaseRequestOptions, hooks?: BaseRequestHooks): Promise<T | null> {
+
+    Request<T = ResponseBodyData>(api: t_url_pattern, options?: BaseRequestOptions, hooks?: BaseRequestHooks): Promise<T> {
         return this.request(this.normalizeOptions(api, options), hooks)
     }
 

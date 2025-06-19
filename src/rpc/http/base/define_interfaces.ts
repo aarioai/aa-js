@@ -1,4 +1,4 @@
-import type {BaseOptions, FetchBaseOptions} from './define_fetch'
+import type {BaseOptions, FetchBaseOptions, FetchOptions} from './define_fetch'
 import AaURL from '../../../basic/urls/url'
 import type {ResponseBodyData} from '../../../aa/atype/a_server_dto'
 import type {t_millisecond, t_url_pattern} from '../../../aa/atype/a_define'
@@ -39,19 +39,35 @@ export interface RequestHooks extends BaseRequestHooks {
 }
 
 export interface RequestImpl {
-    request<T = ResponseBodyData>(r: BasicRequestStruct, hooks?: BaseRequestHooks): Promise<T | null>
+    head(r: BasicRequestStruct, hooks?: BaseRequestHooks): Promise<void>
 
-    Request<T = ResponseBodyData>(api: t_url_pattern, options?: BaseRequestOptions, hooks?: BaseRequestHooks): Promise<T | null>
+    Head(api: t_url_pattern, options?: FetchOptions, hooks?: BaseRequestHooks): Promise<void>
+
+    fetchRaw(url: string, options?: FetchOptions): Promise<string>
+
+    fetch<T = ResponseBodyData>(url: string, options?: FetchOptions): Promise<T>
+
+    Fetch(api: t_url_pattern, options?: BaseRequestOptions, hooks?: BaseRequestHooks): Promise<string>
+
+    request<T = ResponseBodyData>(r: BasicRequestStruct, hooks?: BaseRequestHooks): Promise<T>
+
+    Request<T = ResponseBodyData>(api: t_url_pattern, options?: BaseRequestOptions, hooks?: BaseRequestHooks): Promise<T>
 }
 
 export interface HttpImpl {
+    handleRedirect(path: string): unknown
+
+    fetch(r: RequestStruct, hooks?: RequestHooks): Promise<string>
+
+    Fetch(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<string>
+
     request<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T | null>
 
     Request<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T | null>
 
-    head(r: RequestStruct, hooks?: RequestHooks): Promise<null>
+    head(r: RequestStruct, hooks?: RequestHooks): Promise<void>
 
-    Head(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<null>
+    Head(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<void>
 
     get<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T>
 
