@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "aa-ts": "git+https://github.com/aarioai/aa-ts.git"
+    "aa-ts": "^0.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

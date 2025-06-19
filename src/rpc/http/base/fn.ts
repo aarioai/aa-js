@@ -1,7 +1,6 @@
 import type {t_url_pattern} from '../../../aa/atype/a_define'
 import type {BaseRequestOptions, BasicRequestStruct, RequestOptions, RequestStruct} from './define_interfaces'
 import AaURL from '../../../basic/urls/url'
-import defaults from './defaults'
 import type {BaseOptions, FetchBaseOptions} from './define_fetch'
 import {normalizeHeaders} from './fn_fetch'
 import type {t_httpmethod} from '../../../aa/atype/enums/http_method'
@@ -17,9 +16,7 @@ export function getBaseURL(opts: BaseRequestOptions): string {
     if (opts?.baseURL) {
         return opts.baseURL
     }
-    if (defaults.baseURL) {
-        return defaults.baseURL
-    }
+
     return location.origin
 }
 
@@ -52,7 +49,7 @@ export function normalizeBasicRequestOptions(apiPattern: t_url_pattern, opts: Ba
         ...options,
         url: url,
         timeout: opts?.timeout ?? 0,
-        debounceInterval: opts?.debounceInterval ?? defaults.debounceInterval,
+        debounceInterval: opts?.debounceInterval || 0,
     }
 }
 
@@ -67,8 +64,8 @@ export function normalizeRequestOptions(apiPattern: t_url_pattern, opts: Request
     return {
         ...options,
         url: url,
-        timeout: opts?.timeout ?? 0,
-        debounceInterval: opts?.debounceInterval ?? defaults.debounceInterval,
+        timeout: opts?.timeout || 0,
+        debounceInterval: opts.debounceInterval || 0,
         disableAuth: opts?.disableAuth ?? false,
         disableAuthRefresh: opts?.disableAuthRefresh ?? false,
     }

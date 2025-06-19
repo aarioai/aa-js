@@ -55,6 +55,9 @@ export interface RequestImpl {
 }
 
 export interface HttpImpl {
+    baseURL: string
+    debounceInterval: t_millisecond
+
     handleRedirect(path: string): unknown
 
     fetch(r: RequestStruct, hooks?: RequestHooks): Promise<string>

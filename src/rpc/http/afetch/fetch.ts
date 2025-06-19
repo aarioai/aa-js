@@ -7,12 +7,16 @@ import type {Dict} from '../../../aa/atype/a_define_interfaces'
 import {aerror} from '../../../aa/aerror/fn'
 import {E_OK, E_Unauthorized} from '../../../aa/aerror/errors'
 import type {t_httpmethod} from '../../../aa/atype/enums/http_method'
-import type {t_url_pattern} from '../../../aa/atype/a_define'
+import type {t_millisecond, t_url_pattern} from '../../../aa/atype/a_define'
+import {Millisecond} from '../../../aa/atype/a_define_units.ts'
 
 export default class AaFetch implements HttpImpl {
     readonly auth: AaAuth
     readonly baseRequest: RequestImpl
     defaultOptions: RequestOptions | null
+
+    baseURL: string = ''
+    debounceInterval: t_millisecond = 400 * Millisecond
 
     constructor(auth: AaAuth, defaultOptions: RequestOptions | null = null) {
         this.auth = auth
@@ -110,6 +114,10 @@ export default class AaFetch implements HttpImpl {
 
     private async normalizeOptions(api: t_url_pattern, options?: RequestOptions, method?: t_httpmethod): Promise<RequestStruct> {
         options = options ?? {}
+        if (this.baseURL) {
+            options.baseURL = this.baseURL
+        }
+        options.debounceInterval = this.debounceInterval
         if (this.defaultOptions) {
             options = fillDict(options, this.defaultOptions as Dict)
         }
