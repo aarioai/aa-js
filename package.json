@@ -1,8 +1,8 @@
 {
-  "name": "aa-js",
+  "name": "aa-ts",
   "version": "0.0.1",
   "author": "Aario",
-  "description": "a javascript SDK for calling restful APIs",
+  "description": "a typescript SDK for calling restful APIs",
   "type": "module",
   "scripts": {
     "test": "jest",
@@ -22,13 +22,13 @@
     "typescript": "^5.8.3",
     "vite": "^6.3.5"
   },
-  "homepage": "https://github.com/aarioai/aa-js#readme",
+  "homepage": "https://github.com/aarioai/aa-ts#readme",
   "bugs": {
-    "url": "https://github.com/aarioai/aa-js/issues"
+    "url": "https://github.com/aarioai/aa-ts/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aarioai/aa-js.git"
+    "url": "git+https://github.com/aarioai/aa-ts.git"
   },
   "dependencies": {
     "@babel/runtime": "^7.27.6"

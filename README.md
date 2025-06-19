@@ -1,4 +1,4 @@
-# aa-js
+# aa-ts
 
 [中文说明文档](README_说明)
 

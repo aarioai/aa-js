@@ -1,6 +1,6 @@
 @echo off
 
-:: CUR: script directory, ROOT: aa-js directory
+:: CUR: script directory, ROOT: aa-ts directory
 set "CUR=%~dp0"
 cd /d "%CUR%..\.."
 set "ROOT=%cd%"
