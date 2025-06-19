@@ -1,9 +1,9 @@
 import {
-    NormalizedOption,
+    type NormalizedOption,
     normalizeOption,
     normalizeSelectGroupData,
-    Option,
-    t_selectgroup_data
+    type Option,
+    type t_selectgroup_data
 } from './select_group_fn'
 import {cloneArray} from '../aa/atype/clone'
 import {safeCast} from '../aa/atype/t_basic'
@@ -151,7 +151,7 @@ export default class SelectGroup<V = unknown> {
             return []
         }
 
-        let pid: V = null
+        let pid: V | null = null
         let chain: NormalizedOption<V>[] = []
         let typedValue = safeCast<V>(value, this.cast)
 

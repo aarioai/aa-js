@@ -10,6 +10,7 @@ import {
     Option,
     sortAndValidateOptions
 } from './select_group_fn'
+import type {Dict} from '../aa/atype/a_define_interfaces.ts'
 
 describe('basic functions', () => {
     test(`sortAndValidateOptions`, () => {
@@ -37,21 +38,18 @@ describe('basic functions', () => {
         expect(extractValues({value: 100, text: "A"})).toEqual([100])
         expect(extractValues([{value: 100, text: "A"}, {value: 1001, text: "A1"}])).toEqual([100, 1001])
     })
-
-
 })
-
 
 describe('basic normalize', () => {
     const basicWant = '[[{"value":"female","text":"女","key":0,"pid":null,"prefix":"","suffix":"","inherit":false,"comment":"","virtual":false},{"value":"male","text":"男","key":1,"pid":null,"prefix":"","suffix":"","inherit":false,"comment":"","virtual":false}]]'
     test(`normalizeDictData`, () => {
-        const data = {male: '男', female: '女'}
+        const data: Dict<string> = {male: '男', female: '女'}
         expect(JSON.stringify(normalizeDictData(data))).toBe(basicWant)
         expect(JSON.stringify(normalizeSelectGroupData(data))).toBe(basicWant)
     })
 
     test(`normalizeValueTextPairsData`, () => {
-        const data = [{female: '女'}, {male: '男'}]
+        const data: Dict<string>[] = [{female: '女'}, {male: '男'}]
         expect(JSON.stringify(normalizeValueTextPairsData(data))).toBe(basicWant)
         expect(JSON.stringify(normalizeSelectGroupData(data))).toBe(basicWant)
     })

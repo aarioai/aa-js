@@ -2,12 +2,12 @@ import {describe, expect, test} from '@jest/globals';
 import {
     array_t,
     atypeAlias,
-    AtypeAlias,
     bigint_t,
     bool_t,
     class_t,
     date_t,
     detectAtype,
+    detectAtypeAlias,
     dict_t,
     function_t,
     map_t,
@@ -71,32 +71,32 @@ describe('atype', () => {
         expect(detectAtype({a: 1, b: 2n})).toBe(dict_t)
     })
 
-    test('atypeAlias', () => {
-        expect(atypeAlias([])).toBe(AtypeAlias[array_t])
-        expect(atypeAlias(true)).toBe(AtypeAlias[bool_t])
-        expect(atypeAlias(false)).toBe(AtypeAlias[bool_t])
+    test('detectAtypeAlias', () => {
+        expect(detectAtypeAlias([])).toEqual([array_t, atypeAlias(array_t)])
+        expect(detectAtypeAlias(true)).toEqual([bool_t, atypeAlias(bool_t)])
+        expect(detectAtypeAlias(false)).toEqual([bool_t, atypeAlias(bool_t)])
 
         class A {
         }
 
-        expect(atypeAlias(A)).toBe(AtypeAlias[class_t])
-        expect(atypeAlias(Date)).toBe(AtypeAlias[function_t])
-        expect(atypeAlias(new Date())).toBe(AtypeAlias[date_t])
-        expect(atypeAlias({})).toBe(AtypeAlias[dict_t])
-        expect(atypeAlias(0)).toBe(AtypeAlias[number_t])
+        expect(detectAtypeAlias(A)).toEqual([class_t, atypeAlias(class_t)])
+        expect(detectAtypeAlias(Date)).toEqual([function_t, atypeAlias(function_t)])
+        expect(detectAtypeAlias(new Date())).toEqual([date_t, atypeAlias(date_t)])
+        expect(detectAtypeAlias({})).toEqual([dict_t, atypeAlias(dict_t)])
+        expect(detectAtypeAlias(0)).toEqual([number_t, atypeAlias(number_t)])
 
         function f() {
         }
 
-        expect(atypeAlias(f)).toBe(AtypeAlias[function_t])
-        expect(atypeAlias(null)).toBe(AtypeAlias[null_t])
-        expect(atypeAlias(new Map())).toBe(AtypeAlias[map_t])
-        expect(atypeAlias(1n)).toBe(AtypeAlias[bigint_t])
-        expect(atypeAlias(new RegExp(/^\d+$/ig))).toBe(AtypeAlias[regexp_t])
-        expect(atypeAlias('')).toBe(AtypeAlias[string_t])
-        expect(atypeAlias('string')).toBe(AtypeAlias[string_t])
-        expect(atypeAlias(new Set())).toBe(AtypeAlias[set_t])
-        expect(atypeAlias(undefined)).toBe(AtypeAlias[undefined_t])
+        expect(detectAtypeAlias(f)).toEqual([function_t, atypeAlias(function_t)])
+        expect(detectAtypeAlias(null)).toEqual([null_t, atypeAlias(null_t)])
+        expect(detectAtypeAlias(new Map())).toEqual([map_t, atypeAlias(map_t)])
+        expect(detectAtypeAlias(1n)).toEqual([bigint_t, atypeAlias(bigint_t)])
+        expect(detectAtypeAlias(new RegExp(/^\d+$/ig))).toEqual([regexp_t, atypeAlias(regexp_t)])
+        expect(detectAtypeAlias('')).toEqual([string_t, atypeAlias(string_t)])
+        expect(detectAtypeAlias('string')).toEqual([string_t, atypeAlias(string_t)])
+        expect(detectAtypeAlias(new Set())).toEqual([set_t, atypeAlias(set_t)])
+        expect(detectAtypeAlias(undefined)).toEqual([undefined_t, atypeAlias(undefined_t)])
     })
 })
 

@@ -1,5 +1,5 @@
 import {buildURL, normalizeSearchParams, normalizeURLWithMethod, revertURLPathParams} from "./fn";
-import {
+import type {
     t_booln,
     t_char,
     t_float64,
@@ -37,18 +37,18 @@ import {
     uint64b,
     uint8
 } from "../../aa/atype/t_basic";
-import {t_params, t_searchparam, URLOptions} from './base'
+import type {t_params, t_searchparam, URLOptions} from './base';
 import SearchParams from './search_params'
-import {t_httpmethod} from '../../aa/atype/enums/http_method'
-import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
-import {MapCallbackFn} from '../maps/base'
-import {a_weekday, t_weekday} from '../../aa/atype/enums/weekday'
-import {t_path_param} from '../../aa/atype/enums/path_param'
+import type {t_httpmethod} from '../../aa/atype/enums/http_method';
+import {ASCEND, type SortFunc} from '../../aa/atype/a_define_funcs'
+import type {MapCallbackFn} from '../maps/base';
+import {a_weekday, type t_weekday} from '../../aa/atype/enums/weekday'
+import type {t_path_param} from '../../aa/atype/enums/path_param';
 
 
 export default class AaURL {
     name = 'aa-url'
-    method: t_httpmethod   // can be null
+    method: t_httpmethod | null  // can be null
     #tidy: boolean = true  // remove empty string value parameter, e.g. a=&b=10
 
     private readonly searchParams: SearchParams   // as URL interface
@@ -63,7 +63,7 @@ export default class AaURL {
     #password: string = ''
     #username: string = ''
 
-    #href: string
+    #href: string = ''
 
     /**
      * Creates an AaURL instance
@@ -293,11 +293,11 @@ export default class AaURL {
         this.searchParams.references.delete(name)
     }
 
-    getReference(name: string): [string, t_path_param] {
+    getReference(name: string): [string, t_path_param?] | undefined {
         return this.searchParams.references.get(name)
     }
 
-    forEachReference(callback: MapCallbackFn<[string, t_path_param]>, thisArg?: any) {
+    forEachReference(callback: MapCallbackFn<[string, t_path_param?]>, thisArg?: any) {
         this.#href = ''
         this.searchParams.references.forEach(callback, thisArg)
     }
@@ -340,7 +340,7 @@ export default class AaURL {
         if (!this.hasParam(key)) {
             return undefined
         }
-        const value = this.searchParams[key]
+        const value = this.searchParams.get(key)
         if (!cast) {
             return value as T
         }
@@ -348,83 +348,83 @@ export default class AaURL {
     }
 
     queryByte(key: string): t_char | undefined {
-        const value = this.query(key, a_char)
-        return value != '\0' ? value : undefined
+        const value = this.query<t_char>(key, a_char as any)
+        return value && value != '\0' ? value : undefined
     }
 
-    queryString(key: string): string {
+    queryString(key: string): string | undefined {
         return this.query(key, a_string)
     }
 
     queryInt64b(key: string): t_int64b | undefined {
-        return this.query(key, int64b)
+        return this.query(key, int64b as any)
     }
 
     querySafeInt(key: string): t_safeint | undefined {
-        return this.query(key, safeInt)
+        return this.query(key, safeInt as any)
     }
 
     queryInt32(key: string): t_int32 | undefined {
-        return this.query(key, int32)
+        return this.query(key, int32 as any)
     }
 
     queryInt24(key: string): t_int24 | undefined {
-        return this.query(key, int24)
+        return this.query(key, int24 as any)
     }
 
     queryInt16(key: string): t_int16 | undefined {
-        return this.query(key, int16)
+        return this.query(key, int16 as any)
     }
 
     queryInt8(key: string): t_int8 | undefined {
-        return this.query(key, int8)
+        return this.query(key, int8 as any)
     }
 
     queryUint64b(key: string): t_uint64b | undefined {
-        return this.query(key, uint64b)
+        return this.query(key, uint64b as any)
     }
 
     queryUint32(key: string): t_uint32 | undefined {
-        return this.query(key, uint32)
+        return this.query(key, uint32 as any)
     }
 
     queryUint24(key: string): t_uint24 | undefined {
-        return this.query(key, uint24)
+        return this.query(key, uint24 as any)
     }
 
     queryUint16(key: string): t_uint16 | undefined {
-        return this.query(key, uint16)
+        return this.query(key, uint16 as any)
     }
 
     queryUint8(key: string): t_uint8 | undefined {
-        return this.query(key, uint8)
+        return this.query(key, uint8 as any)
     }
 
     queryFloat64(key: string): t_float64 | undefined {
-        return this.query(key, float64)
+        return this.query(key, float64 as any)
     }
 
     queryFloat32(key: string): t_float64 | undefined {
-        return this.query(key, float32)
+        return this.query(key, float32 as any)
     }
 
     queryBool(key: string): boolean | undefined {
-        return this.query(key, a_bool)
+        return this.query(key, a_bool as any)
     }
 
     queryBooln(key: string): t_booln | undefined {
-        return this.query(key, a_booln)
+        return this.query(key, a_booln as any)
     }
 
     queryMillisecond(key: string): t_millisecond | undefined {
-        return this.query(key, safeInt)
+        return this.query(key, safeInt as any)
     }
 
     querySecond(key: string): t_second | undefined {
-        return this.query(key, safeInt)
+        return this.query(key, safeInt as any)
     }
 
-    queryWeekday(key: string): t_weekday {
+    queryWeekday(key: string): t_weekday | undefined {
         return this.query(key, a_weekday)
     }
 

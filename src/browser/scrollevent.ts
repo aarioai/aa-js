@@ -34,12 +34,12 @@ export default class AaScrollEvent {
         document.removeEventListener('scroll', this.scrollHandler)
     }
 
-    isAtTop(scrollTop: number, prevScrollTop: number, isAuto: boolean): boolean {
+    isAtTop(scrollTop: number, prevScrollTop: number): boolean {
         scrollTop = floatToInt(scrollTop)
         return scrollTop <= 1 && scrollTop <= floatToInt(prevScrollTop)
     }
 
-    isAtBottom(scrollTop: number, prevScrollTop: number, isAuto: boolean): boolean {
+    isAtBottom(scrollTop: number, prevScrollTop: number): boolean {
         scrollTop = floatToInt(scrollTop)
         const threshold = documentHeight() - window.innerHeight - 200  // close to bottom 200px
         return scrollTop >= threshold && scrollTop >= floatToInt(prevScrollTop)
@@ -93,7 +93,7 @@ export default class AaScrollEvent {
         this.onAutoScrolling = Math.abs(scrollTop - prevScrollTop) > 10
         const isAuto = this.isAutoScroll(scrollTop, prevScrollTop)
 
-        this.events.forEach((event, name) => {
+        this.events.forEach((event) => {
             if (event.pause) {
                 return CONTINUE
             }

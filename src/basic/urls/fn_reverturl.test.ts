@@ -1,4 +1,4 @@
-import {HASH_REF_NAME, URLBase, URLPathError} from './base'
+import {HASH_REF_NAME, type URLBase, URLPathError} from './base'
 import {describe, expect, test} from '@jest/globals'
 import {revertURLPathParams} from './fn'
 import SearchParams from './search_params'

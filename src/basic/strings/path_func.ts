@@ -1,5 +1,5 @@
 import {Panic} from "../../aa/atype/panic";
-import {Stringable} from '../../aa/atype/a_define_interfaces'
+import type {Stringable} from '../../aa/atype/a_define_interfaces';
 
 export function isWindowsAbsolutePath(path: string): boolean {
     return path ? /^[A-Za-z]:[\/\\]/.test(path) : false

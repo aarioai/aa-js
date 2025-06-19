@@ -1,16 +1,16 @@
-import {BaseRequestOptions, RequestImpl} from '../base/define_interfaces'
+import type {BaseRequestOptions, RequestImpl} from '../base/define_interfaces'
 import {AaRequest} from '../middleware/request'
 import AaCollection from '../../../basic/storage/collection'
-import {NormalizedUserToken, t_usertoken_key, UserToken, UserTokenAttach} from '../../../aa/atype/a_server_dto'
-import {CookieOptions, StorageImpl, StorageOptions} from '../../../basic/storage/define_types'
+import type {NormalizedUserToken, t_usertoken_key, UserToken, UserTokenAttach} from '../../../aa/atype/a_server_dto'
+import type {CookieOptions, StorageImpl, StorageOptions} from '../../../basic/storage/define_types'
 import AaStorageManager from '../../../basic/storage/manager'
 import AaDbLike from '../../../basic/storage/dblike'
 import {P_Logout} from '../../../aa/aconfig/const_param'
 import defaults from '../base/defaults'
-import {t_expires, t_second} from '../../../aa/atype/a_define'
+import type {t_expires, t_second} from '../../../aa/atype/a_define'
 import {MinutesInSecond, NO_EXPIRES, Second, Seconds} from '../../../aa/atype/a_define_units'
 import Registry from '../../../aa/aconfig/registry'
-import {Dict} from '../../../aa/atype/a_define_interfaces'
+import type {Dict} from '../../../aa/atype/a_define_interfaces'
 import {cloneDict} from '../../../aa/atype/clone'
 import {fillDict} from '../../../basic/maps/groups'
 import {AaMutex, E_DeadLock} from '../../../aa/calls/mutex'
@@ -37,10 +37,10 @@ export default class AaAuth {
         secure: location.protocol === 'https:'
     }
     private readonly tx = new AaMutex()
-    private userToken: NormalizedUserToken
+    private userToken: NormalizedUserToken | null = null
     private readonly registry: Registry
     #authTime: t_second = 0
-    #validated: boolean
+    #validated?: boolean
 
     constructor(registry: Registry, storageManager: AaStorageManager, r?: RequestImpl) {
         this.registry = registry
@@ -103,26 +103,26 @@ export default class AaAuth {
                     'code': refreshToken,
                 }
             })
-            const userToken = this.handleAuthed(data)
+            const userToken = this.handleAuthed(data!)
             if (!userToken) {
                 return [null, E_InvalidUserToken.widthDetail(data)]
             }
             return [userToken, null]
         } catch (err) {
-            err = aerror(err)
-            if (!err.isServerError()) {
+            const e = aerror(err as any)
+            if (!e.isServerError()) {
                 this.clear()
             }
-            log.test(err)
-            return [null, err]
+            log.test(e)
+            return [null, e]
         } finally {
             this.tx.unlock()
         }
     }
 
     async getOrRefreshUserToken(): Promise<[NormalizedUserToken | null, AError | null]> {
-        if (this.userToken) {
-            return [this.userToken, null]
+        if (!this.userToken) {
+            return [null, E_InvalidUserToken]
         }
         if (!this.userToken['refresh_token'] || !this.userToken.attach?.['refresh_api']) {
             return [null, E_MissingUserToken]
@@ -153,7 +153,7 @@ export default class AaAuth {
         if (err !== null) {
             return [null, aerror(err)]
         }
-        const options = this.packAuthorization(userToken)
+        const options = this.packAuthorization(userToken!)
         if (!options) {
             return [null, E_MissingUserToken]
         }
@@ -171,7 +171,7 @@ export default class AaAuth {
         if (!options) {
             return false
         }
-        const api = userToken.attach['validate_api']
+        const api = userToken.attach['validate_api']!
         if (!await this.tx.awaitLock(5 * Seconds)) {
             return false
         }
@@ -179,22 +179,24 @@ export default class AaAuth {
             this.validated = false
             await this.request.Request(api, options)
             this.validated = true
+            return true
         } catch (err) {
-            err = aerror(err)
-            if (!err.isServerError()) {
+            const e = aerror(err as any)
+            if (!e.isServerError()) {
                 this.clear()
             }
-            log.warn(`validate user token failed: ${err}`)
+            log.warn(`validate user token failed: ${e}`)
         } finally {
             this.tx.unlock()
         }
+        return false
     }
 
     saveUserToken(userToken: NormalizedUserToken | null) {
-        if (!userToken?.['access_token']) {
+        if (!userToken || !userToken['access_token']) {
             return
         }
-        const expiresIn = userToken['expires_in']
+        const expiresIn = userToken['expires_in']!
         if (this.enableCookie) {
             this.setUserTokenCookies(expiresIn, userToken, 'access_token', 'token_type')
         } else {
@@ -230,7 +232,7 @@ export default class AaAuth {
         if (ok || !userToken) {
             return
         }
-        await this.refresh(userToken['refresh_token'], userToken.attach['refresh_api'])
+        await this.refresh(userToken['refresh_token']!, userToken.attach!['refresh_api']!)
     }
 
     logout() {
@@ -241,18 +243,18 @@ export default class AaAuth {
         })
     }
 
-    private setUserTokenSession(expiresIn: t_expires, userToken: UserToken, ...keys: t_usertoken_key[]) {
-        const options: StorageOptions = {
-            expiresIn: expiresIn
-        }
-        for (const key of keys) {
-            if (key in userToken) {
-                this.sessionCollection.insert(key, userToken[key], options)
-            }
-        }
-    }
+    // private setUserTokenSession(expiresIn: t_expires, userToken: UserToken, ...keys: t_usertoken_key[]) {
+    //     const options: StorageOptions = {
+    //         expiresIn: expiresIn
+    //     }
+    //     for (const key of keys) {
+    //         if (key in userToken) {
+    //             this.sessionCollection.insert(key, userToken[key], options)
+    //         }
+    //     }
+    // }
 
-    private setUserTokenLocal(expiresIn: t_expires, userToken: UserToken, ...keys: t_usertoken_key[]) {
+    private setUserTokenLocal(expiresIn: t_expires, userToken: NormalizedUserToken, ...keys: t_usertoken_key[]) {
         const options: StorageOptions = {
             expiresIn: expiresIn
         }
@@ -263,11 +265,11 @@ export default class AaAuth {
         }
     }
 
-    private setUserTokenCookies(expires: t_expires, userToken: UserToken, ...keys: string[]) {
+    private setUserTokenCookies(expires: t_expires, userToken: NormalizedUserToken, ...keys: string[]) {
         const options = this.cookieOptions(expires)
         for (const key of keys) {
             if (key in userToken) {
-                this.cookie.setItem(key, userToken[key], options)
+                this.cookie.setItem(key, userToken[key as keyof typeof userToken], options)
             }
         }
     }
@@ -294,20 +296,20 @@ export default class AaAuth {
         return this.cookie.getItem(key) as T | null
     }
 
-    private loadStorageWithTTL<T = string>(key: t_usertoken_key): [T, t_expires] | null {
-        let result = this.localCollection.findWithTTL<T>(key)
-        if (result !== null && result !== undefined) {
-            return result
-        }
-        result = this.sessionCollection.findWithTTL<T>(key)
-        if (result !== null && result !== undefined) {
-            return result
-        }
-        return this.cookie.getItemWithTTL<T>(key)
-    }
+    // private loadStorageWithTTL<T = string>(key: t_usertoken_key): [T | null, t_expires] | null {
+    //     let result = this.localCollection.findWithTTL<T>(key)
+    //     if (result !== null && result !== undefined) {
+    //         return result
+    //     }
+    //     result = this.sessionCollection.findWithTTL<T>(key)
+    //     if (result !== null && result !== undefined) {
+    //         return result
+    //     }
+    //     return this.cookie.getItemWithTTL<T>(key)
+    // }
 
 
-    private getOrDefault<T = string>(data: UserToken, key: t_usertoken_key, defaultValue: T = null): T | null {
+    private getOrDefault<T = string>(data: UserToken, key: t_usertoken_key, defaultValue: T | null = null): T | null {
         if (data && key in data) {
             return data[key] as T
         }
@@ -328,9 +330,12 @@ export default class AaAuth {
     }
 
     private checkUserToken(userToken: NormalizedUserToken): [NormalizedUserToken | null, boolean] {
+        if (!this.userToken) {
+            return [null, false]
+        }
         const accessToken = this.userToken['access_token']
         const refreshToken = this.userToken['refresh_token']
-        const refreshAPI = this.userToken.attach['refresh_api']
+        const refreshAPI = this.userToken.attach?.['refresh_api']
         if (!accessToken && (!refreshToken || !refreshAPI)) {
             return [null, false]
         }

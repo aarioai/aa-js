@@ -1,4 +1,4 @@
-import {t_lowers, t_millisecond, t_second, t_uppers} from './a_define'
+import type {t_lowers, t_millisecond, t_second, t_uppers} from './a_define'
 import {a_string, floatToInt} from './t_basic'
 import {Second} from './a_define_units'
 

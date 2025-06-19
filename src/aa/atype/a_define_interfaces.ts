@@ -1,6 +1,7 @@
-export type Dict<T = unknown> = Record<string, T>  // same as {[key:string]:T
+export type DictKey = string | number
+export type Dict<V = unknown> = Record<string, V>  // same as {[key:string]:T
 
-export type AnyMap<T = unknown> = Map<string, T>
+export type AnyMap<V = unknown> = Map<string, V>
 export type StringMap = AnyMap<string>
 
 export interface ValueOf<T = number> {
@@ -9,17 +10,17 @@ export interface ValueOf<T = number> {
 
 
 export interface Marshallable<T = unknown> {
-    toJSON(): T    // Decimal.toJSON() => string, Percent.toJSON() => number
+    toJSON(): T | null    // Decimal.toJSON() => string, Percent.toJSON() => number
 }
 
-export interface ForEachIterable<T = number | string> {
-    forEach(fn: (value: unknown, key: T) => void, thisArg?: unknown): void
+export interface ForEachIterable<V = unknown, K = DictKey> {
+    forEach(fn: (value: V, key: K) => void, thisArg?: unknown): void
 }
 
-export interface ForEachCopyable<T = number | string> extends ForEachIterable<T> {
-    get(key: T): unknown
+export interface ForEachCopyable<V = unknown, K = DictKey> extends ForEachIterable<V, K> {
+    get(key: K): unknown
 
-    set(key: T, value: unknown): void
+    set(key: K, value: V): void
 }
 
 export interface ToStringable {
@@ -50,10 +51,20 @@ export type Builder<T> = new(...args: any[]) => T
  */
 export default abstract class Serializable {
     static deserialize(serialized: string): Serializable {
-        throw new Error(`${this.name} deserialization not implemented`)
+        throw new Error(`${this.name} deserialization not implemented. Serialized string: ${serialized}`);
     }
 
-    abstract serialize(): string
+    abstract serialize(): string | null
 }
 
 
+export function isSerializable(value: unknown): value is Serializable {
+    if (!value || typeof value !== 'object') {
+        return false
+    }
+    return value instanceof Serializable ||
+        ('serialize' in value && typeof value.serialize === 'function' &&
+            'constructor' in value &&
+            'deserialize' in (value as any).constructor &&
+            typeof (value as any).constructor.deserialize === 'function')
+}

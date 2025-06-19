@@ -4,11 +4,11 @@ import AaDbLike from '../basic/storage/dblike'
 import AaAuth from '../rpc/http/auth/auth'
 import {HoursInSecond, Seconds} from '../aa/atype/a_define_units'
 import {AaMutex} from '../aa/calls/mutex'
-import {HttpImpl} from '../rpc/http/base/define_interfaces'
-import {NormalizedVuserMetadata, t_vtype, Vuser, VuserMetadata} from './vuser'
-import {t_uint64b, t_url_pattern} from '../aa/atype/a_define'
+import type {HttpImpl} from '../rpc/http/base/define_interfaces'
+import type {NormalizedVuserMetadata, t_vtype, Vuser, VuserMetadata} from './vuser'
+import type {t_uint64b, t_url_pattern} from '../aa/atype/a_define'
 import {uint64b} from '../aa/atype/t_basic'
-import {StorageOptions} from '../basic/storage/define_types'
+import type {StorageOptions} from '../basic/storage/define_types'
 
 export default class AaVuserMetadata {
     readonly tableName = 'vuser_metadata'
@@ -17,7 +17,7 @@ export default class AaVuserMetadata {
         expiresIn: 6 * HoursInSecond,
     }
     #selectedVuid?: t_uint64b
-    #metadata: NormalizedVuserMetadata
+    #metadata?: NormalizedVuserMetadata
     private readonly tx = new AaMutex()
     private readonly auth: AaAuth
     private readonly collection: AaCollection
@@ -53,18 +53,18 @@ export default class AaVuserMetadata {
     }
 
     clear() {
-        this.#selectedVuid = null
-        this.#metadata = null
+        this.#selectedVuid = undefined
+        this.#metadata = undefined
         this.collection.drop()
     }
 
-    async metadata() {
+    async metadata(): Promise<NormalizedVuserMetadata> {
         if (!this.getMetadataAPI) {
             throw new Error('getMetadataAPI is missing')
         }
         const userToken = await this.auth.getOrRefreshUserToken()
-        if (userToken) {
-            return null
+        if (!userToken) {
+            throw new Error('user token is missing or expired')
         }
 
         // Load from cache
@@ -74,7 +74,7 @@ export default class AaVuserMetadata {
         }
 
         if (!await this.tx.awaitLock(5 * Seconds)) {
-            return null
+            throw new Error('dead lock')
         }
         return this.http.Request(this.getMetadataAPI, {mustAuth: true}).then(metadata => {
             return this.normalizeAndSave(metadata as VuserMetadata)
@@ -85,30 +85,31 @@ export default class AaVuserMetadata {
         })
     }
 
-    normalizeAndSave(metadata: VuserMetadata) {
+    normalizeAndSave(metadata: VuserMetadata): NormalizedVuserMetadata {
         this.#metadata = {
             vuser: metadata.vuser,
-            sub_vusers: metadata.sub_vusers ?? null,
+            sub_vusers: metadata.sub_vusers || null,
             selected_vuid: null,
         }
         this.collection.insertMany(metadata, this.collectionOptions)
+        return this.#metadata
     }
 
     vusers() {
         return this.metadata().then(metadata => {
-            return [metadata['vuser'],
-                ...(metadata['sub_vuser'] || [])
+            return [metadata!['vuser'],
+                ...(metadata!['sub_vusers'] || [])
             ]
         })
     }
 
     vuserAsVtype(vtype: t_vtype) {
         return this.metadata().then(metadata => {
-            const main = metadata['vuser']
+            const main = metadata!['vuser']
             if (!vtype || vtype === main['vtype']) {
                 return main
             }
-            const subs = metadata['sub_vusers']
+            const subs = metadata!['sub_vusers']
             if (!subs?.length) {
                 return null
             }
@@ -123,26 +124,26 @@ export default class AaVuserMetadata {
 
     mainVuser(): Promise<Vuser> {
         return this.metadata().then(metadata => {
-            return metadata['vuser']
+            return metadata!['vuser']
         })
     }
 
-    vuser(vuid: t_uint64b): Promise<Vuser | null> {
+    vuser(vuid: t_uint64b): Promise<Vuser> {
         return this.metadata().then(metadata => {
-            const main = metadata['vuser']
+            const main = metadata!['vuser']
             if (!vuid || vuid === main['vuid']) {
                 return main
             }
             const subs = metadata['sub_vusers']
             if (!subs?.length) {
-                return null
+                throw new Error(`vuid ${vuid} does not exist`)
             }
             for (const sub of subs) {
                 if (sub['vuid'] === vuid) {
                     return sub
                 }
             }
-            return null
+            throw new Error(`vuid ${vuid} does not exist`)
         })
     }
 

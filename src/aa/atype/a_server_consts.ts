@@ -1,5 +1,6 @@
 // a nil function
-import {
+// a nil function
+import type {
     t_booln,
     t_date,
     t_datetime,

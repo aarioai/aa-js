@@ -41,7 +41,7 @@ export function trimArray<T = unknown>(arr: T[], trimable: (v: T) => boolean = v
  * concat([1], null, [2]) // [1, 2]
  * concat([], [1, 2])     // [1, 2]
  */
-export function concat(...arrays: (unknown[] | undefined)[]): unknown[] {
+export function concat(...arrays: (unknown[] | undefined | null)[]): unknown[] {
     let result: unknown[] = []
     for (const arr of arrays) {
         if (!arr) {
@@ -54,7 +54,7 @@ export function concat(...arrays: (unknown[] | undefined)[]): unknown[] {
     return result
 }
 
-export function concatInType<T>(cast: (v: unknown) => T, ...args: (unknown[] | undefined)[]): T[] {
+export function concatInType<T, F = unknown>(cast: (v?: F) => T, ...args: (unknown[] | undefined)[]): T[] {
     let arr = concat(...args)
     if (!arr.length) {
         return []

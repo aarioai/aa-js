@@ -1,12 +1,11 @@
-import {MapCallbackFn} from '../maps/base'
-import {BREAK} from '../../aa/atype/a_define_signals'
+import {BREAK, type t_loopsignal} from '../../aa/atype/a_define_signals'
 import {decodeStorageValue, encodeStorageValue} from './fn'
-import {StorageImpl, StorageOptions} from './define_types'
+import type {StorageImpl, StorageOptions} from './define_types'
 import {NO_EXPIRES, Second} from '../../aa/atype/a_define_units'
 import {floatToInt} from '../../aa/atype/t_basic'
-import {t_expires, t_second} from '../../aa/atype/a_define'
+import type {t_expires, t_second} from '../../aa/atype/a_define'
 import {matchAny, normalizeArrayArguments} from '../arrays/fn'
-import {Dict} from '../../aa/atype/a_define_interfaces'
+import type {Dict} from '../../aa/atype/a_define_interfaces'
 
 export default class AaStorageEngine implements StorageImpl {
     readonly name = 'AaStorageEngine'
@@ -27,7 +26,7 @@ export default class AaStorageEngine implements StorageImpl {
     clear(): void {
         for (let i = 0; i < this.storage.length; i++) {
             const key = this.storage.key(i)
-            if (this.unclearable.has(key)) {
+            if (key === null || this.unclearable.has(key)) {
                 continue
             }
             const encodedValue = this.storage.getItem(key)
@@ -42,9 +41,12 @@ export default class AaStorageEngine implements StorageImpl {
         }
     }
 
-    forEach(fn: MapCallbackFn<unknown, string, StorageImpl>, thisArg?: unknown): void {
+    forEach(fn: (value: unknown, key: string) => void | t_loopsignal, thisArg?: unknown): void {
         for (let i = 0; i < this.storage.length; i++) {
             const key = this.storage.key(i)
+            if (key === null) {
+                continue
+            }
             const value = this.getItem(key)
             const result = thisArg ? fn.call(thisArg, value, key) : fn(value, key)
             if (result === BREAK) {

@@ -1,6 +1,6 @@
-import {t_httpmethod} from '../../../aa/atype/enums/http_method'
-import {Dict} from '../../../aa/atype/a_define_interfaces'
-import {TypedArray} from '../../../aa/atype/a_define'
+import type {t_httpmethod} from '../../../aa/atype/enums/http_method'
+import type {Dict} from '../../../aa/atype/a_define_interfaces'
+import type {TypedArray} from '../../../aa/atype/a_define'
 
 
 // https://developer.mozilla.org/en-US/docs/Web/API/RequestInit

@@ -1,4 +1,4 @@
-import {t_alphabetical, t_alphadigits, t_digits, t_lowers, t_safeint, t_uppers} from './a_define'
+import type {t_alphabetical, t_alphadigits, t_digits, t_lowers, t_safeint, t_uppers} from './a_define'
 
 export const LF = '\n'
 

@@ -2,7 +2,7 @@ import {DATE_PATTERN, DATETIME_PATTERN, ZERO_DATE, ZERO_DATETIME} from "../atype
 import aconfig from "../aconfig/aconfig"
 import {TZDate} from "@date-fns/tz"
 import {format} from "date-fns";
-import {t_date, t_datetime, t_timestamp} from '../atype/a_define'
+import type {t_date, t_datetime, t_timestamp} from '../atype/a_define';
 
 
 export function isZeroDate(s: string | t_timestamp): boolean {
@@ -21,9 +21,6 @@ export function isZeroDate(s: string | t_timestamp): boolean {
 
 
 export function tzdate(s: string | t_timestamp | Date | TZDate, timezone?: string): TZDate {
-    if (!s) {
-        return null
-    }
     if (!timezone) {
         timezone = aconfig.timezone
     }
@@ -49,7 +46,7 @@ export function tzdate(s: string | t_timestamp | Date | TZDate, timezone?: strin
  *  a_date('2023-10-10T00:00:00.000Z') // 2023-10-10
  *  a_date(new Date('2012-01-01 12:00:00')) // 2012-01-01
  */
-export function a_date(s: string | t_timestamp | Date | TZDate, timezone?: string): t_date {
+export function a_date(s: string | t_timestamp | Date | TZDate | null | undefined, timezone?: string): t_date {
     if (!s || (typeof s === 'string' && isZeroDate(s))) {
         return aconfig.minDate
     }

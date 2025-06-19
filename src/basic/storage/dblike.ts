@@ -1,8 +1,8 @@
 import AaStorageEngine from './engine'
-import {DbLikeImpl, InsertCondition, StorageOptions} from './define_types'
-import {Dict} from '../../aa/atype/a_define_interfaces'
+import type {DbLikeImpl, InsertCondition, StorageOptions} from './define_types'
+import type {Dict} from '../../aa/atype/a_define_interfaces'
 import {matchAny} from '../arrays/fn'
-import {t_expires} from '../../aa/atype/a_define'
+import type {t_expires} from '../../aa/atype/a_define'
 
 export default class AaDbLike implements DbLikeImpl {
     readonly storage: AaStorageEngine

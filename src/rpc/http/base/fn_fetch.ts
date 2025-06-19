@@ -1,13 +1,14 @@
 // https://developer.mozilla.org/en-US/docs/Web/API/RequestInit
 import json from '../../../aa/atype/json'
-import {t_httpmethod} from '../../../aa/atype/enums/http_method'
-import {Dict} from '../../../aa/atype/a_define_interfaces'
+import type {t_httpmethod} from '../../../aa/atype/enums/http_method'
+import type {Dict} from '../../../aa/atype/a_define_interfaces'
 import {fillDict} from '../../../basic/maps/groups'
 import defaults from './defaults'
-import {FetchBaseOptions, FetchOptions, t_fetchbody} from './define_fetch'
+import type {FetchBaseOptions, FetchOptions, t_fetchbody} from './define_fetch'
 
 export function normalizeHeaders(method: t_httpmethod, headers?: Headers | Dict): Headers {
-    const defaultHeaders = fillDict<string>({}, defaults.headers[method], defaults.headers.common)
+    const h = defaults.headers?.[method as keyof typeof defaults.headers] || {}
+    const defaultHeaders = fillDict<string>({}, h, defaults.headers.common)
     const newHeaders = headers ? new Headers(headers as any) : new Headers()
     for (const [key, value] of Object.entries(defaultHeaders)) {
         if (!newHeaders.has(key)) {
@@ -37,7 +38,7 @@ export function normalizeFetchOptions(source: FetchBaseOptions, method?: t_httpm
             continue
         }
         if (value !== null && value !== undefined && value !== '') {
-            result[key] = value
+            result[key as keyof typeof result] = value
         }
     }
     return result

@@ -1,6 +1,6 @@
 import aconfig from './aa/aconfig/aconfig'
 import httpDefaults from './rpc/http/base/defaults'
-import {HttpImpl} from './rpc/http/base/define_interfaces'
+import type {HttpImpl} from './rpc/http/base/define_interfaces'
 import AaFetch from './rpc/http/afetch/fetch'
 import AaAuth from './rpc/http/auth/auth'
 import Registry from './aa/aconfig/registry'

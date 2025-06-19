@@ -1,27 +1,24 @@
-import {path_param_string_t, t_path_param} from '../../aa/atype/enums/path_param'
+import {path_param_string_t, type t_path_param} from '../../aa/atype/enums/path_param'
 import AaMap from '../maps/map'
-import {t_params} from './base'
+import type {t_params} from './base'
 import {parseURLSearch} from './fn'
-import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
+import {ASCEND, type SortFunc} from '../../aa/atype/a_define_funcs'
 
-export default class SearchReference<V = [string, t_path_param]> extends AaMap<V> {
+export default class SearchReference<V = [string, t_path_param?]> extends AaMap<V> {
     [Symbol.toStringTag] = 'SearchReference'
     sortFunc: SortFunc = ASCEND
 
     constructor(source?: t_params) {
         super()
-        if (!source) {
-            return
-        }
         this.setMany(source)
     }
 
-    readonly cast = (v: [string, t_path_param?]): V => {
-        if (!v[1]) {
-            v[1] = path_param_string_t
-        }
-        return v as V
-    }
+    // readonly cast = (value: unknown): V => {
+    //     const v = Array.isArray(value) ? value : [value]
+    //     const t = v.length === 2 ? v[1] as t_path_param : path_param_string_t
+    //
+    //     return [v[0] || '', t] as V
+    // }
 
     /**
      * Sets parameters from a search string
@@ -40,7 +37,7 @@ export default class SearchReference<V = [string, t_path_param]> extends AaMap<V
 
     set(key: string, value: [string, t_path_param?] | undefined): this {
         if (!value) {
-            return
+            return this
         }
         super.set(key, value)
         return this
@@ -54,8 +51,7 @@ export default class SearchReference<V = [string, t_path_param]> extends AaMap<V
             this.setFromSearch(source)
             return this
         }
-
-        super.setMany(source)
+        super.setMany(source as any)
         return this
     }
 
@@ -72,19 +68,24 @@ export default class SearchReference<V = [string, t_path_param]> extends AaMap<V
         return this
     }
 
-    referrers(reference: string): [string, t_path_param][] {
-        const result: [string, t_path_param][] = []
-        this.forEach((ref, referer) => {
-            if (ref[0] === reference) {
-                result.push([referer, ref[1]])
+    referrers(reference: string): V[] {
+        const result: V[] = []
+        super.forEach((ref, referer) => {
+            const r: [string, t_path_param?] = ref as any
+            if (r[0] === reference) {
+                const v: [string, t_path_param?] = [referer]
+                if (r.length === 2) {
+                    v.push(r[1] as t_path_param)
+                }
+                result.push(v as V)
             }
         })
         return result
     }
 
-
-    getReference(name: string): string {
-        return this.get(name)[0]
+    getReference(name: string): string | undefined {
+        const value = super.get(name)
+        return value ? (value as any)[0] : undefined
     }
 
     toString(): string {
@@ -97,7 +98,7 @@ export default class SearchReference<V = [string, t_path_param]> extends AaMap<V
         }
         let s = ''
         for (const key of keys) {
-            const value = this.get(key)
+            const value = this.getReference(key) || ''
             s += `&${key}=${value}`
         }
         if (!s) {

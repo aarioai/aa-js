@@ -1,4 +1,4 @@
-import {t_int, t_path, t_uint8} from './a_define'
+import type {t_int, t_path, t_uint8} from './a_define'
 
 export type ImagePattern = {
     height: t_int,

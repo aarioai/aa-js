@@ -1,12 +1,13 @@
 import {parseHTMLBody} from '../browser/doms/doms'
 import {forEachDescendantNodes, transferChildNodes} from '../browser/doms/dom_descendants'
-import {NodeSelector} from '../browser/doms/define'
+import type {NodeSelector} from '../browser/doms/define'
 import {ImgSrc} from '../source/media/imgsrc'
 import {replaceAll} from '../basic/strings/strings'
 import {AudioSrc} from '../source/media/audiosrc'
 import {VideoSrc} from '../source/media/videosrc'
 import log from '../aa/alog/log'
 import {parseAttrStyle} from '../browser/doms/attributes'
+import type {Dict} from '../aa/atype/a_define_interfaces.ts'
 
 
 export type AudioSrcBuilder = (path: string) => AudioSrc
@@ -16,7 +17,7 @@ export type VideoSrcBuilder = (path: string) => VideoSrc
 export default class AaEditor {
     anchorHrefHandler?: (href: string) => string
 
-    submittableAttributeWhitelist = {
+    submittableAttributeWhitelist: Dict<string[]> = {
         default: ['class', 'contenteditable', 'style'],
         IMG: ['alt', 'data-path', 'width', 'height'],
         TABLE: [],
@@ -24,7 +25,7 @@ export default class AaEditor {
         PRE: ['data-language'],
     }
 
-    temporaryAttributeWhitelist = {
+    temporaryAttributeWhitelist: Dict<string[]> = {
         default: ['title'],
         IMG: ['src'],
     }
@@ -57,6 +58,7 @@ export default class AaEditor {
 
     // @TODO
     decodeAudio(audio: HTMLAudioElement) {
+        console.error("unimplemented decodeAudio", audio)
         return
     }
 
@@ -69,10 +71,12 @@ export default class AaEditor {
         }
 
         const imgsrc = this.imgsrcBuilder(path || src!)
-        if (!imgsrc) return
+        if (!imgsrc) {
+            return
+        }
 
         img.dataset.path = imgsrc.path
-        const fa = imgsrc.resize()
+        const fa = imgsrc.resize()!
         img.setAttribute("src", fa.url)
         if (!img.hasAttribute('width')) {
             img.setAttribute("width", String(fa.css.width))
@@ -85,6 +89,7 @@ export default class AaEditor {
 
     // @TODO
     decodeVideo(video: HTMLVideoElement) {
+        console.error("unimplemented decodeVideo", video)
     }
 
     decodeContent(
@@ -202,7 +207,7 @@ export default class AaEditor {
             ["\n", "<br>"],
         ])
 
-        return s.replace(/<fuzzy>\s*\d+\s*:\s*(\d+)\s*<\/fuzzy>/ig, (m, l) => tag.repeat(parseInt(l)))
+        return s.replace(/<fuzzy>\s*\d+\s*:\s*(\d+)\s*<\/fuzzy>/ig, (_, l) => tag.repeat(parseInt(l)))
     }
 
 
@@ -214,8 +219,7 @@ export default class AaEditor {
             ...this.temporaryAttributeWhitelist
         }
 
-        return whitelist.default?.includes(attr.name) ||
-            whitelist[tagName]?.includes(attr.name) || false
+        return whitelist.default?.includes(attr.name) || whitelist[tagName]?.includes(attr.name) || false
     }
 
     textToHtml(s: string): string {
@@ -228,7 +232,7 @@ export default class AaEditor {
             }
         }
 
-        result = result.replace(/&#(\d{1,3});/gi, (match, numStr) =>
+        result = result.replace(/&#(\d{1,3});/gi, (_, numStr) =>
             String.fromCharCode(parseInt(numStr, 10)))
 
         return replaceAll(result, [
@@ -354,8 +358,8 @@ export default class AaEditor {
         const src = node.getAttribute('src')
 
         if (src) {
-            let newSrc: string
-            let srcPath: string
+            let newSrc: string = ''
+            let srcPath: string = ''
             switch (node.tagName) {
                 case 'AUDIO':
                     if (this.audiosrcBuilder) {
@@ -368,7 +372,7 @@ export default class AaEditor {
                     if (this.imgsrcBuilder) {
                         const imgsrc = this.imgsrcBuilder(src)
                         srcPath = imgsrc.path
-                        newSrc = imgsrc.resize().url
+                        newSrc = imgsrc.resize()!.url
                     }
                     break
                 case 'VIDEO':

@@ -1,4 +1,4 @@
-import {Dict, Marshallable} from "./a_define_interfaces";
+import type {Dict, Marshallable} from "./a_define_interfaces";
 import {convertJSONMap, JsonMarshalError, marshalReviver, unmarshalReviver} from './json_base'
 
 
@@ -11,7 +11,7 @@ export default class json {
      *  Marshal(null)           // null
      *  Marshal(undefined)      // null
      */
-    static Marshal(o: object | Marshallable<string> | undefined): string | null {
+    static Marshal(o: object | Marshallable<string> | undefined | null): string | null {
         if (o === undefined || o === null) {
             return null
         }
@@ -39,7 +39,7 @@ export default class json {
      *  Unmarshal(null)         // null
      *  Unmarshal('invalid')    // null
      */
-    static Unmarshal(input: string | undefined | Dict | Array<unknown>): object {
+    static Unmarshal(input: string | undefined | Dict | Array<unknown> | null): object | null {
         if (!input) {
             return null
         }

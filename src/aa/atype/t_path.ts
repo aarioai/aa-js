@@ -1,4 +1,4 @@
-import {t_filetype} from './a_define'
+import type {t_filetype} from './a_define'
 
 /**
  * Formats a file type string

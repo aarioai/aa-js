@@ -1,9 +1,9 @@
 import AaCookie from './cookie'
 import AaStorageEngine from './engine'
-import {StorageImpl} from './define_types'
+import type {StorageImpl} from './define_types'
 
 export default class AaStorageManager {
- 
+
     readonly cookie: StorageImpl
     readonly local: AaStorageEngine
     readonly session: AaStorageEngine

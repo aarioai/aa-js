@@ -1,4 +1,4 @@
-import {t_enum, t_uint64b} from '../aa/atype/a_define'
+import type {t_enum, t_uint64b} from '../aa/atype/a_define'
 
 export type t_vtype = t_enum
 
@@ -16,6 +16,6 @@ export type VuserMetadata = {
 
 export type NormalizedVuserMetadata = {
     vuser: Vuser
-    sub_vusers: Vuser[]
+    sub_vusers: Vuser[] | null
     selected_vuid: t_uint64b | null
 }

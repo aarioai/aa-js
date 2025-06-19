@@ -1,21 +1,22 @@
 import {describe, test} from '@jest/globals'
 import SearchParams from './search_params'
 import json from '../../aa/atype/json'
+import type {Dict} from '../../aa/atype/a_define_interfaces.ts'
 
 describe('SearchParams', () => {
 
     function testSearchParams(p: SearchParams) {
-        const data = {}
+        const data: Dict<string> = {}
         for (const [key, value] of p) {
             data[key] = value
         }
         expect(json.Marshal(data)).toBe(p.toJSON())
 
-        const entries = {}
+        const entries: Dict<string> = {}
         p.forEach((value, key) => {
             entries[key] = value
         })
- 
+
         expect(json.Marshal(entries)).toBe(p.toJSON())
 
         expect(p.has('test')).toBe(false)

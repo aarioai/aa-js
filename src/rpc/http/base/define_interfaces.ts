@@ -1,7 +1,8 @@
-import {t_millisecond, t_params, t_url_pattern} from '../../../aa/atype/a_define'
-import {BaseOptions, FetchBaseOptions} from './define_fetch'
+import type {BaseOptions, FetchBaseOptions} from './define_fetch'
 import AaURL from '../../../basic/urls/url'
-import {ResponseBodyData} from '../../../aa/atype/a_server_dto'
+import type {ResponseBodyData} from '../../../aa/atype/a_server_dto'
+import type {t_millisecond, t_url_pattern} from '../../../aa/atype/a_define'
+import type {t_params} from '../../../basic/urls/base.ts'
 
 export interface BaseRequestOptions extends BaseOptions {
     baseURL?: string
@@ -38,15 +39,15 @@ export interface RequestHooks extends BaseRequestHooks {
 }
 
 export interface RequestImpl {
-    request<T = ResponseBodyData>(r: BasicRequestStruct, hooks?: BaseRequestHooks): Promise<T>
+    request<T = ResponseBodyData>(r: BasicRequestStruct, hooks?: BaseRequestHooks): Promise<T | null>
 
-    Request<T = ResponseBodyData>(api: t_url_pattern, options?: BaseRequestOptions, hooks?: BaseRequestHooks): Promise<T>
+    Request<T = ResponseBodyData>(api: t_url_pattern, options?: BaseRequestOptions, hooks?: BaseRequestHooks): Promise<T | null>
 }
 
 export interface HttpImpl {
-    request<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T>
+    request<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T | null>
 
-    Request<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T>
+    Request<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T | null>
 
     head(r: RequestStruct, hooks?: RequestHooks): Promise<null>
 

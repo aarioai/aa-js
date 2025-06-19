@@ -1,13 +1,13 @@
-import {HttpImpl, RequestHooks, RequestImpl, RequestOptions, RequestStruct} from '../base/define_interfaces'
+import type {HttpImpl, RequestHooks, RequestImpl, RequestOptions, RequestStruct} from '../base/define_interfaces'
 import AaAuth from '../auth/auth'
-import {ResponseBodyData} from '../../../aa/atype/a_server_dto'
+import type {ResponseBodyData} from '../../../aa/atype/a_server_dto'
 import {normalizeRequestOptions} from '../base/fn'
 import {fillDict, union} from '../../../basic/maps/groups'
-import {Dict} from '../../../aa/atype/a_define_interfaces'
+import type {Dict} from '../../../aa/atype/a_define_interfaces'
 import {aerror} from '../../../aa/aerror/fn'
 import {E_OK, E_Unauthorized} from '../../../aa/aerror/errors'
-import {t_httpmethod} from '../../../aa/atype/enums/http_method'
-import {t_url_pattern} from '../../../aa/atype/a_define'
+import type {t_httpmethod} from '../../../aa/atype/enums/http_method'
+import type {t_url_pattern} from '../../../aa/atype/a_define'
 
 export default class AaFetch implements HttpImpl {
     readonly auth: AaAuth
@@ -25,7 +25,7 @@ export default class AaFetch implements HttpImpl {
     }
 
 
-    request<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T> {
+    request<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T | null> {
         return this.baseRequest.request<T>(r, hooks).catch(err => {
             err = aerror(err)
             if (err.isFailedAndSeeOther()) {
@@ -41,7 +41,7 @@ export default class AaFetch implements HttpImpl {
         })
     }
 
-    Request<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions): Promise<T> {
+    Request<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions): Promise<T | null> {
         return this.normalizeOptions(api, options).then(r => this.request<T>(r))
     }
 
@@ -56,7 +56,7 @@ export default class AaFetch implements HttpImpl {
 
     get<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T> {
         r.method = 'GET'
-        return this.request<T>(r, hooks)
+        return this.request<T>(r, hooks) as Promise<T>
     }
 
     Get<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {
@@ -65,7 +65,7 @@ export default class AaFetch implements HttpImpl {
 
     delete<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T> {
         r.method = 'DELETE'
-        return this.request<T>(r, hooks)
+        return this.request<T>(r, hooks) as Promise<T>
     }
 
     Delete<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {
@@ -74,7 +74,7 @@ export default class AaFetch implements HttpImpl {
 
     post<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T> {
         r.method = 'POST'
-        return this.request<T>(r, hooks)
+        return this.request<T>(r, hooks) as Promise<T>
     }
 
     Post<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {
@@ -83,7 +83,7 @@ export default class AaFetch implements HttpImpl {
 
     put<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T> {
         r.method = 'PUT'
-        return this.request<T>(r, hooks)
+        return this.request<T>(r, hooks) as Promise<T>
     }
 
     Put<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {
@@ -92,7 +92,7 @@ export default class AaFetch implements HttpImpl {
 
     patch<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T> {
         r.method = 'PATCH'
-        return this.request<T>(r, hooks)
+        return this.request<T>(r, hooks) as Promise<T>
     }
 
     Patch<T = ResponseBodyData>(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<T> {

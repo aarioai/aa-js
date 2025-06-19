@@ -48,12 +48,16 @@ export const string_t: t_atype = ':string'
 export const regexp_t: t_atype = ':regexp'
 export const undefined_t: t_atype = ':undefined'
 
-
-export function atypeAlias(value: unknown): string | unknown {
-    return AtypeAlias[detectAtype(value)]
+export function isAtype(key: t_atype | string): key is keyof typeof AtypeAlias {
+    return key in AtypeAlias
 }
 
-export function objectAtype(v: object): t_atype {
+export function isAtypeAlias(s: string): boolean {
+    return ALIASED_ATYPES.includes(s as any)
+}
+
+
+export function objectAtype(v: object | null): t_atype {
     if (v === null) {
         return null_t
     }
@@ -111,7 +115,7 @@ export function isNonInstantiatedClass(v: unknown): boolean {
         v()   // Classes throw when called without 'new'
         return false
     } catch (err) {
-        return err.message.includes('class constructor')
+        return (err as Error).message.includes('class constructor')
     }
 }
 
@@ -149,9 +153,19 @@ export function detectAtype(v: unknown): t_atype {
     return typeof v === "object" ? objectAtype(v) : undefined_t
 }
 
-export function detectAtypeAlias(v: unknown): [t_atype, t_atype_alias] {
-    const t = detectAtype(v)
-    return [t, AtypeAlias[t] ?? undefined]
+export function detectAtypeAlias(value: unknown): [t_atype, t_atype_alias] {
+    const t = detectAtype(value)
+    if (isAtype(t)) {
+        return [t, AtypeAlias[t]]
+    }
+    return [t, ""]
+}
+
+export function atypeAlias(t: t_atype | string): t_atype_alias {
+    if (isAtype(t)) {
+        return AtypeAlias[t]
+    }
+    return ""
 }
 
 export function aliasToAtype(alias: t_atype_alias): t_atype {
@@ -160,13 +174,7 @@ export function aliasToAtype(alias: t_atype_alias): t_atype {
             return t
         }
     }
-    return undefined
+    return undefined_t
 }
 
-export function isAtype(s: string): s is t_atype {
-    return AtypeAlias[s] !== undefined
-}
 
-export function isAtypeAlias(s: string): boolean {
-    return ALIASED_ATYPES.includes(s as any)
-}

@@ -7,7 +7,7 @@ set "ROOT=%cd%"
 
 :: init package.json
 if not exist "package.json" (
-    npm init
+    echo "{}" > "package.json"
 )
 
 :: node js must support structuredClone

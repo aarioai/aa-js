@@ -1,5 +1,5 @@
-import {ValueOf} from "../../aa/atype/a_define_interfaces"
-import {t_float64, t_vmoney} from "../../aa/atype/a_define";
+import type {ValueOf} from "../../aa/atype/a_define_interfaces";
+import type {t_float64, t_vmoney} from "../../aa/atype/a_define";
 import {X_VMONEY} from "../../aa/atype/a_server_consts";
 import {a_money, divideBigint} from "../../aa/atype/t_decimal";
 

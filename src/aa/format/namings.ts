@@ -1,5 +1,5 @@
 export function isSnakeCase(s: string): boolean {
-    return s && /^[a-z](?:[a-z0-9]+)?(?:_[a-z0-9]+)*$/.test(s)
+    return !!s && /^[a-z](?:[a-z0-9]+)?(?:_[a-z0-9]+)*$/.test(s)
 }
 
 // Converts to UPPER_UNDERSCORE_CASE/PascalCase/camelCase/kebab-case to snake_case (or underscore_case)
@@ -17,7 +17,7 @@ export function snakeCase(s: string): string {
 
 
 export function isUpperCase(s: string): boolean {
-    return s && /^[A-Z](?:[A-Z0-9]+)?(?:_[A-Z0-9]+)*$/.test(s)
+    return !!s && /^[A-Z](?:[A-Z0-9]+)?(?:_[A-Z0-9]+)*$/.test(s)
 }
 
 
@@ -42,12 +42,12 @@ export function upperCase(s: string): string {
  */
 export function isCamelCase(s: string, strict: boolean = false): boolean {
     const pattern = strict ? /^[a-z]+(?:[A-Z][a-z0-9]+)*$/ : /^[a-z][a-z0-9]*([A-Z][a-z0-9]+)*$/
-    return s && pattern.test(s)
+    return !!s && pattern.test(s)
 }
 
 export function isPascalOrCamel(s: string, strict: boolean = false): boolean {
     const pattern = strict ? /^[a-zA-Z]+(?:[A-Z][a-z0-9]+)*$/ : /^[a-zA-Z][a-z0-9]*([A-Z][a-z0-9]+)*$/
-    return s && pattern.test(s)
+    return !!s && pattern.test(s)
 }
 
 // Converts UPPER_UNDERSCORE_CASE/snake_case/PascalCase/kebab-case to camelCase
@@ -71,7 +71,7 @@ export function camelCase(s: string): string {
  */
 export function isPascalCase(s: string, strict: boolean = false): boolean {
     const pattern = strict ? /^[A-Z]+(?:[a-z][a-z0-9]*)*$/ : /^[A-Z][a-z0-9]*([A-Z][a-z0-9]+)*$/
-    return s && pattern.test(s)
+    return !!s && pattern.test(s)
 }
 
 

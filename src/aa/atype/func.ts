@@ -54,13 +54,13 @@ export function len(value: unknown): number {
  * @example
  * typeArray([1,"3","5"], a_number)
  */
-export function typeArray<T>(cast: (value: unknown) => T, arr: unknown[]): T[] {
+export function typeArray<T, F = unknown>(cast: (value?: F) => T, arr: unknown[]): T[] {
     if (arr.length === 0) {
         return []
     }
     let result: T[] = new Array(arr.length)
     for (let i = 0; i < arr.length; i++) {
-        result[i] = cast(arr[i])
+        result[i] = cast(arr[i] as F)
     }
     return result
 }
@@ -74,5 +74,5 @@ export function numberArray(arr: unknown[]): number[] {
 }
 
 export function boolArray(arr: unknown[]): boolean[] {
-    return arr.map(v => v && a_bool(v as any))
+    return arr.map(v => v && a_bool(v as any)) as boolean[]
 }

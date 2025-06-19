@@ -1,10 +1,10 @@
-import {AaMapImpl, IterableKV, KV, MapCallbackFn} from './base'
+import type {AaMapImpl, IterableKV, KV, MapCallbackFn} from './base'
 import {mapizeKV} from './kv'
-import {BREAK, CONTINUE} from '../../aa/atype/a_define_signals'
+import {BREAK} from '../../aa/atype/a_define_signals'
 import {compareAny} from './groups'
 import json from '../../aa/atype/json'
 import {forEach} from './iterates'
-import Serializable, {AnyMap} from '../../aa/atype/a_define_interfaces'
+import Serializable, {type AnyMap} from '../../aa/atype/a_define_interfaces'
 
 export default class AaMap<V = unknown> extends Serializable implements AaMapImpl<V> {
     [Symbol.toStringTag] = 'AaMap'
@@ -12,17 +12,17 @@ export default class AaMap<V = unknown> extends Serializable implements AaMapImp
     readonly map: AnyMap<V>
     cast?: (value: unknown) => V
 
-    constructor(source?: KV<V>) {
+    constructor(source?: KV<V, string>) {
         super()
-        this.map = mapizeKV(source)
+        this.map = mapizeKV<V, string>(source)
     }
 
     get size(): number {
         return this.map.size
     }
 
-    static deserialize<V>(s: string): AaMap<V> {
-        return new AaMap<V>(json.Unmarshal(s) as KV<V>)
+    static deserialize<V, T extends AaMap<V>, G extends KV<V> = KV<V>>(this: new (source?: G) => T, s: string): T {
+        return new this(json.Unmarshal(s) as G)
     }
 
     entries(): MapIterator<[string, V]> {
@@ -59,7 +59,7 @@ export default class AaMap<V = unknown> extends Serializable implements AaMapImp
 
     forEach(callbackfn: MapCallbackFn<V>, thisArg?: unknown): void {
         let stop = false
-        this.map.forEach((value, key, map?) => {
+        this.map.forEach((value, key, map) => {
             if (stop) {
                 return BREAK
             }
@@ -71,7 +71,7 @@ export default class AaMap<V = unknown> extends Serializable implements AaMapImp
         })
     }
 
-    get(key: string): V {
+    get(key: string): V | undefined {
         return this.map.get(key)
     }
 
@@ -89,24 +89,24 @@ export default class AaMap<V = unknown> extends Serializable implements AaMapImp
         return Array.from(this.map.keys())
     }
 
-    merge(source: IterableKV | undefined, overwrite: boolean = false) {
+    merge(source: IterableKV<V, string> | undefined, overwrite: boolean = false) {
         if (!source) {
             return
         }
-        forEach(source, (value, key) => {
+        forEach(source, (value, key: string) => {
             if (overwrite || !this.has(key)) {
                 this.set(key, value)
             }
         })
     }
 
-    reset(source?: KV): this {
+    reset(source?: IterableKV<V, string>): this {
         this.map.clear()
         this.setMany(source)
         return this
     }
 
-    serialize(): string {
+    serialize(): string | null {
         return json.Marshal(Array.from(this.map))
     }
 
@@ -116,21 +116,17 @@ export default class AaMap<V = unknown> extends Serializable implements AaMapImp
         return this
     }
 
-    setMany(source: IterableKV | undefined): this {
+    setMany(source: IterableKV<V, string> | undefined): this {
         if (!source) {
             return this
         }
         forEach(source, (value, key) => {
-            // Handle Iterable array
-            if (typeof key === 'number' && Array.isArray(value)) {
-                this.set(value[0], value[1])
-                return CONTINUE
-            }
             this.set(key, value)
         })
+        return this
     }
 
-    toJSON(): string {
+    toJSON(): string | null {
         return json.Marshal(this.map)
     }
 }

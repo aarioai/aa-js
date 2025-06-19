@@ -13,13 +13,19 @@ import {Panic} from "../atype/panic";
  * instantiateClass('Date'); // Returns new Date()
  */
 export function instantiateClass(className: string): object {
-    if (typeof window !== 'undefined' && window[className]?.prototype) {
-        return new window[className]();
+    // Try browser window
+    if (typeof window === 'object' && className in window) {
+        const constructor = (window as any)[className]
+        if (typeof constructor === 'function' && constructor.prototype) {
+            return new constructor()
+        }
     }
+
+    // Fallback to Function constructor
     try {
-        const constructor = new Function(`return ${className}`)();
-        if (constructor?.prototype) {
-            return new constructor();
+        const constructor = new Function(`return (typeof ${className} === 'function' ? ${className} : null)`)();
+        if (typeof constructor === 'function' && constructor?.prototype) {
+            return new constructor()
         }
     } catch {
 
@@ -43,7 +49,7 @@ export function instantiateClass(className: string): object {
 export function hasStaticMethod(className: string, methodName: string): boolean {
     try {
         let c = instantiateClass(className)
-        return typeof c[methodName] === 'function'
+        return typeof (c as any)[methodName] === 'function'
     } catch {
         return false
     }
@@ -75,6 +81,6 @@ export function invokeStaticMethod<T = unknown>(
     ...args: unknown[]
 ): T {
     const c = instantiateClass(className).constructor
-    Panic.assertNotTypeof(c[methodName], ['function'])
-    return c[methodName](...args) as T;
+    Panic.assertNotTypeof((c as any)[methodName], ['function'])
+    return (c as any)[methodName](...args) as T;
 }

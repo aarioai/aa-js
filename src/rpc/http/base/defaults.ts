@@ -1,6 +1,6 @@
 import {HoursInSecond, Millisecond, NO_EXPIRES} from '../../../aa/atype/a_define_units'
-import {t_millisecond} from '../../../aa/atype/a_define'
-import {UserToken} from '../../../aa/atype/a_server_dto'
+import type {t_millisecond} from '../../../aa/atype/a_define'
+import type {UserToken} from '../../../aa/atype/a_server_dto'
 
 
 class defaultHTTPHeaders {

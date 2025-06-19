@@ -1,5 +1,5 @@
 import FileSrc from '../base/filesrc'
-import {t_docsrc} from '../base/define'
+import type {t_docsrc} from '../base/define'
 
 export class DocSrc extends FileSrc {
     constructor(src: t_docsrc) {

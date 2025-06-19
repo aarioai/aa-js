@@ -19,7 +19,7 @@ import {
     TRUE
 } from "./a_server_consts";
 import {Panic} from "./panic";
-import {
+import type {
     t_booln,
     t_char,
     t_int16,
@@ -35,7 +35,7 @@ import {
     t_uint64b,
     t_uint8,
 } from "./a_define";
-import Serializable, {Dict} from './a_define_interfaces'
+import {type Dict, isSerializable} from './a_define_interfaces'
 import {typeArray} from './func'
 
 import json from './json'
@@ -62,7 +62,7 @@ function inRange(value: number, min: number, max: number, name: string): number 
  * a_array([1, 2, 3])    // => [1, 2, 3]
  * a_array({a: 1, b: 2}) // => [1, 2]
  */
-export function a_array<T = unknown>(value: object | unknown[] | undefined, cast?: (value: unknown) => T): T[] {
+export function a_array<T = unknown>(value: object | unknown[] | undefined | null, cast?: (value: unknown) => T): T[] {
     if (value === undefined || value == null) {
         return []
     }
@@ -73,11 +73,11 @@ export function a_array<T = unknown>(value: object | unknown[] | undefined, cast
     return Object.values(value)
 }
 
-export function a_func(value: Function | undefined) {
+export function a_func(value: Function | undefined | null) {
     return typeof value === "function" ? value : NIF
 }
 
-export function a_maps(value: Dict | unknown[] | undefined): Dict {
+export function a_maps(value: Dict | unknown[] | undefined | null): Dict {
     if (!value) {
         return {}
     }
@@ -93,7 +93,10 @@ export function a_maps(value: Dict | unknown[] | undefined): Dict {
  * Converts number except NaN, bigint into a number, NaN into 0, and boolean into a t_bool
  * @param v
  */
-export function a_number(v?: t_numeric | boolean): number {
+export function a_number(v?: t_numeric | boolean | null): number {
+    if (!v) {
+        return 0
+    }
     switch (typeof v) {
         case 'undefined':
             return 0
@@ -124,7 +127,10 @@ export function a_number(v?: t_numeric | boolean): number {
  * a_string({a: 1})        // "{"a":1}" (JSON serialization)
  * a_string([1, 2, 3])     // "[1,2,3]" (array serialization)
  */
-export function a_string(value: unknown): string {
+export function a_string(value: unknown | null): string {
+    if (value === null) {
+        return ''
+    }
     switch (typeof value) {
         case 'boolean':
             return value ? String(TRUE) : String(FALSE)
@@ -137,12 +143,9 @@ export function a_string(value: unknown): string {
         case 'undefined':
             return ''
     }
-    if (value === null) {
-        return ''
-    }
 
     // Serializable > toJSON() > toString() > valueOf()
-    if (value instanceof Serializable) {
+    if (isSerializable(value)) {
         return value.constructor.name + SERIALIZE_SEPARATOR + value.serialize()  // special, high priority
     }
 
@@ -151,7 +154,7 @@ export function a_string(value: unknown): string {
     }
 
     if (Array.isArray(value)) {
-        return json.Marshal(value)
+        return json.Marshal(value) || ''
     }
 
     if (typeof (value as any).toString === 'function') {
@@ -178,7 +181,7 @@ export function a_string(value: unknown): string {
  * Converts a visible ASCII byte character
  * @returns Single ASCII character or null character (\0) if conversion fails
  */
-export function a_char(value: string | number | undefined): t_char {
+export function a_char(value: string | number | undefined | null): t_char {
     if (!value) {
         return '\0' // String.fromCharCode(0)
     }
@@ -186,18 +189,15 @@ export function a_char(value: string | number | undefined): t_char {
         return (value > 31 && value < 127) ? String.fromCharCode(value) : '\0'
     }
 
-    if (typeof value === 'string') {
-        if (value.length !== 1) {
-            return '\0'
-        }
-        const charCode = value.charCodeAt(0);
-        return (charCode > 31 && charCode < 127) ? value : '\0';
+    // Handle string
+    if (value.length !== 1) {
+        return '\0'
     }
-
-    return '\0';
+    const charCode = value.charCodeAt(0);
+    return (charCode > 31 && charCode < 127) ? value : '\0';
 }
 
-export function a_bool(value: boolean | number | bigint | string | undefined): boolean {
+export function a_bool(value: boolean | number | bigint | string | undefined | null): boolean {
     switch (typeof value) {
         case "boolean":
             return value
@@ -213,69 +213,69 @@ export function a_bool(value: boolean | number | bigint | string | undefined): b
     }
 }
 
-export function a_booln(value: boolean | number | bigint | string | undefined): t_booln {
+export function a_booln(value: boolean | number | bigint | string | undefined | null): t_booln {
     return a_bool(value) ? TRUE : FALSE
 }
 
 
-export function float64(v?: t_numeric): number {
+export function float64(v?: t_numeric | null): number {
     return a_number(v)
 }
 
-export function float32(v?: t_numeric): number {
-    return float64(v)
+export function float32(v?: t_numeric | null): number {
+    return v ? float64(v) : 0
 }
 
-export function floatToInt(v: number): number {
+export function floatToInt(v: number | undefined | null): number {
     return v ? v | 0 : 0  // faster than Math.floor()
 }
 
-export function int64b(v?: t_numeric): t_int64b {
-    return BigInt(v)
+export function int64b(v?: t_numeric | null): t_int64b {
+    return v ? BigInt(v) : 0n as t_int64b
 }
 
 // [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER] [-9007199254740991, 9007199254740991]
-export function safeInt(v?: t_numeric): t_safeint {
+export function safeInt(v?: t_numeric | null): t_safeint {
     return floatToInt(a_number(v))
 }
 
-export function int32(v?: t_numeric): t_int32 {
+export function int32(v?: t_numeric | null): t_int32 {
     return inRange(safeInt(v), MIN_INT32, MAX_INT32, 'int32')
 }
 
-export function int24(v?: t_numeric): t_int24 {
+export function int24(v?: t_numeric | null): t_int24 {
     return inRange(safeInt(v), MIN_INT24, MAX_INT24, 'int24')
 }
 
-export function int16(v?: t_numeric): t_int16 {
+export function int16(v?: t_numeric | null): t_int16 {
     return inRange(safeInt(v), MIN_INT16, MAX_INT16, 'int16')
 }
 
-export function int8(v?: t_numeric): t_int8 {
+export function int8(v?: t_numeric | null): t_int8 {
     return inRange(safeInt(v), MIN_INT8, MAX_INT8, 'int8')
 }
 
-export function uint64b(v?: t_numeric): t_uint64b {
-    return BigInt(v)
+export function uint64b(v?: t_numeric | null): t_uint64b {
+    return v ? BigInt(v) : 0n as t_uint64b
 }
 
-export function uint32(v?: t_numeric): t_uint32 {
+export function uint32(v?: t_numeric | null): t_uint32 {
     return inRange(safeInt(v), 0, MAX_UINT32, 'uint32')
 }
 
-export function uint24(v?: t_numeric): t_uint24 {
+export function uint24(v?: t_numeric | null): t_uint24 {
     return inRange(safeInt(v), 0, MAX_UINT24, 'uint24')
 }
 
-export function uint16(v?: t_numeric): t_uint16 {
+export function uint16(v?: t_numeric | null): t_uint16 {
     return inRange(safeInt(v), 0, MAX_UINT16, 'uint16')
 }
 
-export function uint8(v?: number): t_uint8 {
-    return inRange(safeInt(v), 0, MAX_UINT8, 'uint8')
+export function uint8(v?: t_numeric | null): t_uint8 {
+    return v ? inRange(safeInt(v), 0, MAX_UINT8, 'uint8') : 0
 }
 
-export function zeroize<T = unknown>(value: T): T {
+export function zeroize<T = unknown>(value: T): T | null {
     if (!value) {
         return value
     }
@@ -322,7 +322,7 @@ export function safeCast<V = unknown>(value: unknown, cast?: (v: unknown) => V):
  *  syncType(1n, 20)          // 1
  *  syncType(undefined, 100)  // 0
  */
-export function syncType<T = unknown>(target: unknown, source: T): T {
+export function syncType<T = unknown>(target: unknown, source: T): T | null {
     if (typeof target === typeof source) {
         return target as T
     }

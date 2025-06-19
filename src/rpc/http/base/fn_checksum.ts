@@ -1,8 +1,8 @@
 import {floatToInt} from '../../../aa/atype/t_basic'
-import {t_httpmethod} from '../../../aa/atype/enums/http_method'
+import type {t_httpmethod} from '../../../aa/atype/enums/http_method'
 import {valuesSortedByKeys} from '../../../basic/maps/iterates'
-import {Dict} from '../../../aa/atype/a_define_interfaces'
-import {t_fetchbody} from './define_fetch'
+import type {Dict} from '../../../aa/atype/a_define_interfaces'
+import type {t_fetchbody} from './define_fetch'
 
 function createFileFactor(file: File): string {
     const {size, type, lastModified, name, webkitRelativePath} = file

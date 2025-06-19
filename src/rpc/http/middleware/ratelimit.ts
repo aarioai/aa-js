@@ -1,8 +1,8 @@
-import {t_timestamp_ms} from '../../../aa/atype/a_define'
-import {AnyMap} from '../../../aa/atype/a_define_interfaces'
+import type {t_timestamp_ms} from '../../../aa/atype/a_define'
+import type {AnyMap} from '../../../aa/atype/a_define_interfaces'
 import {createRequestFactor} from '../base/fn_checksum'
 import {Millisecond, Second} from '../../../aa/atype/a_define_units'
-import {BasicRequestStruct} from '../base/define_interfaces'
+import type {BasicRequestStruct} from '../base/define_interfaces'
 import {AError} from '../../../aa/aerror/error'
 
 
@@ -11,28 +11,28 @@ export const E_ClientDenyDebounce = new AError('request denied due to debounce')
 export default class AaRateLimit {
     readonly debounceInterval: number
     readonly records: AnyMap<t_timestamp_ms> = new Map()
-    private cleanTimer: number
+    private cleanTimer: number = 0
 
     constructor(debounceInterval: number = 400 * Millisecond) {
         this.debounceInterval = debounceInterval
         this.activeAutoClean()
     }
 
-    denied(r: BasicRequestStruct): [boolean, AError?] {
+    denied(r: BasicRequestStruct): false | AError {
         this.activeAutoClean()
 
         const now = Date.now()
-        const factor = createRequestFactor(r.url.method, r.url.href, r.headers, r.data, r.body)
+        const factor = createRequestFactor(r.url.method || 'GET', r.url.href, r.headers, r.data, r.body)
         if (!factor) {
-            return [false]
+            return false
         }
         const prevTime = this.records.get(factor) ?? 0
 
         if (prevTime + this.debounceInterval < now) {
             this.records.set(factor, now)
-            return [false]       // allow
+            return false      // allow
         }
-        return [true, E_ClientDenyDebounce] // deny
+        return E_ClientDenyDebounce // deny
     }
 
     private cleanExpiredRecords(): void {

@@ -1,4 +1,4 @@
-import {t_expires, t_millisecond, t_second} from './a_define'
+import type {t_expires, t_millisecond, t_second} from './a_define'
 
 
 export const InSecond: t_second = 1

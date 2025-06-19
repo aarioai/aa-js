@@ -1,4 +1,13 @@
-import {t_filetype, t_float64, t_int, t_path, t_second, t_uint, t_url, t_url_pattern} from '../../aa/atype/a_define'
+import type {
+    t_filetype,
+    t_float64,
+    t_int,
+    t_path,
+    t_second,
+    t_uint,
+    t_url,
+    t_url_pattern
+} from '../../aa/atype/a_define'
 
 export type Provider = t_uint | string
 export type t_size_value = [width: t_int, height: t_int]

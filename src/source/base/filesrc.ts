@@ -1,6 +1,6 @@
 import AaMap from '../../basic/maps/map'
-import {Provider, t_filesrc} from './define'
-import {t_int, t_url, t_url_pattern} from '../../aa/atype/a_define'
+import type {Provider, t_filesrc} from './define'
+import type {t_int, t_url, t_url_pattern} from '../../aa/atype/a_define'
 import {safeInt} from '../../aa/atype/t_basic'
 
 export default class FileSrc extends AaMap {
@@ -14,7 +14,7 @@ export default class FileSrc extends AaMap {
         this.set('base_url', src['base_url'])
         this.set('path', src['path'])
         this.set('filetype', src['filetype'])
-        this.set('size', safeInt(src['size']))
+        this.set('filesize', safeInt(src['filesize']))
         this.set('info', src['info'])
         this.set('checksum', src['checksum'])
         this.set('jsonkey', src['jsonkey'] || 'path')
@@ -48,8 +48,8 @@ export default class FileSrc extends AaMap {
         return this.get('filetype') as string
     }
 
-    get size(): t_int {
-        return this.get('size') as t_int
+    get filesize(): t_int {
+        return this.get('filesize') as t_int
     }
 
     get info(): string {

@@ -1,18 +1,19 @@
 import {joinPath, parseBaseName, splitPath} from "../strings/path_func"
 import {CONTINUE} from "../../aa/atype/a_define_signals"
-import {HASH_REF_NAME, PathParamMap, safePathParamValue, t_params, URLBase, URLPathError} from './base'
-import {t_url_pattern} from '../../aa/atype/a_define'
-import {AnyMap, Dict} from '../../aa/atype/a_define_interfaces'
+import {HASH_REF_NAME, type PathParamMap, safePathParamValue, type t_params, type URLBase, URLPathError} from './base'
+import type {t_url_pattern} from '../../aa/atype/a_define'
+import type {AnyMap, Dict} from '../../aa/atype/a_define_interfaces'
 import SearchParams from './search_params'
 import {LOCALHOST_DOMAINS} from '../../aa/aconfig/detect'
 import {DOMAIN_GTLDS} from './consts'
-import {HttpMethods, t_httpmethod} from '../../aa/atype/enums/http_method'
+import {HttpMethods, type t_httpmethod} from '../../aa/atype/enums/http_method'
 import {
     path_param_string_t,
     PATH_PARAM_TESTER,
     PATH_PARAMS_MATCHER,
-    t_path_param
+    type t_path_param
 } from '../../aa/atype/enums/path_param'
+import {getKV} from '../maps/kv.ts'
 
 
 /**
@@ -275,7 +276,7 @@ export function searchParam(params: SearchParams | URLSearchParams | Dict | AnyM
         return params.get(name)
     }
     // Fallback MapObject
-    return params.hasOwnProperty(name) ? params[name] : undefined
+    return getKV(params, name)
 }
 
 

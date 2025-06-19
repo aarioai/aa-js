@@ -10,7 +10,7 @@ import {
     splitURLMethod,
     splitURLSearch
 } from './fn';
-import {URLBase} from './base'
+import type {URLBase} from './base';
 import SearchParams from './search_params'
 
 function testURLBase(received: URLBase, expected: URLBase) {

@@ -1,5 +1,5 @@
-import {t_int} from '../../aa/atype/a_define'
-import {t_size, t_size_value} from './define'
+import type {t_int} from '../../aa/atype/a_define'
+import type {t_size, t_size_value} from './define'
 
 export function findClosestSize(allowed: t_size_value[] | null, width: t_int, height: t_int): t_size {
     if (!allowed?.length) {

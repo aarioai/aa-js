@@ -1,4 +1,4 @@
-import {Builder, Dict} from './a_define_interfaces'
+import type {Builder, Dict} from './a_define_interfaces'
 import {isIterable} from './type_check'
 import json from './json'
 
@@ -13,7 +13,7 @@ import json from './json'
  *  class CustomMap extends Map{}
  *  build(new CustomMap())  // Equals to new CustomMap()
  */
-export function build<T>(source: T): T {
+export function build<T extends object>(source: T): T {
     return new (source.constructor as Builder<T>)()
 }
 
@@ -112,7 +112,7 @@ export function cloneDict(source: Dict): Dict {
         return clone
     }
 
-    const target = {}
+    const target: Record<string | number | symbol, unknown> = {}
     for (const key in source) {
         if (Object.prototype.hasOwnProperty.call(source, key)) {
             const value = source[key]
@@ -158,16 +158,17 @@ export function cloneAny<T = unknown>(source: T): T {
         return cloneIterable(clone)
     }
 
-    // try as MapObject
+    // try as Dict
+
     try {
-        const target = build<T>(clone)
+        const target = build(clone as Dict)
         for (const key in clone) {
             if (!Object.prototype.hasOwnProperty.call(clone, key)) {
                 continue
             }
             target[key] = cloneAny(clone[key])
         }
-        return target
+        return target as T
     } catch {
         return clone
     }

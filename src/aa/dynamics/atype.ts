@@ -18,7 +18,7 @@ import {
     set_t,
     string_t,
     symbol_t,
-    t_atype,
+    type t_atype,
     undefined_t
 } from '../atype/t_atype'
 import {SERIALIZE_SEPARATOR} from '../atype/a_define_consts'
@@ -27,7 +27,7 @@ import {invokeStaticMethod} from '../calls/hack'
 import json from '../atype/json'
 
 
-export function deserialize(s: string): Serializable {
+export function deserialize(s: string): Serializable | null {
     const [className, serial] = s.split(SERIALIZE_SEPARATOR)
     if (!className) {
         return null

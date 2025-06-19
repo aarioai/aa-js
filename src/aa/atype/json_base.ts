@@ -1,5 +1,5 @@
 import {isSafeInt} from './type_check'
-import {AnyMap, Dict} from './a_define_interfaces'
+import type {AnyMap, Dict} from './a_define_interfaces'
 
 export interface JsonReviverCtx {
     source: string
@@ -58,8 +58,8 @@ export function convertJSONAny(v: unknown): unknown {
     // Server-defined property `jsonkey`,
     //  e.g. {"nation":{"code":86, "name:"China", "jsonkey":"code"}}
     //  means, server wants client send nation code {"nation":86} back, but not the whole map object
-    if ('jsonkey' in v && typeof v.jsonkey === 'string' && v.jsonkey) {
-        return convertJSONAny(v[v.jsonkey])
+    if ('jsonkey' in v && typeof v.jsonkey === 'string' && v.jsonkey in v) {
+        return convertJSONAny(v[v.jsonkey as keyof typeof v])
     }
     if (v instanceof Map) {
         return convertJSONMap(v)

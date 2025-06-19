@@ -1,4 +1,4 @@
-import {t_float64, t_safeint, t_uint} from '../aa/atype/a_define'
+import type {t_float64, t_safeint, t_uint} from '../aa/atype/a_define'
 
 export type t_css_size = t_uint | string  // 100, '100px', '1rem', '100vw', '100 PX'
 

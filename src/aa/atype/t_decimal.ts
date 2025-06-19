@@ -1,6 +1,6 @@
-import {ValueOf} from "./a_define_interfaces";
+import type {ValueOf} from "./a_define_interfaces";
 import {int32, int64b} from "./t_basic";
-import {t_decimal, t_float64, t_money, t_percent, t_vmoney} from './a_define'
+import type {t_decimal, t_float64, t_money, t_percent, t_vmoney} from './a_define';
 
 
 /**

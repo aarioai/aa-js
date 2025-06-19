@@ -1,13 +1,13 @@
 import {normalizePath} from "vite";
 import {isAbsolutePath, joinPath, parsePath} from "./path_func";
 
-class Path {
+export class Path {
     separator = '/'
     #path: string = ''
-    #dirname: string    // path = dirname + '/' + basename
-    #basename: string   // filename + extname
-    #filename: string   // filename without extension name
-    #extension: string    // extension name starts with a dot
+    #dirname: string = ''   // path = dirname + '/' + basename
+    #basename: string = ''// filename + extname
+    #filename: string = ''  // filename without extension name
+    #extension: string = ''   // extension name starts with a dot
     #parsed: boolean = false
 
     constructor(path: string, normalize: boolean = true) {

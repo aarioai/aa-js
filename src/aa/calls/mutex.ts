@@ -11,7 +11,7 @@ export class AaMutex {
     private readonly id = AaMutex.atomicId()
     private readonly timeout: number
     private lockTime: number = 0
-    private cleanTimer: number
+    private cleanTimer: number = 0
 
     constructor(timeout: number = 5 * Second, debug: boolean = false) {
         this.timeout = timeout
@@ -58,7 +58,7 @@ export class AaMutex {
     }
 
     waitLock(maxWaitTime = 5 * Seconds): Promise<boolean> {
-        return new Promise(async resolve => this.awaitLock(maxWaitTime))
+        return new Promise(async () => this.awaitLock(maxWaitTime))
     }
 
     unlock(): void {
@@ -98,7 +98,6 @@ export class AaMutex {
     private clearTimer() {
         if (this.cleanTimer !== null) {
             clearTimeout(this.cleanTimer)
-            this.cleanTimer = null
         }
     }
 }

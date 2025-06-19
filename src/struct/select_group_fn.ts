@@ -1,5 +1,5 @@
-import {Dict} from '../aa/atype/a_define_interfaces'
-import {ASCEND, SortFunc} from '../aa/atype/a_define_funcs'
+import type {Dict} from '../aa/atype/a_define_interfaces'
+import {ASCEND, sort, type SortFunc} from '../aa/atype/a_define_funcs'
 import log from '../aa/alog/log'
 import {safeCast} from '../aa/atype/t_basic'
 
@@ -49,9 +49,9 @@ export function extractValues<V = unknown>(options: Option<V> | Option<V>[]): V[
 
 export function normalizeOption<V = unknown>(option: Option, cast?: (value: unknown) => V): NormalizedOption<V> {
     return {
-        value: safeCast<V>(option.value, cast),
+        value: safeCast<V>(option.value, cast) as V,
         text: option.text,
-        key: option.key,
+        key: option.key as number,
         pid: safeCast<V>(option.pid, cast),
         prefix: option.prefix ?? '',
         suffix: option.suffix ?? '',
@@ -166,9 +166,9 @@ export function normalizeSelectGroupData<V = unknown>(data: t_selectgroup_data, 
     }
 
     // Handle selects data
-    const selects = []
+    const selects: NormalizedOption<V>[][] = []
     for (const select of data) {
-        selects.push(normalizeSelectGroupData(select as t_select_1d_data, cast, enableInherit))
+        selects.concat(normalizeSelectGroupData(select as t_select_1d_data, cast, enableInherit))
     }
     return selects
 }
@@ -219,7 +219,7 @@ export function sortAndValidateOptions<V = unknown>(options: Option[], cast?: (v
 
     return Object.keys(optionGroup).sort().flatMap(pid => {
         return optionGroup[pid]
-            .sort((a, b) => a.key - b.key)
+            .sort((a, b) => a.key! - b.key!)
             .map((option, index) => ({
                 ...option,
                 key: index,
@@ -239,7 +239,7 @@ export function sortAndValidateOptions<V = unknown>(options: Option[], cast?: (v
  *      <select><option value="male">男</option><option value="female">女</option></select>
  */
 export function normalizeDictData<V = unknown>(data: Dict<string>, cast?: (value: unknown) => V, enableInherit: boolean = false, sortFn: SortFunc = ASCEND): NormalizedOption<V>[][] {
-    const keys = data ? Object.keys(data).sort(sortFn) : []
+    const keys = data ? sort(Object.keys(data), sortFn) : []
     if (keys.length === 0) {
         return []
     }

@@ -1,5 +1,5 @@
 import log from '../../aa/alog/log'
-import {ElementSelector, NodeSelector} from './define'
+import type {ElementSelector, NodeSelector} from './define'
 
 export function a_node(selector: NodeSelector): Node | Element | null {
     if (!selector) {

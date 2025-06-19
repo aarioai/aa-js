@@ -1,6 +1,6 @@
-import {BREAK, t_loopsignal} from '../../aa/atype/a_define_signals'
+import {BREAK, type t_loopsignal} from '../../aa/atype/a_define_signals'
 import {a_node} from './doms'
-import {NodeSelector} from './define'
+import type {NodeSelector} from './define'
 
 /**
  * List all descendants by generation
@@ -55,12 +55,16 @@ export function forEachDescendantNodes(root: Node, callback: (node: Node) => t_l
 /**
  * Safely moves all child nodes from one element to another
  */
-export function transferChildNodes(sourceNode: NodeSelector | string, targetNode: NodeSelector): Node {
+export function transferChildNodes(sourceNode: NodeSelector | string, targetNode: NodeSelector): Node | Element | null {
     const source = a_node(sourceNode)
+    if (!source) {
+        return null
+    }
     const target = a_node(targetNode)
     if (!target || target === source) {
         return source
     }
+
 
     const children = Array.from(source.childNodes || [])
     const fragment = document.createDocumentFragment()

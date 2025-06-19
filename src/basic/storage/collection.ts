@@ -1,8 +1,8 @@
-import {DbLikeImpl, InsertCondition, StorageOptions} from './define_types'
+import type {DbLikeImpl, InsertCondition, StorageOptions} from './define_types'
 import AaDbLike from './dblike'
-import {Dict} from '../../aa/atype/a_define_interfaces'
+import type {Dict} from '../../aa/atype/a_define_interfaces'
 import {normalizeArrayArguments} from '../arrays/fn'
-import {t_expires} from '../../aa/atype/a_define'
+import type {t_expires} from '../../aa/atype/a_define'
 
 export default class AaCollection {
     readonly db: DbLikeImpl

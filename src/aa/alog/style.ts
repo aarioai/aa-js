@@ -6,7 +6,7 @@ export class ALogStyle {
     readonly fontWeight: number
 
 
-    constructor(color?: string, background?: string, fontWeight?: number) {
+    constructor(color: string = '', background: string = '', fontWeight: number = 0) {
         this.color = color
         this.fontWeight = fontWeight
         this.background = background;

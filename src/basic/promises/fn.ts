@@ -6,7 +6,7 @@ export function asleep(delay: number, ...args: unknown[]) {
 }
 
 export function asleepx(p: Promise<unknown>, delay: number, ...args: unknown[]): Promise<unknown> {
-    return p.then((...params) => asleep(delay, ...args))
+    return p.then(() => asleep(delay, ...args))
 }
 
 

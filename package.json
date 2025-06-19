@@ -1,8 +1,8 @@
 {
   "name": "aa-js",
-  "description": "a javascript SDK for airis Golang restful APIs",
   "version": "0.0.1",
   "author": "Aario",
+  "description": "a javascript SDK for airis Golang restful APIs",
   "type": "module",
   "scripts": {
     "test": "jest",
@@ -21,5 +21,13 @@
     "tsdown": "^0.11.9",
     "typescript": "^5.8.3",
     "vite": "^6.3.5"
+  },
+  "homepage": "https://github.com/aarioai/aa-js#readme",
+  "bugs": {
+    "url": "https://github.com/aarioai/aa-js/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aarioai/aa-js.git"
   }
 }

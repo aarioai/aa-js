@@ -1,6 +1,6 @@
 import FileSrc from '../base/filesrc'
-import {t_audiosrc} from '../base/define'
-import {t_int, t_second, t_url} from '../../aa/atype/a_define'
+import type {t_audiosrc} from '../base/define'
+import type {t_int, t_second, t_url} from '../../aa/atype/a_define'
 import {safeInt} from '../../aa/atype/t_basic'
 
 export class AudioSrc extends FileSrc {

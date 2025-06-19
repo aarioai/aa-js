@@ -18,9 +18,13 @@ export default class log {
         let handler = console.log
         // console.debug, console.warn ...
         const match = msg.match(/^\[([a-zA-Z]+)]/)
-        if (match && typeof console[match[1]] === "function") {
-            handler = console[match[1]]
+        if (match) {
+            const method = match[1] as keyof Console
+            if (typeof console[method] === "function") {
+                handler = (console[method] as Function).bind(console)
+            }
         }
+
         handler(msg)
     }
 

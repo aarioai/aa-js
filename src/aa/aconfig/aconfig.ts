@@ -1,6 +1,6 @@
 import {Debugger} from "./debugger";
 import {MYSQL_MAX_DATE, MYSQL_MAX_DATETIME, MYSQL_MIN_DATE, MYSQL_MIN_DATETIME} from '../atype/a_server_consts'
-import {t_date, t_datetime} from '../atype/a_define'
+import type {t_date, t_datetime} from '../atype/a_define';
 import Registry from './registry'
 
 class AConfigure {

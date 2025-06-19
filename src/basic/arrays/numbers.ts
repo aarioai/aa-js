@@ -1,5 +1,5 @@
 import {numberArray} from "../../aa/atype/func";
-import {t_numeric} from "../../aa/atype/a_define";
+import type {t_numeric} from "../../aa/atype/a_define";
 import {Panic} from "../../aa/atype/panic";
 import {a_number} from '../../aa/atype/t_basic'
 

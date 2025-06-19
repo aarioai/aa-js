@@ -1,15 +1,15 @@
-import {CookieOptions, StorageImpl} from './define_types'
-import {Dict, StringMap} from '../../aa/atype/a_define_interfaces'
-import {MapCallbackFn} from '../maps/base'
+import type {CookieOptions, StorageImpl} from './define_types'
+import type {Dict, StringMap} from '../../aa/atype/a_define_interfaces'
+import type {MapCallbackFn} from '../maps/base'
 import {BREAK} from '../../aa/atype/a_define_signals'
 import {a_string} from '../../aa/atype/t_basic'
 import {unsafeExtractDomain} from '../urls/fn'
 import {NO_EXPIRES, Seconds} from '../../aa/atype/a_define_units'
 import {matchAny, normalizeArrayArguments} from '../arrays/fn'
-import {t_expires} from '../../aa/atype/a_define'
+import type {t_expires} from '../../aa/atype/a_define'
 
 export default class AaCookie implements StorageImpl {
-    readonly name: 'AaCookie'
+    readonly name = 'AaCookie'
     domainExtractor: (hostname: string) => string = unsafeExtractDomain
     private cachedCookie: string = ''  // no need share
     private cached: StringMap = new Map()
@@ -98,16 +98,17 @@ export default class AaCookie implements StorageImpl {
 
     normalizeOptions(options?: CookieOptions | undefined): CookieOptions {
         let expires = null
-        if (options?.expiresIn) {
-            if (typeof options.expiresIn === 'string') {
-                expires = options.expiresIn
+        const exp = options?.expiresIn
+        if (exp) {
+            if (typeof exp === 'string') {
+                expires = exp
             } else {
-                let expiresDate: Date = null
-                if (typeof options.expiresIn === 'number') {
+                let expiresDate: Date | null = null
+                if (typeof exp === 'number') {
                     expiresDate = new Date()
-                    expiresDate.setTime(expiresDate.getTime() + options.expiresIn * Seconds)
-                } else if (options.expiresIn instanceof Date) {
-                    expiresDate = options.expiresIn
+                    expiresDate.setTime(expiresDate.getTime() + exp * Seconds)
+                } else if (exp instanceof Date) {
+                    expiresDate = exp
                 }
                 if (expiresDate) {
                     expires = expiresDate.toUTCString()

@@ -1,5 +1,5 @@
 import {a_number, float64} from '../atype/t_basic'
-import {t_numeric} from '../atype/a_define'
+import type {t_numeric} from '../atype/a_define'
 
 /**
  * Formats a number or numeric string by trimming unnecessary trailing decimal zeros.

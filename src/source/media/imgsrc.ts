@@ -1,14 +1,14 @@
 import FileSrc from '../base/filesrc'
-import {t_float64, t_int, t_url_pattern} from '../../aa/atype/a_define'
-import {Image, t_imgsrc, t_size_value} from '../base/define'
+import type {t_float64, t_int, t_url_pattern} from '../../aa/atype/a_define'
+import type {Image, t_imgsrc, t_size_value} from '../base/define'
 import {tabletMainWidth} from '../../browser/detect_device'
-import {pxInt, t_css_size} from '../../browser/pixel'
+import {pxInt, type t_css_size} from '../../browser/pixel'
 import defaults from '../base/defaults'
 import {floatToInt, safeInt} from '../../aa/atype/t_basic'
 import {KB} from '../../aa/atype/a_define_units'
 import {findClosestSize} from '../base/fn'
 import {replaceAll} from '../../basic/strings/strings'
-import {Dict} from '../../aa/atype/a_define_interfaces'
+import type {Dict} from '../../aa/atype/a_define_interfaces'
 
 export class ImgSrc extends FileSrc {
     dpr: number = defaults.imageDPR
@@ -69,7 +69,7 @@ export class ImgSrc extends FileSrc {
         if (this.isSmall(realWidth, realHeight, true)) {
             return {
                 url: this.url,
-                alterURL: replaceAll(this.alterUrlPattern, this.patternReplacement(this.width, this.height, true, true)),
+                alterURL: replaceAll(this.alterUrlPattern, this.patternReplacement(this.width, this.height)),
                 aspectRatio: this.aspectRatio,
                 css: {width: cssWidth, height: cssHeight},
                 real: {width: this.width, height: this.height},
@@ -79,8 +79,8 @@ export class ImgSrc extends FileSrc {
 
         const real = findClosestSize(this.allowed, realWidth, realHeight)
         return {
-            url: replaceAll(this.urlPattern, this.patternReplacement(real.width, real.height, true)),
-            alterURL: replaceAll(this.alterUrlPattern, this.patternReplacement(real.width, real.height, true, true)),
+            url: replaceAll(this.urlPattern, this.patternReplacement(real.width, real.height)),
+            alterURL: replaceAll(this.alterUrlPattern, this.patternReplacement(real.width, real.height)),
             aspectRatio: this.aspectRatio,
             css: {width: cssWidth, height: cssHeight},
             real: real,
@@ -125,7 +125,7 @@ export class ImgSrc extends FileSrc {
         if (this.isSmall(realWidth, realHeight, false)) {
             return {
                 url: this.url,
-                alterURL: replaceAll(this.alterUrlPattern, this.patternReplacement(this.width, this.height, false, true)),
+                alterURL: replaceAll(this.alterUrlPattern, this.patternReplacement(this.width, this.height)),
                 aspectRatio: this.aspectRatio,
                 css: {width: cssWidth, height: cssHeight},
                 real: {width: this.width, height: this.height},
@@ -134,14 +134,14 @@ export class ImgSrc extends FileSrc {
         const real = findClosestSize(this.allowed, realWidth, realHeight)
         return {
             url: replaceAll(this.urlPattern, this.patternReplacement(real.width, real.height)),
-            alterURL: replaceAll(this.alterUrlPattern, this.patternReplacement(real.width, real.height, false, true)),
+            alterURL: replaceAll(this.alterUrlPattern, this.patternReplacement(real.width, real.height)),
             aspectRatio: this.aspectRatio,
             css: {width: cssWidth, height: cssHeight},
             real: real,
         }
     }
 
-    private patternReplacement(width: t_int, height: t_int, isCrop: boolean = false, isAlter: boolean = false): Dict {
+    private patternReplacement(width: t_int, height: t_int): Dict {
         return {
             '{width:int}': width,
             '{height:int}': height,
@@ -149,7 +149,7 @@ export class ImgSrc extends FileSrc {
             '{max_height: int}': height,
         }
     }
- 
+
 }
 
 export default function imgsrc(src: t_imgsrc | ImgSrc): ImgSrc | null {

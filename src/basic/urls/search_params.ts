@@ -1,7 +1,7 @@
 import {deepEncodeURI, parseURLSearch} from './fn'
 import {a_string} from '../../aa/atype/t_basic'
-import {HASH_REF_NAME, NewChangeReferrerError, safePathParamValue, t_params} from './base'
-import {ASCEND, SortFunc} from '../../aa/atype/a_define_funcs'
+import {HASH_REF_NAME, NewChangeReferrerError, safePathParamValue, type t_params} from './base'
+import {ASCEND, type SortFunc} from '../../aa/atype/a_define_funcs'
 import AaMap from '../maps/map'
 import SearchReference from './search_reference'
 
@@ -30,20 +30,23 @@ export default class SearchParams extends AaMap<string> {
     }
 
 
-    getHashName(): string | null {
+    getHashName(): string | undefined {
         if (this.references.has(HASH_REF_NAME)) {
-            return this.references.get(HASH_REF_NAME)[0]
+            return this.references.getReference(HASH_REF_NAME)
         }
-        return null
+        return undefined
     }
 
-    getHash(): string | null {
+    getHash(): string {
         const hashName = this.getHashName()
         if (!hashName) {
-            return null
+            return ''
         }
         const hash = this.get(hashName)
-        return (!hash || hash.startsWith('#')) ? hash : ('#' + hash)
+        if (!hash) {
+            return ''
+        }
+        return hash.startsWith('#') ? hash : ('#' + hash)
     }
 
     reset(source?: t_params): this {
@@ -78,7 +81,7 @@ export default class SearchParams extends AaMap<string> {
             return this.setFromSearch(source)
         }
 
-        super.setMany(source)
+        super.setMany(source as any)
         return this
     }
 
@@ -130,10 +133,10 @@ export default class SearchParams extends AaMap<string> {
             let value = ''
             // The alias overrides/prevails over the key.
             if (this.references.has(key)) {
-                const [name, type] = this.references.get(key)
+                const [name, type] = this.references.get(key)!
                 value = safePathParamValue(this.get(name), type)
             } else {
-                value = this.get(key)
+                value = this.get(key) || ''
             }
             if (this.tidy && (!value || key === hashName)) {
                 continue

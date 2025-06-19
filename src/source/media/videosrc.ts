@@ -1,7 +1,7 @@
 import FileSrc from '../base/filesrc'
-import {t_size_value, t_videosrc} from '../base/define'
+import type {t_size_value, t_videosrc} from '../base/define'
 import {safeInt} from '../../aa/atype/t_basic'
-import {t_int, t_second, t_url} from '../../aa/atype/a_define'
+import type {t_int, t_second, t_url} from '../../aa/atype/a_define'
 import {ImgSrc} from './imgsrc'
 
 export class VideoSrc extends FileSrc {

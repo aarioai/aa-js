@@ -1,5 +1,5 @@
-import {t_decimal, t_float64} from "../../aa/atype/a_define";
-import {ValueOf} from "../../aa/atype/a_define_interfaces";
+import type {t_decimal, t_float64} from "../../aa/atype/a_define";
+import type {ValueOf} from "../../aa/atype/a_define_interfaces";
 import {a_decimal, divideBigint} from "../../aa/atype/t_decimal";
 import {X_DECIMAL} from "../../aa/atype/a_server_consts";
 import {Percent} from "./percent";

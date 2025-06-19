@@ -1,5 +1,5 @@
-import {t_expires, t_float64, t_uint, t_uint16, t_uint8, t_versiontag} from './a_define'
-import {Dict} from './a_define_interfaces'
+import type {t_expires, t_float64, t_uint, t_uint16, t_uint8, t_versiontag} from './a_define'
+import type {Dict} from './a_define_interfaces'
 
 export type ResponseBodyData = Dict | string | null
 export type ResponseBody = {

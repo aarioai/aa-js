@@ -1,6 +1,6 @@
-import {ElementSelector} from './define'
+import type {ElementSelector} from './define'
 import {a_element} from './doms'
-import {Dict} from '../../aa/atype/a_define_interfaces'
+import type {Dict} from '../../aa/atype/a_define_interfaces'
 
 export function classListRemove(selector: ElementSelector, ...patterns: (RegExp | string)[]) {
     const ele = a_element(selector)
@@ -18,11 +18,11 @@ export function classListRemove(selector: ElementSelector, ...patterns: (RegExp 
 
 export function parseAttrStyle(eleOrStyle: Element | string, keyHandler?: (key: string) => string): Dict<string> {
     let style = eleOrStyle instanceof Element ? eleOrStyle.getAttribute('style') : eleOrStyle
-    if (!style || typeof style !== 'string') {
+    if (!style) {
         return {}
     }
     const parts = style.split(';')
-    let styles = {}
+    let styles: Dict<string> = {}
     for (const part of parts) {
         const segs = part.trim().split(':')
         const key = keyHandler ? keyHandler(segs[0].trim()) : segs[0].trim()

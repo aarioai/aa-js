@@ -4,7 +4,7 @@ import {language, matchLanguage} from "../translate/language";
 import {AErrorDictionaries} from "./dictionaries";
 import {translate} from "../translate/dictionary";
 import {LF} from "../atype/a_define_consts";
-import {t_numeric} from '../atype/a_define'
+import type {t_numeric} from '../atype/a_define';
 import {a_number, a_string} from '../atype/t_basic'
 import {NotFoundCodes} from './base'
 import {isOK} from './fn'

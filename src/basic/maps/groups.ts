@@ -1,6 +1,6 @@
-import {Dict} from '../../aa/atype/a_define_interfaces'
+import type {Dict, DictKey} from '../../aa/atype/a_define_interfaces'
 import {Err_MissingArgument} from '../../aa/aerror/errors'
-import {KV} from './base'
+import type {KV} from './base'
 import {forEach} from './iterates'
 import {getKV, setKV} from './kv'
 import {isMeaningful, syncType, zeroize} from '../../aa/atype/t_basic'
@@ -74,7 +74,11 @@ export function assign<T extends KV = KV>(target: T, ...sources: (KV | undefined
         return target
     }
     for (let i = 0; i < n; i++) {
-        forEach(sources[i], (value, key) => {
+        const src = sources[i]
+        if (!src) {
+            continue
+        }
+        forEach(src, (value, key) => {
             if (isMeaningful(value)) {
                 setKV(target, key, value)
             }
@@ -115,7 +119,11 @@ export function fill<T extends KV = KV>(target: T, ...defaults: (KV | undefined)
         return target
     }
     for (let i = 0; i < n; i++) {
-        forEach(defaults[i], (defaultValue, key) => {
+        const defaultKV = defaults[i]
+        if (!defaultKV) {
+            continue
+        }
+        forEach(defaultKV, (defaultValue, key) => {
             const value = getKV(target, key)
             if (!isMeaningful(value)) {
                 setKV(target, key, defaultValue)
@@ -195,30 +203,33 @@ export function refillIn<T extends KV = KV>(defaults: T, source: KV | undefined)
  *  union({a:[100]}, {a:[200]})                             // {a:[100, 200]}
  *  union({a:[100]}, {a:[200]}, false)                      // {a:[200]}
  */
-export function union<T extends KV = KV>(base: T, partial: T, unionArrays: boolean = true): T {
+export function union<V = unknown, K extends DictKey = DictKey, T extends KV<V, K> = KV<V, K>>(base: T, partial: T, unionArrays: boolean = true): T {
     if (!base || Object.keys(base).length === 0) {
         return partial
     }
 
-    forEach(partial, (value, key) => {
-        if (!isMeaningful(base[key]) || !isMeaningful(value)) {
-            base[key] = value
+    forEach(partial, (value: V, key) => {
+        const baseValue = getKV<V, K>(base, key)
+        if (!isMeaningful(baseValue) || !isMeaningful(value)) {
+            setKV(base, key, value)
             return CONTINUE
         }
 
         if (typeof value !== 'object') {
-            base[key] = value
+            setKV<V, K>(base, key, value)
         } else if (Array.isArray(value)) {
             if (!unionArrays) {
-                base[key] = value
+                setKV<V, K>(base, key, value)
             } else {
-                if (!Array.isArray(base[key])) {
+                if (!Array.isArray(baseValue)) {
                     throw new TypeError(`cannot merge array with non-array value at key '${key}'`);
                 }
-                base[key] = [...base[key], ...value]
+                const newValue = [...baseValue, ...value]
+                setKV<V, K>(base, key, newValue as any)
             }
         } else {
-            base[key] = union(base[key] as Dict, value as Dict)
+            const newValue = union<V, K>(baseValue!, value as T)
+            setKV<V, K>(base, key, newValue as any)
         }
     })
 

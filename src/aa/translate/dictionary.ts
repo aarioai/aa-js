@@ -1,5 +1,5 @@
 import {escapeRegExp} from "../format/regexp";
-import {Dict} from '../atype/a_define_interfaces'
+import type {Dict} from '../atype/a_define_interfaces';
 
 export type Dictionary = Dict<string>
 export type Dictionaries = Dict<Dictionary>
@@ -41,7 +41,7 @@ export function translate(text: string, d?: Dictionary): string {
 
 const dictionaryPatternCache = new Map<string, RegExp>()
 
-export function findDictionaryPattern(text: string, d: Dictionary): { pattern: string, values: string[] } {
+export function findDictionaryPattern(text: string, d: Dictionary): { pattern: string | null, values: string[] } {
     if (d[text]) {
         return {
             pattern: text,

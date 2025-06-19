@@ -1,5 +1,5 @@
 import {a_string} from "../../aa/atype/t_basic";
-import {Dict} from '../../aa/atype/a_define_interfaces'
+import type {Dict} from '../../aa/atype/a_define_interfaces';
 
 /**
  * Splits a string at the first occurrence of a separator, returning the parts and a success flag.
@@ -193,7 +193,7 @@ export function trimLeft(s: string, cut: string | number = ' ', cutLen?: number)
         return s
     }
 
-    cutLen = cutLen > 0 ? cutLen : s.length
+    cutLen = cutLen ? cutLen : s.length
     let startIndex = 0
 
     while (cutLen > 0 && startIndex <= s.length - cutLength &&

@@ -1,8 +1,8 @@
 import {a_booln, a_string, int16, int32, int64b, int8, uint16, uint32, uint64b, uint8} from '../../aa/atype/t_basic'
-import {t_path_param} from '../../aa/atype/enums/path_param'
+import type {t_path_param} from '../../aa/atype/enums/path_param'
 import SearchParams from './search_params'
-import {t_httpmethod} from '../../aa/atype/enums/http_method'
-import {IterableKV} from '../maps/base'
+import type {t_httpmethod} from '../../aa/atype/enums/http_method'
+import type {IterableKV} from '../maps/base'
 
 export type URLBase = {
     base: string,
@@ -24,7 +24,7 @@ export type t_searchparam = string | IterableKV | URLSearchParams
 export type t_params = t_searchparam | SearchParams
 
 
-export function NewChangeReferrerError(referer: string, reference: string): Error {
+export function NewChangeReferrerError(referer: string, reference: string | undefined): Error {
     return new Error(`Parameter '${referer}' references to '${reference}'. Modify the source parameter instead.`)
 }
 

@@ -1,5 +1,5 @@
-import {t_expires, t_second, t_utc} from '../../aa/atype/a_define'
-import {Dict} from '../../aa/atype/a_define_interfaces'
+import type {t_expires, t_second, t_utc} from '../../aa/atype/a_define'
+import type {Dict} from '../../aa/atype/a_define_interfaces'
 
 export const STORAGE_SEPARATOR = ' `'
 
@@ -12,7 +12,7 @@ export interface StorageImpl {
 
     getItem<T = unknown>(key: string): T | null
 
-    getItemWithTTL<T = unknown>(key: string): [T | null, t_expires]
+    getItemWithTTL<T = unknown>(key: string): [T | null, t_expires] | null
 
     getItems(key: (RegExp | string)[] | RegExp | string, ...keys: (RegExp | string)[]): Dict | null
 
@@ -27,7 +27,7 @@ export interface StorageImpl {
 export type t_storage_expires = t_expires | Date | t_utc
 
 export interface StorageOptions {
-    expiresIn?: t_storage_expires
+    expiresIn?: t_storage_expires | null
     unclearable?: boolean
     timeDiff?: t_second
 }

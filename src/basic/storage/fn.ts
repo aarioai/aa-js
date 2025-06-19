@@ -1,20 +1,27 @@
-import {NormalizedStorageOptions, STORAGE_SEPARATOR, StorageOptions, t_storage_expires} from './define_types'
+import {
+    type NormalizedStorageOptions,
+    STORAGE_SEPARATOR,
+    type StorageOptions,
+    type t_storage_expires
+} from './define_types'
 import {aliasToAtype, ATYPE_PREFIX, detectAtypeAlias} from '../../aa/atype/t_atype'
 import {a_string, floatToInt} from '../../aa/atype/t_basic'
 import {atypeize} from '../../aa/dynamics/atype'
-import {t_expires, t_second} from '../../aa/atype/a_define'
+import type {t_expires, t_second} from '../../aa/atype/a_define'
 import {DaysInSecond, MinuteInSecond, MinutesInSecond, NO_EXPIRES} from '../../aa/atype/a_define_units'
 import {a_second} from '../../aa/atype/t_basic_server'
 
 
-function normalizeStorageExpires(expires: t_storage_expires, timeDiff: t_second): t_expires {
+function normalizeStorageExpires(expires: t_storage_expires | undefined | null, timeDiff: t_second | undefined | null): t_expires {
     if (expires === undefined || expires === null) {
         return 3 * DaysInSecond // default expires, 3 days
     }
     if (!expires) {
         return 0   // expired
     }
-
+    if (!timeDiff) {
+        timeDiff = 0
+    }
     if (typeof expires === 'number') {
         return expires + timeDiff
     }
@@ -46,7 +53,7 @@ function encodeStorageOptions(options: NormalizedStorageOptions): string {
     return `${expires}${unclearable}`
 }
 
-export function encodeStorageValue(value: unknown, options?: StorageOptions): string | null {
+export function encodeStorageValue(value: unknown, options: StorageOptions): string | null {
     const normalizedOptions = normalizeStorageOptions(options)
     if (!normalizedOptions.expiresIn) {
         return null  // expired
@@ -58,7 +65,7 @@ export function encodeStorageValue(value: unknown, options?: StorageOptions): st
     return `${s}${STORAGE_SEPARATOR}${typeAlias}${opts}`
 }
 
-export function decodeStorageValue<T = unknown>(s: string): { value: T, options?: NormalizedStorageOptions } {
+export function decodeStorageValue<T = unknown>(s: string): { value: T | null, options?: NormalizedStorageOptions } {
     if (!s) {
         return {value: null}
     }
