@@ -1,4 +1,4 @@
-import {CODE_CLIENT_THROWING, CODE_FAILED_AND_SEE_OTHER} from "./code";
+import {CODE_CLIENT_THROWING, CODE_FAILED_AND_SEE_OTHER, CODE_UNAUTHORIZED} from "./code";
 import {code2msg} from "./code2msg";
 import {language, matchLanguage} from "../translate/language";
 import {AErrorDictionaries} from "./dictionaries";
@@ -111,6 +111,10 @@ export class AError extends Error {
 
     isFailedAndSeeOther(): boolean {
         return this.code === CODE_FAILED_AND_SEE_OTHER && this.message !== ''
+    }
+
+    isUnauthorized(): boolean {
+        return this.code === CODE_UNAUTHORIZED
     }
 
     isServerError(): boolean {

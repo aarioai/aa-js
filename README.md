@@ -47,12 +47,24 @@ import aa from 'aa-ts/src/aa.ts'
 aa.httpDefaults.baseURL = 'http://localhost:8080'
 //aa.http.baseURL = 'http://localhost:8080'
 
+// 获取用户列表接口，返回第一页内容
 // 等价于 aa.http.Get("/v1/users")
-aa.http.Request("GET /v1/users").then(data => {
+aa.http.Request("/v1/users").then(data => {
     console.log(data)
 })
 
-aa.http.Request("GET /v1/users", {
+// 获取用户列表第五页内容
+aa.http.Request("/v1/users/page/{page:uint8}", {
+    params: {
+        page: 5,
+    }
+}).then(data => {
+    console.log(data)
+})
+
+
+// 通过性别查询用户列表接口，并返回第二页内容
+aa.http.Request("/v1/users", {
     params: {
         page: 2,
         sex: 2,
@@ -61,7 +73,8 @@ aa.http.Request("GET /v1/users", {
     console.log(data)
 })
 
-aa.http.Request("GET /v1/users/sex/{sex:uint8}/page/{page:uint8}", {
+// 使用Restful URL 标准方式，通过 Path parameter 查询
+aa.http.Request("/v1/users/sex/{sex:uint8}/page/{page:uint8}", {
     params: {
         page: 5,
         sex: 1,
@@ -70,15 +83,8 @@ aa.http.Request("GET /v1/users/sex/{sex:uint8}/page/{page:uint8}", {
     console.log(data)
 })
 
-aa.http.Request("GET /v1/users/page/{page:uint8}", {
-    params: {
-        page: 5,
-    }
-}).then(data => {
-    console.log(data)
-})
-
-aa.http.Request("GET /v1/users/{uid:uint64}", {
+// 通过uid查询匹配的用户列表
+aa.http.Request("/v1/users/{uid:uint64}", {
     params: {
         uid: 3,
     }
@@ -86,6 +92,31 @@ aa.http.Request("GET /v1/users/{uid:uint64}", {
     console.log(data)
 })
 
+```
+
+**进行HTTP Auth的接口请求**
+
+HTTP auth 目前支持对后端 `ResponseBody.data` 返回 `UserToken` 结构的数据：
+
+```ts
+export type UserTokenAttach = {
+    refresh_api?: string
+    refresh_ttl?: t_expires
+    secure?: boolean
+    validate_api?: string
+    [key: string]: unknown
+}
+
+export type UserToken = {
+    access_token?: string    // access token
+    expires_in?: t_expires  // access token 剩余时间（秒）
+    refresh_token?: string // refresh token，可以使用 refresh token 刷新 access token（可能会返回新的token），延长其过期时间
+    scope?: Dict  // 授权范围
+    state?: string // 客户端透传字符串
+    token_type?: string // access token 类型
+
+    attach?: UserTokenAttach  // 附带参数
+}
 ```
 
 ### HTTP 配置
