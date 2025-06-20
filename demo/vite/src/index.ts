@@ -1,5 +1,6 @@
 import aa from 'aa-ts/src/aa.ts'
 import {UNAUTHORIZED_HANDLER} from '../../../src/aa/aconfig/registry_names.ts'
+import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
 
 (function () {
     // aa.httpDefaults.baseURL = ''
@@ -48,16 +49,19 @@ import {UNAUTHORIZED_HANDLER} from '../../../src/aa/aconfig/registry_names.ts'
         console.log(data)
     })
 
-    aa.registry.register(UNAUTHORIZED_HANDLER, (...args) => {
-        console.log(args)
+    aa.registry.register(UNAUTHORIZED_HANDLER, () => {
+         
     })
 
     aa.http.Request("POST /v1/login", {
         data: {
             account: "12345",
             password: "hello",
+            state: "aa-js",
         }
     }).then(data => {
-        console.log(data)
+        aa.http.auth.handleAuthed(data as UserToken)
+    }).catch(e => {
+        console.log("ERROR", e.toString())
     })
 })()
