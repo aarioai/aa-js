@@ -3,6 +3,8 @@ import AaURL from '../../../basic/urls/url'
 import type {ResponseBodyData} from '../../../aa/atype/a_server_dto'
 import type {t_millisecond, t_url_pattern} from '../../../aa/atype/a_define'
 import type {t_params} from '../../../basic/urls/base.ts'
+import {Dict} from '../../../aa/atype/a_define_interfaces.ts'
+import type {t_httpmethod} from '../../../aa/atype/enums/http_method.ts'
 
 export interface BaseRequestOptions extends BaseOptions {
     baseURL?: string
@@ -16,6 +18,12 @@ export interface BasicRequestStruct extends FetchBaseOptions {
     url: AaURL  // method is in AaURL, url.method
     timeout: number
     debounceInterval: t_millisecond
+}
+
+export type HeaderSetting = {
+    [key in t_httpmethod]: Dict<string>
+} & {
+    common: Dict<string>
 }
 
 export interface RequestOptions extends BaseRequestOptions {

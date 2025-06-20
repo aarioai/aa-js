@@ -1,4 +1,11 @@
-import type {HttpImpl, RequestHooks, RequestImpl, RequestOptions, RequestStruct} from '../base/define_interfaces'
+import {
+    HeaderSetting,
+    HttpImpl,
+    RequestHooks,
+    RequestImpl,
+    RequestOptions,
+    RequestStruct
+} from '../base/define_interfaces'
 import AaAuth from '../auth/auth'
 import type {ResponseBodyData} from '../../../aa/atype/a_server_dto'
 import {normalizeBasicRequestOptions, normalizeRequestOptions} from '../base/fn'
@@ -17,6 +24,7 @@ export default class AaFetch implements HttpImpl {
 
     baseURL: string = ''
     debounceInterval: t_millisecond = 400 * Millisecond
+    defaultHeader?: HeaderSetting
 
     constructor(auth: AaAuth, defaultOptions: RequestOptions | null = null) {
         this.auth = auth
@@ -30,7 +38,7 @@ export default class AaFetch implements HttpImpl {
     }
 
     fetch(r: RequestStruct, hooks?: RequestHooks): Promise<string> {
-        return this.baseRequest.Fetch(r.url.href, normalizeBasicRequestOptions(r.url.href, r), hooks)
+        return this.baseRequest.Fetch(r.url.href, normalizeBasicRequestOptions(r.url.href, r, this.defaultHeader), hooks)
     }
 
     Fetch(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<string> {
@@ -134,6 +142,6 @@ export default class AaFetch implements HttpImpl {
                 throw E_Unauthorized
             }
         }
-        return normalizeRequestOptions(api, options)
+        return normalizeRequestOptions(api, options, this.defaultHeader)
     }
 }

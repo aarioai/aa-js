@@ -1,5 +1,5 @@
 import type {t_url_pattern} from '../../../aa/atype/a_define'
-import type {BaseRequestOptions, BasicRequestStruct, RequestOptions, RequestStruct} from './define_interfaces'
+import {BaseRequestOptions, BasicRequestStruct, HeaderSetting, RequestOptions, RequestStruct} from './define_interfaces'
 import AaURL from '../../../basic/urls/url'
 import type {BaseOptions, FetchBaseOptions} from './define_fetch'
 import {normalizeHeaders} from './fn_fetch'
@@ -9,6 +9,7 @@ import {AError} from '../../../aa/aerror/error'
 import json from '../../../aa/atype/json'
 import {E_MissingResponseBody, E_ParseResponseBodyFailed} from './errors'
 import type {Dict} from '../../../aa/atype/a_define_interfaces.ts'
+import defaults from './defaults.ts'
 
 
 // Determines the base URL for API requests based on priority: options > defaults > location.origin
@@ -17,13 +18,17 @@ export function getBaseURL(opts: BaseRequestOptions): string {
         return opts.baseURL
     }
 
+    if (defaults.baseURL) {
+        return defaults.baseURL
+    }
+
     return location.origin
 }
 
-export function extractFetchOptions(method: t_httpmethod, source: BaseOptions): FetchBaseOptions {
+export function extractFetchOptions(method: t_httpmethod, source: BaseOptions, defaultHeader?: HeaderSetting): FetchBaseOptions {
     const result: Dict = {
         method: method,
-        headers: normalizeHeaders(method, source.headers),
+        headers: normalizeHeaders(method, source.headers, defaultHeader),
     }
     for (const [key, value] of Object.entries(source)) {
         // Handled headers
@@ -37,13 +42,13 @@ export function extractFetchOptions(method: t_httpmethod, source: BaseOptions): 
     return result
 }
 
-export function normalizeBasicRequestOptions(apiPattern: t_url_pattern, opts: BaseRequestOptions): BasicRequestStruct {
+export function normalizeBasicRequestOptions(apiPattern: t_url_pattern, opts: BaseRequestOptions, defaultHeader?: HeaderSetting): BasicRequestStruct {
     const url = new AaURL(apiPattern, {
         method: opts?.method,
         baseURL: getBaseURL(opts),
         params: opts?.params,
     })
-    const options = extractFetchOptions(url.method || 'GET', opts)
+    const options = extractFetchOptions(url.method || 'GET', opts, defaultHeader)
 
     return {
         ...options,
@@ -53,13 +58,13 @@ export function normalizeBasicRequestOptions(apiPattern: t_url_pattern, opts: Ba
     }
 }
 
-export function normalizeRequestOptions(apiPattern: t_url_pattern, opts: RequestOptions): RequestStruct {
+export function normalizeRequestOptions(apiPattern: t_url_pattern, opts: RequestOptions, defaultHeader?: HeaderSetting): RequestStruct {
     const url = new AaURL(apiPattern, {
         method: opts?.method,
         baseURL: getBaseURL(opts),
         params: opts?.params,
     })
-    const options = extractFetchOptions(url.method || 'GET', opts)
+    const options = extractFetchOptions(url.method || 'GET', opts, defaultHeader)
 
     return {
         ...options,

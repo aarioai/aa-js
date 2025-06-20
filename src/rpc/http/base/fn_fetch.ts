@@ -5,10 +5,15 @@ import type {Dict} from '../../../aa/atype/a_define_interfaces'
 import {fillDict} from '../../../basic/maps/groups'
 import defaults from './defaults'
 import type {FetchBaseOptions, FetchOptions, t_fetchbody} from './define_fetch'
+import {HeaderSetting} from './define_interfaces.ts'
 
-export function normalizeHeaders(method: t_httpmethod, headers?: Headers | Dict): Headers {
-    const h = defaults.headers?.[method as keyof typeof defaults.headers] || {}
-    const defaultHeaders = fillDict<string>({}, h, defaults.headers.common)
+export function normalizeHeaders(method: t_httpmethod, headers?: Headers | Dict, defaultHeader?: HeaderSetting): Headers {
+    if (!defaultHeader) {
+        defaultHeader = defaults.headers
+    }
+
+    const h = defaultHeader?.[method as keyof typeof defaultHeader] || {}
+    const defaultHeaders = fillDict<string>({}, h, defaultHeader.common)
     const newHeaders = headers ? new Headers(headers as any) : new Headers()
     for (const [key, value] of Object.entries(defaultHeaders)) {
         if (!newHeaders.has(key)) {
