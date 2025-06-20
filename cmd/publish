@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+
+git add -A .
+git commit -m "${1:-"no comment"}"
+git push origin main
+npm version patch
+npm publish

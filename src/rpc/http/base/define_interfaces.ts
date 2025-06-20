@@ -5,6 +5,7 @@ import type {t_millisecond, t_url_pattern} from '../../../aa/atype/a_define'
 import type {t_params} from '../../../basic/urls/base.ts'
 import {Dict} from '../../../aa/atype/a_define_interfaces.ts'
 import type {t_httpmethod} from '../../../aa/atype/enums/http_method.ts'
+import AaAuth from '../auth/auth.ts'
 
 export interface BaseRequestOptions extends BaseOptions {
     baseURL?: string
@@ -63,6 +64,7 @@ export interface RequestImpl {
 }
 
 export interface HttpImpl {
+    readonly auth: AaAuth
     baseURL: string
     debounceInterval: t_millisecond
 

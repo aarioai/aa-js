@@ -31,11 +31,8 @@ export default class AaAuth {
     readonly request: RequestImpl
     customPackAuthorization?: (token: NormalizedUserToken) => BaseRequestOptions | null
     enableCookie: boolean = true
-    defaultCookieOptions: CookieOptions = {
-        path: '/',
-        sameSite: 'Lax',
-        secure: location.protocol === 'https:'
-    }
+    defaultCookieOptions?: CookieOptions
+    defaultUserTokenOptions?: UserToken
     private readonly tx = new AaMutex()
     private userToken: NormalizedUserToken | null = null
     private readonly registry: Registry
@@ -275,8 +272,9 @@ export default class AaAuth {
     }
 
     private cookieOptions(expiresIn?: t_expires): CookieOptions {
+        const defaultOptions = this.defaultCookieOptions || defaults.cookieOptions
         const options = {
-            ...this.defaultCookieOptions
+            ...defaultOptions
         }
         if (expiresIn) {
             options.expiresIn = expiresIn
@@ -313,12 +311,13 @@ export default class AaAuth {
         if (data && key in data) {
             return data[key] as T
         }
-        const userToken = defaults.userToken
-        return key in userToken ? userToken[key] as T : defaultValue
+        const userToken = this.defaultUserTokenOptions || defaults.userTokenOptions
+        return (userToken && key in userToken) ? userToken[key] as T : defaultValue
     }
 
     private mergeDefault<T = Dict>(data: UserToken, key: t_usertoken_key): T | null {
-        const defaultValue = key in defaults.userToken ? cloneDict(defaults.userToken) : null
+        const userToken = this.defaultUserTokenOptions || defaults.userTokenOptions
+        const defaultValue = (userToken && key in userToken) ? cloneDict(userToken) : null
         if (!data || !(key in data)) {
             return defaultValue ? defaultValue as T : null
         }

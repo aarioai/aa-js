@@ -1,7 +1,7 @@
 import aa from 'aa-ts/src/aa.ts'
 
 (function () {
-
+    // aa.httpDefaults.baseURL = ''
     aa.http.baseURL = 'http://192.168.0.222:8080'
 
     // Fetch raw string

@@ -54,7 +54,7 @@ export function normalizeBasicRequestOptions(apiPattern: t_url_pattern, opts: Ba
         ...options,
         url: url,
         timeout: opts?.timeout ?? 0,
-        debounceInterval: opts?.debounceInterval || 0,
+        debounceInterval: opts?.debounceInterval || defaults.debounceInterval || 0,
     }
 }
 
@@ -70,7 +70,7 @@ export function normalizeRequestOptions(apiPattern: t_url_pattern, opts: Request
         ...options,
         url: url,
         timeout: opts?.timeout || 0,
-        debounceInterval: opts.debounceInterval || 0,
+        debounceInterval: opts.debounceInterval || defaults.debounceInterval || 0,
         disableAuth: opts?.disableAuth ?? false,
         disableAuthRefresh: opts?.disableAuthRefresh ?? false,
     }
