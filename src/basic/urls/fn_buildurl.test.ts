@@ -1,6 +1,6 @@
 import {describe} from '@jest/globals'
 import {buildURL, revertURLPathParams} from './fn'
-import {DESCEND} from '../../aa/atype/a_define_funcs'
+import {DESCEND} from '../../aa/atype/a_define_funcs.ts'
 
 describe('buildURL', () => {
     test('buildURL simple', () => {
@@ -40,5 +40,15 @@ describe('buildURL', () => {
         expect(buildURL(base, hash, search)).toBe('https://luexu.com/api/v1/users/123/records/page/100?zig=zag&refer=&redirect=&name=Aario&age=18')
         search.tidy = true
         expect(buildURL(base, hash, search)).toBe('https://luexu.com/api/v1/users/123/records/page/100?zig=zag&name=Aario&age=18')
+    })
+
+
+    test('buildURL with array parameter', () => {
+        const urlPattern = 'https://luexu.com/api/v1/users/{uid:string}'
+        const params = {
+            'uid': [123n, 23n, 32n],
+        }
+        const {base, hash, search} = revertURLPathParams(urlPattern, params)
+        expect(buildURL(base, hash, search)).toBe('https://luexu.com/api/v1/users/123,23,32')
     })
 })

@@ -4,31 +4,32 @@ import {HASH_REF_NAME, NewChangeReferrerError, safePathParamValue, type t_params
 import {ASCEND, type SortFunc} from '../../aa/atype/a_define_funcs'
 import AaMap from '../maps/map'
 import SearchReference from './search_reference'
+import {forEach} from '../maps/iterates.ts'
 
 
 /**
  * Pros for Web API URLSearchParams
  *  1. JSON.stringify(new URLSearchParams('a=100'))  returns '{}', but not {"a":"100"}
  *  2. Jest URLSearchParams does not have `size` property
+ *  3. a=["a","b","c"] will convert to a=a,b,c
  *
  * Cons:
  *  1. SearchParams not support array search params, e.g.  a[]=100&a[]=200 is not allowed
  */
 export default class SearchParams extends AaMap<string> {
     [Symbol.toStringTag] = 'SearchParams'
-    readonly cast = a_string as any
     readonly isAaMap = true
     references: SearchReference = new SearchReference()
     sortFunc: SortFunc = ASCEND
     tidy: boolean = true
     encode: (s: string) => string = deepEncodeURI
 
-
     constructor(source?: t_params) {
         super()
         this.setMany(source)
     }
 
+    cast = (v: unknown): string => Array.isArray(v) ? v.join(',') : a_string(v)
 
     getHashName(): string | undefined {
         if (this.references.has(HASH_REF_NAME)) {
@@ -80,8 +81,9 @@ export default class SearchParams extends AaMap<string> {
         if (typeof source === 'string') {
             return this.setFromSearch(source)
         }
-
-        super.setMany(source as any)
+        forEach(source as any, (value, name: string) => {
+            this.set(name, value)
+        })
         return this
     }
 
@@ -136,7 +138,7 @@ export default class SearchParams extends AaMap<string> {
                 const [name, type] = this.references.get(key)!
                 value = safePathParamValue(this.get(name), type)
             } else {
-                value = safePathParamValue(this.get(key))
+                value = this.get(key) || ''
             }
             if (this.tidy && (!value || key === hashName)) {
                 continue

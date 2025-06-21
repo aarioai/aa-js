@@ -41,7 +41,7 @@ export function safePathParamValue(value: unknown, type?: t_path_param): string 
         return ''
     }
     if (!type) {
-        return Array.isArray(value) ? value.join(',') : a_string(value)
+        return a_string(value)
     }
     switch (type) {
         case ':bool':
@@ -65,6 +65,6 @@ export function safePathParamValue(value: unknown, type?: t_path_param): string 
         case ':uint64':
             return String(uint64b(value as any))
         default:
-            return Array.isArray(value) ? value.join(',') : a_string(value)  // :string, :alphabetical, :uuid, :email, :mail, :weekday
+            return a_string(value)  // :string, :alphabetical, :uuid, :email, :mail, :weekday
     }
 }

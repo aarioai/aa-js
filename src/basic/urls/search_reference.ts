@@ -12,14 +12,7 @@ export default class SearchReference<V = [string, t_path_param?]> extends AaMap<
         super()
         this.setMany(source)
     }
-
-    // readonly cast = (value: unknown): V => {
-    //     const v = Array.isArray(value) ? value : [value]
-    //     const t = v.length === 2 ? v[1] as t_path_param : path_param_string_t
-    //
-    //     return [v[0] || '', t] as V
-    // }
-
+ 
     /**
      * Sets parameters from a search string
      * @example
@@ -98,10 +91,7 @@ export default class SearchReference<V = [string, t_path_param?]> extends AaMap<
         }
         let s = ''
         for (const key of keys) {
-            let value = this.getReference(key) || ''
-            if (Array.isArray(value)) {
-                value = value.join(',')
-            }
+            const value = this.getReference(key) || ''
             s += `&${key}=${value}`
         }
         if (!s) {
