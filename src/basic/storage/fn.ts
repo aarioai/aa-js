@@ -28,11 +28,6 @@ function normalizeStorageExpires(expires: t_storage_expires | undefined | null, 
     if (typeof expires === 'string') {
         expires = new Date(expires)
     }
-
-    if (!(expires instanceof Date)) {
-        return 0
-    }
-
     return a_second(Date.now() - expires.getTime()) + timeDiff
 }
 

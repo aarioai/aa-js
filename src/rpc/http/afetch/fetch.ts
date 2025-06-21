@@ -47,18 +47,18 @@ export default class AaFetch implements HttpImpl {
     }
 
     request<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T> {
-        return this.baseRequest.request<T>(r, hooks).catch(err => {
-            err = aerror(err)
-            if (err.isFailedAndSeeOther()) {
-                this.handleRedirect(err.message)  // special redirect
+        return this.baseRequest.request<T>(r, hooks).catch(e => {
+            e = aerror(e)
+            if (e.isFailedAndSeeOther()) {
+                this.handleRedirect(e.message)  // special redirect
                 throw E_OK
             }
-            if (err.isUnauthorized()) {
-                if (this.auth.handleUnauthorized()) {
+            if (e.isUnauthorized()) {
+                if (this.auth.handleUnauthorized(e)) {
                     throw E_OK
                 }
             }
-            throw err
+            throw e
         })
     }
 

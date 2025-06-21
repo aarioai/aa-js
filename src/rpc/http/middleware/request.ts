@@ -12,12 +12,13 @@ import type {Dict} from '../../../aa/atype/a_define_interfaces'
 import type {t_httpmethod} from '../../../aa/atype/enums/http_method'
 import json from '../../../aa/atype/json.ts'
 import {E_ParseResponseBodyFailed} from '../base/errors.ts'
-import {isOK} from '../../../aa/aerror/fn.ts'
+import {aerror, isOK} from '../../../aa/aerror/fn.ts'
+import defaults from '../base/defaults.ts'
 
 export class AaRequest implements RequestImpl {
     defaultOptions?: BaseRequestOptions
     readonly middleware: AaMiddleware
-
+    errorHandler?: (e: AError) => boolean
 
     constructor(defaults?: BaseRequestOptions, middleware: AaMiddleware = new AaMiddleware()) {
         this.defaultOptions = defaults
@@ -34,20 +35,10 @@ export class AaRequest implements RequestImpl {
         }
         if (hooks?.onFetch) {
             return hooks.onFetch(r).then((r: BasicRequestStruct) => {
-                return window.fetch(r.url.href, normalizeFetchOptions(r)).then(resp => {
-                    let e = new AError(resp.status)
-                    if (!e.isOK()) {
-                        throw e
-                    }
-                })
+                return this.fetchRaw(r.url.href, normalizeFetchOptions(r), true) as Promise<void>
             })
         }
-        return window.fetch(r.url.href, normalizeFetchOptions(r)).then(resp => {
-            let e = new AError(resp.status)
-            if (!e.isOK()) {
-                throw e
-            }
-        })
+        return this.fetchRaw(r.url.href, normalizeFetchOptions(r), true) as Promise<void>
     }
 
     Head(api: t_url_pattern, options?: FetchOptions, hooks?: BaseRequestHooks): Promise<void> {
@@ -60,18 +51,12 @@ export class AaRequest implements RequestImpl {
         return this.head(r, hooks)
     }
 
-    fetchRaw(url: string, options?: FetchOptions): Promise<string> {
-        return window.fetch(url, options).then(resp => {
-            let e = new AError(resp.status)
-            if (!e.isOK()) {
-                throw e
-            }
-            return resp.text()
-        })
+    fetchString(url: string, options?: FetchOptions): Promise<string> {
+        return this.fetchRaw(url, options) as Promise<string>
     }
 
     fetch<T = ResponseBodyData>(url: string, options?: FetchOptions): Promise<T> {
-        return this.fetchRaw(url, options).then(body => {
+        return this.fetchString(url, options).then(body => {
             if (options?.method === 'HEAD') {
                 return null as T
             }
@@ -99,10 +84,10 @@ export class AaRequest implements RequestImpl {
         }
         if (hooks?.onFetch) {
             return hooks.onFetch(r).then((r: BasicRequestStruct) => {
-                return this.fetchRaw(r.url.href, normalizeFetchOptions(r))
+                return this.fetchString(r.url.href, normalizeFetchOptions(r))
             })
         }
-        return this.fetchRaw(r.url.href, normalizeFetchOptions(r))
+        return this.fetchString(r.url.href, normalizeFetchOptions(r))
     }
 
     request<T = ResponseBodyData>(r: BasicRequestStruct, hooks?: BaseRequestHooks): Promise<T> {
@@ -121,11 +106,29 @@ export class AaRequest implements RequestImpl {
         return this.fetch(r.url.href, normalizeFetchOptions(r))
     }
 
-
     Request<T = ResponseBodyData>(api: t_url_pattern, options?: BaseRequestOptions, hooks?: BaseRequestHooks): Promise<T> {
         return this.request(this.normalizeOptions(api, options), hooks)
     }
 
+    private fetchRaw(url: string, options?: FetchOptions, returnVoid?: boolean): Promise<string | void> {
+        return window.fetch(url, options).then(resp => {
+            let e = new AError(resp.status)
+            if (!e.isOK()) {
+                throw e
+            }
+            if (returnVoid) {
+                return
+            }
+            return resp.text()
+        }).catch(e => {
+            e = aerror(e)
+            const handler = this.errorHandler || defaults.requestErrorHandler
+            if (!handler) {
+                throw e
+            }
+            handler(e)
+        })
+    }
 
     private normalizeOptions(api: t_url_pattern, options?: BaseRequestOptions, method?: t_httpmethod): BasicRequestStruct {
         if (this.defaultOptions) {

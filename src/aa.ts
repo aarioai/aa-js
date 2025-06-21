@@ -18,7 +18,7 @@ export class Aa {
 
     constructor() {
         const baseRequest = new AaRequest()
-        const auth = new AaAuth(this.registry, this.#storageManager, baseRequest)
+        const auth = new AaAuth(this.#storageManager, baseRequest)
         this.#http = new AaFetch(auth)
     }
 

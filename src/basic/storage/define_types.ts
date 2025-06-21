@@ -1,7 +1,7 @@
 import type {t_expires, t_second, t_utc} from '../../aa/atype/a_define'
 import type {Dict} from '../../aa/atype/a_define_interfaces'
 
-export const STORAGE_SEPARATOR = ' `'
+export const STORAGE_SEPARATOR = '  |'
 
 export interface StorageImpl {
     readonly length: number

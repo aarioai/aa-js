@@ -2,6 +2,7 @@ import {HoursInSecond, Milliseconds, NO_EXPIRES} from '../../../aa/atype/a_defin
 import type {UserToken} from '../../../aa/atype/a_server_dto'
 import {HeaderSetting} from './define_interfaces.ts'
 import type {CookieOptions} from '../../../basic/storage/define_types.ts'
+import {AError} from '../../../aa/aerror/error.ts'
 
 
 const defaultHeaderSetting: HeaderSetting = {
@@ -36,6 +37,9 @@ class DefaultSettings {
             refresh_ttl: NO_EXPIRES,
         }
     }
+
+    unauthorizedHandler?: (e: AError) => boolean
+    requestErrorHandler?: (e: AError) => boolean
 }
 
 const defaults = new DefaultSettings()

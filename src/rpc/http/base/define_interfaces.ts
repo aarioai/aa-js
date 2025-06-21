@@ -19,6 +19,7 @@ export interface BasicRequestStruct extends FetchBaseOptions {
     url: AaURL  // method is in AaURL, url.method
     timeout: number
     debounceInterval: t_millisecond
+    interceptError: boolean
 }
 
 export type HeaderSetting = {
@@ -52,7 +53,7 @@ export interface RequestImpl {
 
     Head(api: t_url_pattern, options?: FetchOptions, hooks?: BaseRequestHooks): Promise<void>
 
-    fetchRaw(url: string, options?: FetchOptions): Promise<string>
+    fetchString(url: string, options?: FetchOptions): Promise<string>
 
     fetch<T = ResponseBodyData>(url: string, options?: FetchOptions): Promise<T>
 

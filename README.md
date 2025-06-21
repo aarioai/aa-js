@@ -122,8 +122,8 @@ export type UserToken = {
 注册全局未登录方法，若服务端返回HTTP状态码或`ResponseBody.code`错误码 401，则会调用该注册的方法
 
 ```ts 
-aa.registry.register(UNAUTHORIZED_HANDLER, (...args) => {
-    console.log(args)
+aa.registry.register(UNAUTHORIZED_HANDLER, () => {
+    // goto_login_page()
 })
 ```
 
@@ -136,9 +136,12 @@ aa.http.Request("POST /v1/login", {
         state: "aa-js",
     }
 }).then(data => {
-    // 登录成功后，将UserToken存储起来
+    // 登录成功后，将UserToken自动存储起来
     aa.http.auth.handleAuthed(data as UserToken)
 })
+
+
+
 ```
 
 ### HTTP 配置

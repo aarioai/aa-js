@@ -9,14 +9,12 @@ import {P_Logout} from '../../../aa/aconfig/const_param'
 import defaults from '../base/defaults'
 import type {t_expires, t_second} from '../../../aa/atype/a_define'
 import {MinutesInSecond, NO_EXPIRES, Second, Seconds} from '../../../aa/atype/a_define_units'
-import Registry from '../../../aa/aconfig/registry'
 import type {Dict} from '../../../aa/atype/a_define_interfaces'
 import {cloneDict} from '../../../aa/atype/clone'
 import {fillDict} from '../../../basic/maps/groups'
 import {AaMutex, E_DeadLock} from '../../../aa/calls/mutex'
 import {AError} from '../../../aa/aerror/error'
 import log from '../../../aa/alog/log'
-import {UNAUTHORIZED_HANDLER} from '../../../aa/aconfig/registry_names'
 import {CODE_UNAUTHORIZED} from '../../../aa/aerror/code'
 import {aerror} from '../../../aa/aerror/fn'
 import {TRUE} from '../../../aa/atype/a_server_consts'
@@ -34,14 +32,13 @@ export default class AaAuth {
     defaultCookieOptions?: CookieOptions
     defaultUserTokenOptions?: UserToken
     enableDebug = false
+    unauthorizedHandler?: (e: AError) => boolean
     private readonly tx = new AaMutex()
     private userToken: NormalizedUserToken | null = null
-    private readonly registry: Registry
     #authTime: t_second = 0
     #validated?: boolean
 
-    constructor(registry: Registry, storageManager: AaStorageManager, r?: RequestImpl) {
-        this.registry = registry
+    constructor(storageManager: AaStorageManager, r?: RequestImpl) {
         this.cookie = storageManager.cookie
         this.sessionCollection = new AaCollection(this.tableName, new AaDbLike(storageManager.session))
         this.localCollection = new AaCollection(this.tableName, new AaDbLike(storageManager.local))
@@ -206,14 +203,15 @@ export default class AaAuth {
         return userToken
     }
 
-    handleUnauthorized(): boolean {
+    handleUnauthorized(e: AError): boolean {
         this.clear()
-        if (!this.registry.has(UNAUTHORIZED_HANDLER)) {
-            this.debug(`registry missing UNAUTHORIZED_HANDLER`)
+        const handler = this.unauthorizedHandler || defaults.unauthorizedHandler
+
+        if (!handler) {
+            log.error('missing unauthorized handler')
             return false
         }
-        this.registry.activate(UNAUTHORIZED_HANDLER)
-        return true
+        return handler(e)
     }
 
     async awaitAuthed() {
