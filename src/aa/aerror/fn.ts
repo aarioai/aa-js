@@ -11,6 +11,7 @@ export function aerror(e: number | string | Error | AError, msg?: string): AErro
     return new AError(e, msg)
 }
 
-export function isOK(code: number): boolean {
-    return code >= 200 && code < 300
+export function isOK(code: number | string): boolean {
+    const c = Number(code)
+    return c >= 200 && c < 300
 }

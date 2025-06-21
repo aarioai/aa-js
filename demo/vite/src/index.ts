@@ -41,10 +41,10 @@ import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
         console.log(data)
     })
 
-    aa.httpDefaults.requestErrorHandler = (e: AError): boolean => {
-        console.log("=========>", e)
+    // global http request error hook
+    aa.httpDefaults.requestErrorHook = (e: AError): AError => {
         alert(e.toString())
-        return true
+        return e
     }
     aa.http.Request("/v1/users3/{uid:uint64}", {
         params: {
@@ -67,4 +67,10 @@ import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
     }).catch(e => {
         console.log("ERROR", e.toString())
     })
+
+
+    aa.http.auth.unauthorizedHandler = (e: AError): boolean => {
+        alert("Unauthorized " + e.toString())
+        return true
+    }
 })()

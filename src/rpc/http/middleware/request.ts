@@ -73,7 +73,7 @@ export class AaRequest implements RequestImpl {
         }).catch(e => {
             e = aerror(e)
             const handler = this.requestErrorHook || defaults.requestErrorHook
-            throw handler ? handler(e) : e
+            throw (handler ? handler(e) : e)
         })
     }
 
@@ -116,18 +116,17 @@ export class AaRequest implements RequestImpl {
 
     private fetchRaw(url: string, options?: FetchOptions, returnVoid?: boolean): Promise<string | void> {
         return window.fetch(url, options).then(resp => {
-            let e = new AError(resp.status)
-            if (!e.isOK()) {
-                throw e
+            if (!isOK(resp.status)) {
+                throw new AError(resp.status)
             }
             if (returnVoid) {
                 return
             }
             return resp.text()
-        }).catch(e => {
-            e = aerror(e)
+        }).catch((err: Error) => {
+            const e = aerror(err)
             const handler = this.requestErrorHook || defaults.requestErrorHook
-            throw handler ? handler(e) : e
+            throw (handler ? handler(e) : e)
         })
     }
 

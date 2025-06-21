@@ -1,4 +1,5 @@
 import * as ae from "./code";
+import {CODE_CLIENT_THROWING} from "./code";
 
 export const AErrorMessages: [number, string][] = [
     [ae.CODE_CONTINUE, "Continue"],
@@ -77,10 +78,20 @@ export const AErrorMessages: [number, string][] = [
 
 
 export function code2msg(code: number): string {
-    for (const p of AErrorMessages) {
-        if (p[0] === code) {
-            return p[1]
+    for (const [c, msg] of AErrorMessages) {
+        if (c === code) {
+            return msg
         }
     }
     return "code: " + code
+}
+
+export function msg2code(message: string): number {
+    const m = message.toLocaleUpperCase().replace(/[^A-Z\d]/g, '')
+    for (const [code, msg] of AErrorMessages) {
+        if (msg.toLocaleUpperCase().replace(/[^A-Z\d]/g, '') === m) {
+            return code
+        }
+    }
+    return CODE_CLIENT_THROWING
 }

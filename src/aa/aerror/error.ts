@@ -1,5 +1,5 @@
-import {CODE_CLIENT_THROWING, CODE_FAILED_AND_SEE_OTHER, CODE_UNAUTHORIZED} from "./code";
-import {code2msg} from "./code2msg";
+import {CODE_FAILED_AND_SEE_OTHER, CODE_UNAUTHORIZED} from "./code";
+import {code2msg, msg2code} from "./code2msg";
 import {language, matchLanguage} from "../translate/language";
 import {AErrorDictionaries} from "./dictionaries";
 import {translate} from "../translate/dictionary";
@@ -11,7 +11,7 @@ import {isOK} from './fn'
 
 export class AError extends Error {
     readonly code: number
-    readonly message = ''
+
     #headings: string[] = []
     #details: string[] = []
     #locked: boolean = false
@@ -23,13 +23,14 @@ export class AError extends Error {
      * new AError("something wrong happened")
      */
     constructor(code: number | string, msg?: string) {
-        let c: number = CODE_CLIENT_THROWING
+        let c: number
         if (typeof code === "number") {
             c = code
         } else if (/^\d+$/.test(code)) {
             c = Number(code)
         } else {
             msg = code
+            c = msg2code(code)
         }
         if (!msg) {
             msg = code2msg(c)
