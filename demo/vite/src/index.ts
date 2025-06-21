@@ -49,8 +49,9 @@ import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
         console.log(data)
     })
 
+    aa.http.auth.enableDebug = true
     aa.registry.register(UNAUTHORIZED_HANDLER, () => {
-         
+
     })
 
     aa.http.Request("POST /v1/login", {

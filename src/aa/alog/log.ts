@@ -20,7 +20,7 @@ export default class log {
             }
             strs.push(String(msgs[i]))
         }
-        const msg = strs.join('  ')
+        const msg = strs.join(' ')
         if (msg.charAt(0) !== '[') {
             console.log(msg, ...options)
             return
