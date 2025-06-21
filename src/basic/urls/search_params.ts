@@ -141,7 +141,7 @@ export default class SearchParams extends AaMap<string> {
             if (this.tidy && (!value || key === hashName)) {
                 continue
             }
-            const encodedValue = this.encode(value)
+            const encodedValue = this.encode(Array.isArray(value) ? value.join(',') : value)
             s += `&${key}=${encodedValue}`
         }
 

@@ -43,10 +43,10 @@ import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
 
     // global http request error hook
     aa.httpDefaults.requestErrorHook = (e: AError): AError => {
-        alert(e.toString())
+        alert("Global request error hook: " + e.toString())
         return e
     }
-    aa.http.Request("/v1/users3/{uid:uint64}", {
+    aa.http.Request("/v1/users/{uid:uint64}", {
         params: {
             uid: 3,
         }
@@ -73,4 +73,13 @@ import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
         alert("Unauthorized " + e.toString())
         return true
     }
+
+
+    aa.http.Request("/v1/authed/users2/uid/{uid:string}", {
+        params: {
+            uid: [1, 3, 5].join(','),
+        }
+    }).then(data => {
+        console.log(data)
+    })
 })()

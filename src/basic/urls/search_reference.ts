@@ -98,7 +98,10 @@ export default class SearchReference<V = [string, t_path_param?]> extends AaMap<
         }
         let s = ''
         for (const key of keys) {
-            const value = this.getReference(key) || ''
+            let value = this.getReference(key) || ''
+            if (Array.isArray(value)) {
+                value = value.join(',')
+            }
             s += `&${key}=${value}`
         }
         if (!s) {
