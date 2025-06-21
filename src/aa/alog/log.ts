@@ -4,14 +4,25 @@ import {ALogStyle} from './style'
 import {AError} from '../aerror/error'
 
 export default class log {
-
-    static printRaw(msg: string) {
+    static print(...msgs: unknown[]) {
         if (aconfig.debugger.isAlert()) {
+            // @TODO alert
+            const s = joinWith(' ', ...msgs)
+            alert(s)
             return
         }
-
+        let strs: string[] = []
+        let options: unknown[] = []
+        for (let i = 0; i < msgs.length; i++) {
+            if (typeof msgs[i] === 'object') {
+                options = msgs.splice(i)
+                break
+            }
+            strs.push(String(msgs[i]))
+        }
+        const msg = strs.join('  ')
         if (msg.charAt(0) !== '[') {
-            console.log(msg)
+            console.log(msg, ...options)
             return
         }
 
@@ -25,23 +36,20 @@ export default class log {
             }
         }
 
-        handler(msg)
-    }
-
-    static print(...msgs: unknown[]) {
-        const msg = joinWith(' ', ...msgs)
-        log.printRaw(msg)
+        handler(msg, ...options)
     }
 
     static printStyle(style: ALogStyle, ...msgs: unknown[]) {
         if (aconfig.debugger.disabled()) {
             return
         }
-        const msg = joinWith(' ', ...msgs)
+
         if (aconfig.debugger.isAlert()) {
-            log.printRaw(msg)
+            log.print(...msgs)
             return
         }
+
+        const msg = joinWith('  ', ...msgs)
         console.log(`%c ${msg}`, style.toString())
     }
 
@@ -78,10 +86,8 @@ export default class log {
             return err.isNotFound() ? log.debug(err.toString()) : log.error(err.toString())
         }
 
-        if (err instanceof Error) {
-            log.error(err.toString())
-            return
-        }
+        log.error(err.toString())
+        return
     }
 
     static error(...msgs: unknown[]) {

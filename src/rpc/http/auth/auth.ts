@@ -33,6 +33,7 @@ export default class AaAuth {
     enableCookie: boolean = true
     defaultCookieOptions?: CookieOptions
     defaultUserTokenOptions?: UserToken
+    enableDebug = false
     private readonly tx = new AaMutex()
     private userToken: NormalizedUserToken | null = null
     private readonly registry: Registry
@@ -84,12 +85,14 @@ export default class AaAuth {
     }
 
     clear() {
+        this.debug('clear')
         this.cookie.clear()
         this.sessionCollection.drop()
         this.localCollection.drop()
     }
 
     async refresh(refreshToken: string, refreshAPI: string): Promise<[NormalizedUserToken | null, AError | null]> {
+        this.debug(`refresh token: ${refreshToken}, refreshAPI: ${refreshAPI}`)
         if (!await this.tx.awaitLock(5 * Seconds)) {
             return [null, E_DeadLock]
         }
@@ -131,11 +134,14 @@ export default class AaAuth {
 
     packAuthorization(token: NormalizedUserToken): BaseRequestOptions | null {
         if (this.customPackAuthorization) {
-            return this.customPackAuthorization(token)
+            const result = this.customPackAuthorization(token)
+            this.debug('custom pack authorization', token, result)
+            return result
         }
         const accessToken = token['access_token']
         const tokenType = token['token_type']
         if (!accessToken) {
+            this.debug('pack authorization missing access_token', token)
             return null
         }
         return {
@@ -190,7 +196,8 @@ export default class AaAuth {
     }
 
     saveUserToken(userToken: NormalizedUserToken | null) {
-        if (!userToken || !userToken['access_token']) {
+        this.debug('save user token', userToken)
+        if (!userToken?.['access_token']) {
             return
         }
         const expiresIn = userToken['expires_in']!
@@ -204,9 +211,11 @@ export default class AaAuth {
     }
 
     handleAuthed(data: UserToken): NormalizedUserToken | null {
+        this.debug(`handle authed remove cookie ${P_Logout}`)
         this.cookie.removeItem(P_Logout)
         const [userToken, ok] = this.normalizeUserToken(data)
         if (!ok) {
+            this.debug('normalize user token failed', data)
             return null
         }
         this.#authTime = Date.now() / Second
@@ -218,19 +227,21 @@ export default class AaAuth {
     handleUnauthorized(): boolean {
         this.clear()
         if (!this.registry.has(UNAUTHORIZED_HANDLER)) {
+            this.debug(`registry missing UNAUTHORIZED_HANDLER`)
             return false
         }
         this.registry.activate(UNAUTHORIZED_HANDLER)
         return true
     }
 
-    async awaitAuthStatus() {
+    async awaitAuthed() {
         const [userToken, ok] = this.loadUserToken()
         if (ok || !userToken) {
             return
         }
         await this.refresh(userToken['refresh_token']!, userToken.attach!['refresh_api']!)
     }
+
 
     logout() {
         this.cookie.clear(this.cookieOptions())
@@ -240,16 +251,12 @@ export default class AaAuth {
         })
     }
 
-    // private setUserTokenSession(expiresIn: t_expires, userToken: UserToken, ...keys: t_usertoken_key[]) {
-    //     const options: StorageOptions = {
-    //         expiresIn: expiresIn
-    //     }
-    //     for (const key of keys) {
-    //         if (key in userToken) {
-    //             this.sessionCollection.insert(key, userToken[key], options)
-    //         }
-    //     }
-    // }
+    private debug(...msgs: unknown[]) {
+        if (!this.enableDebug) {
+            return
+        }
+        log.debug('auth', ...msgs)
+    }
 
     private setUserTokenLocal(expiresIn: t_expires, userToken: NormalizedUserToken, ...keys: t_usertoken_key[]) {
         const options: StorageOptions = {
@@ -257,7 +264,9 @@ export default class AaAuth {
         }
         for (const key of keys) {
             if (key in userToken) {
-                this.localCollection.insert(key, userToken[key], options)
+                const value = userToken[key]
+                this.debug(`insert collection ${key} to ${value}`)
+                this.localCollection.insert(key, value, options)
             }
         }
     }
@@ -266,7 +275,9 @@ export default class AaAuth {
         const options = this.cookieOptions(expires)
         for (const key of keys) {
             if (key in userToken) {
-                this.cookie.setItem(key, userToken[key as keyof typeof userToken], options)
+                const value = userToken[key as keyof typeof userToken]
+                this.debug(`set cookie ${key} to ${value}`)
+                this.cookie.setItem(key, value, options)
             }
         }
     }
@@ -293,18 +304,6 @@ export default class AaAuth {
         }
         return this.cookie.getItem(key) as T | null
     }
-
-    // private loadStorageWithTTL<T = string>(key: t_usertoken_key): [T | null, t_expires] | null {
-    //     let result = this.localCollection.findWithTTL<T>(key)
-    //     if (result !== null && result !== undefined) {
-    //         return result
-    //     }
-    //     result = this.sessionCollection.findWithTTL<T>(key)
-    //     if (result !== null && result !== undefined) {
-    //         return result
-    //     }
-    //     return this.cookie.getItemWithTTL<T>(key)
-    // }
 
 
     private getOrDefault<T = string>(data: UserToken, key: t_usertoken_key, defaultValue: T | null = null): T | null {
@@ -336,6 +335,7 @@ export default class AaAuth {
         const refreshToken = this.userToken['refresh_token']
         const refreshAPI = this.userToken.attach?.['refresh_api']
         if (!accessToken && (!refreshToken || !refreshAPI)) {
+            this.debug(`check user token access token=${accessToken}, refreshToken=${refreshToken}, refreshAPI=${refreshAPI}`)
             return [null, false]
         }
         if (!accessToken) {
@@ -345,10 +345,12 @@ export default class AaAuth {
         if (expiresIn === null || expiresIn === NO_EXPIRES || (expiresIn - Date.now() - this.authTime > 0)) {
             return [userToken, true]
         }
+        this.debug(`check user token expires_in=${expiresIn}`)
         return [userToken, false]  // expired
     }
 
     private normalizeUserToken(data: UserToken): [NormalizedUserToken | null, boolean] {
+        this.debug("normalizeUserToken", data)
         return this.checkUserToken({
             access_token: this.getOrDefault(data, 'access_token'),
             expires_in: this.getOrDefault<t_expires>(data, 'expires_in', NO_EXPIRES),
