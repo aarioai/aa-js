@@ -39,7 +39,7 @@ class DefaultSettings {
     }
 
     unauthorizedHandler?: (e: AError) => boolean
-    requestErrorHandler?: (e: AError) => boolean
+    requestErrorHook?: (e: AError) => AError
 }
 
 const defaults = new DefaultSettings()

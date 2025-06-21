@@ -1,5 +1,5 @@
 import aa from 'aa-ts/src/aa.ts'
-import {UNAUTHORIZED_HANDLER} from '../../../src/aa/aconfig/registry_names.ts'
+import type {AError} from 'aa-ts/src/aa/aerror/error'
 import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
 
 (function () {
@@ -41,7 +41,12 @@ import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
         console.log(data)
     })
 
-    aa.http.Request("/v1/users/{uid:uint64}", {
+    aa.httpDefaults.requestErrorHandler = (e: AError): boolean => {
+        console.log("=========>", e)
+        alert(e.toString())
+        return true
+    }
+    aa.http.Request("/v1/users3/{uid:uint64}", {
         params: {
             uid: 3,
         }
@@ -50,9 +55,6 @@ import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
     })
 
     aa.http.auth.enableDebug = true
-    aa.registry.register(UNAUTHORIZED_HANDLER, () => {
-
-    })
 
     aa.http.Request("POST /v1/login", {
         data: {

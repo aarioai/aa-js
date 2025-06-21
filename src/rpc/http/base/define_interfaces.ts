@@ -66,6 +66,7 @@ export interface RequestImpl {
 
 export interface HttpImpl {
     readonly auth: AaAuth
+    readonly baseRequest: RequestImpl
     baseURL: string
     debounceInterval: t_millisecond
 

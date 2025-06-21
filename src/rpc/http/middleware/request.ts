@@ -18,7 +18,7 @@ import defaults from '../base/defaults.ts'
 export class AaRequest implements RequestImpl {
     defaultOptions?: BaseRequestOptions
     readonly middleware: AaMiddleware
-    errorHandler?: (e: AError) => boolean
+    requestErrorHook?: (e: AError) => AError
 
     constructor(defaults?: BaseRequestOptions, middleware: AaMiddleware = new AaMiddleware()) {
         this.defaultOptions = defaults
@@ -70,6 +70,10 @@ export class AaRequest implements RequestImpl {
                 throw new AError(result.code, result.msg)
             }
             return result.data as T
+        }).catch(e => {
+            e = aerror(e)
+            const handler = this.requestErrorHook || defaults.requestErrorHook
+            throw handler ? handler(e) : e
         })
     }
 
@@ -122,11 +126,8 @@ export class AaRequest implements RequestImpl {
             return resp.text()
         }).catch(e => {
             e = aerror(e)
-            const handler = this.errorHandler || defaults.requestErrorHandler
-            if (!handler) {
-                throw e
-            }
-            handler(e)
+            const handler = this.requestErrorHook || defaults.requestErrorHook
+            throw handler ? handler(e) : e
         })
     }
 
