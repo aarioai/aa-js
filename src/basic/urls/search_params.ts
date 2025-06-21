@@ -136,12 +136,12 @@ export default class SearchParams extends AaMap<string> {
                 const [name, type] = this.references.get(key)!
                 value = safePathParamValue(this.get(name), type)
             } else {
-                value = this.get(key) || ''
+                value = safePathParamValue(this.get(key))
             }
             if (this.tidy && (!value || key === hashName)) {
                 continue
             }
-            const encodedValue = this.encode(Array.isArray(value) ? value.join(',') : value)
+            const encodedValue = this.encode(value)
             s += `&${key}=${encodedValue}`
         }
 

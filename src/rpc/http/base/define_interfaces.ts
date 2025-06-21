@@ -13,6 +13,7 @@ export interface BaseRequestOptions extends BaseOptions {
     params?: t_params
     timeout?: number
     debounceInterval?: t_millisecond
+    interceptError?: boolean
 }
 
 export interface BasicRequestStruct extends FetchBaseOptions {

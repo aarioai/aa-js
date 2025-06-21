@@ -77,7 +77,7 @@ import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
 
     aa.http.Request("/v1/authed/users2/uid/{uid:string}", {
         params: {
-            uid: [1, 3, 5].join(','),
+            uid: [1, 3, 5],
         }
     }).then(data => {
         console.log(data)
