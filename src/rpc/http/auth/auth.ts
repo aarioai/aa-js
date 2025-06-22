@@ -42,7 +42,7 @@ export default class AaAuth {
     enableDebug = false
     unauthorizedHandler?: (e: AError) => boolean
     txTimeout = 5 * Seconds
-    private readonly tx = new AaMutex()
+    private readonly tx = new AaMutex(5 * Seconds, true)
     private userToken: NormalizedUserToken | null = null
     #authTime: t_second = 0
     #validated?: boolean
@@ -100,9 +100,9 @@ export default class AaAuth {
                 }
                 log.test(e)
                 throw e
-            }).finally(() => {
-                this.tx.unlock()
             })
+        }).finally(() => {
+            this.tx.unlock()
         })
     }
 
