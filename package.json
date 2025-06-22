@@ -1,6 +1,6 @@
 {
   "name": "aa-ts",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "author": "Aario",
   "description": "a typescript SDK for calling restful APIs",
   "type": "module",
