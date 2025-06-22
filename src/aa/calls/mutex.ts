@@ -46,7 +46,7 @@ export class AaMutex {
         this.log('lock-->')
         this.lockTime = Date.now()
         this.log(`lock acquired at ${this.lockTime}`)
-        this.setAutoUnlockTimer()
+        //  this.setAutoUnlockTimer()
         return true
     }
 
