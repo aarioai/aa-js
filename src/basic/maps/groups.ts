@@ -5,6 +5,7 @@ import {forEach} from './iterates'
 import {getKV, setKV} from './kv'
 import {isMeaningful, syncType, zeroize} from '../../aa/atype/t_basic'
 import {BREAK, CONTINUE} from '../../aa/atype/a_define_signals'
+import {len} from '../../aa/atype/func.ts'
 
 
 export function compareAny(a: unknown, b: unknown): boolean {
@@ -204,18 +205,21 @@ export function refillIn<T extends KV = KV>(defaults: T, source: KV | undefined)
  *  union({a:[100]}, {a:[200]}, false)                      // {a:[200]}
  */
 export function union<V = unknown, K extends DictKey = DictKey, T extends KV<V, K> = KV<V, K>>(base: T, partial: T, unionArrays: boolean = true): T {
-    if (!base || Object.keys(base).length === 0) {
+    if (!base || len(base) === 0) {
         return partial
     }
 
     forEach(partial, (value: V, key) => {
+        if (!isMeaningful(value)) {
+            return CONTINUE
+        }
         const baseValue = getKV<V, K>(base, key)
-        if (!isMeaningful(baseValue) || !isMeaningful(value)) {
+        if (!isMeaningful(baseValue) || baseValue === null) {
             setKV(base, key, value)
             return CONTINUE
         }
 
-        if (typeof value !== 'object') {
+        if (typeof value !== 'object' || value === null || typeof baseValue !== 'object') {
             setKV<V, K>(base, key, value)
         } else if (Array.isArray(value)) {
             if (!unionArrays) {
@@ -228,7 +232,7 @@ export function union<V = unknown, K extends DictKey = DictKey, T extends KV<V, 
                 setKV<V, K>(base, key, newValue as any)
             }
         } else {
-            const newValue = union<V, K>(baseValue!, value as T)
+            const newValue = union<V, K>(baseValue as T, value as T)
             setKV<V, K>(base, key, newValue as any)
         }
     })

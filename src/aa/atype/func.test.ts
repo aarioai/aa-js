@@ -31,4 +31,17 @@ describe('len', () => {
         expect(len(new LenTester())).toBe(100)
     })
 
+    test('len Map', () => {
+        const m = new Map()
+        m.set("Content-Type", "text/plain")
+        m.set("Accept", "*/*")
+        expect(len(m)).toBe(2)
+    })
+
+    test('len Header', () => {
+        const header = new Headers()
+        header.set("Content-Type", "text/plain")
+        header.set("Accept", "*/*")
+        expect(len(header)).toBe(2)
+    })
 })

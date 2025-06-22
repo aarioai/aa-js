@@ -25,27 +25,40 @@ import {a_bool, a_string} from "./t_basic";
  * len(class A{get len(){return 5}})        // 5 (custom length property)
  */
 export function len(value: unknown): number {
-    if (typeof value === 'undefined' || value === null) {
+    if (value === undefined || value === null) {
         return 0
     }
 
-    // self-defined property or getter (get len(){ return 10 })
-    if (typeof (value as any).len === "number") {
-        return (value as any).len
+    if (typeof value !== 'object') {
+        return a_string(value).length
+    }
+    const v = (value as any)
+    // Handle custom len property or len getter (get len(){ return 10 })
+    if (typeof v.len === "number") {
+        return v.len
     }
 
-    // string, array or others
-    if (typeof (value as any).length === "number") {
-        return (value as any).length
+    // Handle Map, Set, etc.
+    if (typeof v.size === "number") {
+        return v.size
     }
 
-    switch (typeof value) {
-        case 'number':
-            return String(value).length
-        case 'object':
-            return Object.keys(value).length
+    // Handle array, ect.
+    if (typeof v.length === "number") {
+        return v.length
     }
-    return a_string(value).length
+
+    // Handle iterables (including Headers)
+    if (typeof v[Symbol.iterator] === 'function') {
+        // Special case for Headers which has entries()
+        if (typeof v.entries === 'function') {
+            return Array.from(v.entries()).length;
+        }
+        return Array.from(v).length;
+    }
+
+    // Fallback handle plain object
+    return Object.keys(value).length
 }
 
 /**
