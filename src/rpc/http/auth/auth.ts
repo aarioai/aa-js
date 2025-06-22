@@ -12,15 +12,23 @@ import {MinutesInSecond, NO_EXPIRES, Second, Seconds} from '../../../aa/atype/a_
 import type {Dict} from '../../../aa/atype/a_define_interfaces'
 import {cloneDict} from '../../../aa/atype/clone'
 import {fillDict} from '../../../basic/maps/groups'
-import {AaMutex, E_DeadLock} from '../../../aa/calls/mutex'
+import {AaMutex} from '../../../aa/calls/mutex'
 import {AError} from '../../../aa/aerror/error'
 import log from '../../../aa/alog/log'
 import {CODE_UNAUTHORIZED} from '../../../aa/aerror/code'
 import {aerror} from '../../../aa/aerror/fn'
 import {TRUE} from '../../../aa/atype/a_server_consts'
+import {NIF} from '../../../aa/atype/a_define_funcs.ts'
 
 export const E_MissingUserToken = new AError(CODE_UNAUTHORIZED, 'missing user token').lock()
 export const E_InvalidUserToken = new AError(CODE_UNAUTHORIZED, 'invalid user token').lock()
+
+export enum UserTokenStatus {
+    Missing = -1, // access token expired, and missing refresh token
+    Expired = 0,
+    OK = 1,
+}
+
 export default class AaAuth {
     readonly tableName = 'auth'
     readonly sessionCollection: AaCollection
@@ -33,6 +41,7 @@ export default class AaAuth {
     defaultUserTokenOptions?: UserToken
     enableDebug = false
     unauthorizedHandler?: (e: AError) => boolean
+    txTimeout = 5 * Seconds
     private readonly tx = new AaMutex()
     private userToken: NormalizedUserToken | null = null
     #authTime: t_second = 0
@@ -69,45 +78,53 @@ export default class AaAuth {
         this.localCollection.drop()
     }
 
-    async refresh(refreshToken: string, refreshAPI: string): Promise<[NormalizedUserToken | null, AError | null]> {
+    refresh(refreshToken: string, refreshAPI: string): Promise<NormalizedUserToken> {
         this.debug(`refresh token: ${refreshToken}, refreshAPI: ${refreshAPI}`)
-        if (!await this.tx.awaitLock(5 * Seconds)) {
-            return [null, E_DeadLock]
-        }
-        try {
-            const data = await this.request.Request<UserToken>(refreshAPI, {
+
+        return this.tx.waitLock(this.txTimeout).then(() => {
+            return this.request.Request<UserToken>(refreshAPI, {
                 data: {
                     'grant_type': 'refresh_token',
                     'code': refreshToken,
                 }
+            }).then(data => {
+                const userToken = this.handleAuthed(data)
+                if (!userToken) {
+                    throw E_InvalidUserToken.widthDetail(data)
+                }
+                return userToken
+            }).catch(err => {
+                const e = aerror(err as any)
+                if (!e.isServerError()) {
+                    this.clear()
+                }
+                log.test(e)
+                throw e
+            }).finally(() => {
+                this.tx.unlock()
             })
-            const userToken = this.handleAuthed(data!)
-            if (!userToken) {
-                return [null, E_InvalidUserToken.widthDetail(data)]
-            }
-            return [userToken, null]
-        } catch (err) {
-            const e = aerror(err as any)
-            if (!e.isServerError()) {
-                this.clear()
-            }
-            log.test(e)
-            return [null, e]
-        } finally {
-            this.tx.unlock()
-        }
+        })
     }
 
-    async getOrRefreshUserToken(): Promise<[NormalizedUserToken | null, AError | null]> {
-        if (!this.userToken) {
-            return [null, E_InvalidUserToken]
+    async getOrRefreshUserToken(): Promise<NormalizedUserToken | null> {
+        const [userToken, status] = this.loadUserToken()
+        if (status === UserTokenStatus.OK) {
+            return userToken
         }
-        if (!this.userToken['refresh_token'] || !this.userToken.attach?.['refresh_api']) {
-            return [null, E_MissingUserToken]
+        if (status === UserTokenStatus.Missing) {
+            return null
         }
-        const refreshToken = this.userToken['refresh_token']
-        const api = this.userToken.attach['refresh_api']
-        return await this.refresh(refreshToken, api)
+
+        if (!userToken!['refresh_token'] || !userToken!.attach?.['refresh_api']) {
+            return null
+        }
+        const refreshToken = userToken!['refresh_token']
+        const api = userToken!.attach['refresh_api']
+        try {
+            return await this.refresh(refreshToken, api)
+        } catch (e: any) {
+            return null
+        }
     }
 
     packAuthorization(token: NormalizedUserToken): BaseRequestOptions | null {
@@ -129,16 +146,16 @@ export default class AaAuth {
         }
     }
 
-    async getAuthorizationOptions(): Promise<[BaseRequestOptions | null, AError | null]> {
-        const [userToken, err] = await this.getOrRefreshUserToken()
-        if (err !== null) {
-            return [null, aerror(err)]
+    async getAuthorizationOptions(): Promise<BaseRequestOptions | null> {
+        const userToken = await this.getOrRefreshUserToken()
+        if (!userToken) {
+            return null
         }
         const options = this.packAuthorization(userToken!)
         if (!options) {
-            return [null, E_MissingUserToken]
+            return null
         }
-        return [options, null]
+        return options
     }
 
     async validateUserToken(userToken: NormalizedUserToken): Promise<boolean> {
@@ -153,7 +170,7 @@ export default class AaAuth {
             return false
         }
         const api = userToken.attach['validate_api']!
-        if (!await this.tx.awaitLock(5 * Seconds)) {
+        if (!await this.tx.awaitLock(this.txTimeout)) {
             return false
         }
         try {
@@ -192,11 +209,9 @@ export default class AaAuth {
         this.debug(`handle authed remove cookie ${P_Logout}`)
         this.cookie.removeItem(P_Logout)
         this.#authTime = Date.now()
-        const [userToken, ok] = this.normalizeUserToken(data)
-        if (!ok) {
-            this.debug('normalize user token failed', data)
-            return null
-        }
+        const userToken = this.normalizeUserToken(data)
+        this.userTokenStatus(userToken)
+
         this.#authTime = Date.now() / Second
         this.validated = true
         this.saveUserToken(userToken)
@@ -214,12 +229,13 @@ export default class AaAuth {
         return handler(e)
     }
 
-    async awaitAuthed() {
-        const [userToken, ok] = this.loadUserToken()
-        if (ok || !userToken) {
-            return
+    prepare() {
+        const [userToken, status] = this.loadUserToken()
+        if (status === UserTokenStatus.Expired) {
+            this.refresh(userToken!['refresh_token']!, userToken!.attach!['refresh_api']!).then(NIF, e => {
+                this.handleUnauthorized(aerror(e))
+            })
         }
-        await this.refresh(userToken['refresh_token']!, userToken.attach!['refresh_api']!)
     }
 
     logout() {
@@ -321,27 +337,29 @@ export default class AaAuth {
         return fillDict(value, defaultValue) as T
     }
 
-    private checkUserToken(userToken: NormalizedUserToken): [NormalizedUserToken | null, boolean] {
+    private userTokenStatus(userToken: NormalizedUserToken): UserTokenStatus {
         const accessToken = userToken['access_token']
         const refreshToken = userToken['refresh_token']
         const refreshAPI = userToken.attach?.['refresh_api']
-        if (!accessToken && (!refreshToken || !refreshAPI)) {
+        const refreshable = refreshToken && refreshAPI
+        if (!accessToken && !refreshable) {
             this.debug(`check user token access token=${accessToken}, refreshToken=${refreshToken}, refreshAPI=${refreshAPI}`)
-            return [null, false]
+            return UserTokenStatus.Missing
         }
         if (!accessToken) {
-            return [userToken, false]
+            return UserTokenStatus.Expired
         }
         const expiresIn = userToken['expires_in']
-        if (expiresIn === undefined || expiresIn === null || expiresIn === NO_EXPIRES || (expiresIn + this.authTime() > Date.now())) {
-            return [userToken, true]
+        if (expiresIn === undefined || expiresIn === null || (expiresIn + this.authTime() > Date.now())) {
+            return UserTokenStatus.OK
         }
         this.debug(`check user token expires_in=${expiresIn}`)
-        return [userToken, false]  // expired
+
+        return refreshable ? UserTokenStatus.Expired : UserTokenStatus.Missing
     }
 
-    private normalizeUserToken(data: UserToken): [NormalizedUserToken | null, boolean] {
-        return this.checkUserToken({
+    private normalizeUserToken(data: UserToken): NormalizedUserToken {
+        return {
             access_token: this.getOrDefault(data, 'access_token'),
             expires_in: this.getOrDefault<t_expires>(data, 'expires_in', NO_EXPIRES),
             refresh_token: this.getOrDefault(data, 'refresh_token'),
@@ -349,15 +367,16 @@ export default class AaAuth {
             state: this.getOrDefault(data, 'state'),
             token_type: this.getOrDefault(data, 'token_type'),
             attach: this.mergeDefault<UserTokenAttach>(data, 'attach'),
-        })
+        }
     }
 
 
-    private loadUserToken(): [NormalizedUserToken | null, boolean] {
-        if (this.userToken) {
-            return this.checkUserToken(this.userToken)
+    private loadUserToken(): [NormalizedUserToken | null, UserTokenStatus] {
+        if (this.userToken && this.userTokenStatus(this.userToken) === UserTokenStatus.OK) {
+            return [this.userToken, UserTokenStatus.OK]
         }
-        return this.checkUserToken({
+
+        const userToken = {
             access_token: this.loadStorage('access_token'),
             expires_in: this.loadStorage<t_expires>('expires_in'),
             refresh_token: this.loadStorage('refresh_token'),
@@ -365,7 +384,12 @@ export default class AaAuth {
             state: this.loadStorage('state'),
             token_type: this.loadStorage('token_type'),
             attach: this.loadStorage<UserTokenAttach>('attach') ?? {},
-        })
+        }
+        const status = this.userTokenStatus(userToken)
+        if (status === UserTokenStatus.OK) {
+            this.userToken = userToken
+        }
+        return [userToken, status]
     }
 
 }

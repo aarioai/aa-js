@@ -135,9 +135,9 @@ export default class AaFetch implements HttpImpl {
         console.log("===>", options, !options.disableAuth)
         // Handle auth
         if (!options.disableAuth) {
-            const [auth, err] = await this.auth.getAuthorizationOptions()
-            console.info(auth, err)
-            if (!err) {
+            const auth = await this.auth.getAuthorizationOptions()
+            console.info(auth)
+            if (auth) {
                 console.info("before union", options, auth)
                 options = union(options as Dict, auth as Dict)
                 console.info("union", options)
