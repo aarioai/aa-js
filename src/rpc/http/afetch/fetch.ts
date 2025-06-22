@@ -132,7 +132,7 @@ export default class AaFetch implements HttpImpl {
         if (method && options.method !== method) {
             options.method = method
         }
-
+        console.log("===>", options, !options.disableAuth)
         // Handle auth
         if (!options.disableAuth) {
             const [auth, err] = await this.auth.getAuthorizationOptions()
