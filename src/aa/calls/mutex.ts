@@ -22,20 +22,20 @@ export class AaMutex {
         return ++AaMutex.idIncr
     }
 
-    destroy(): void {
-        this.log('destroy lock')
-        this.clearTimer()
-    }
-
 
     isLocked(): boolean {
         if (!this.lockTime) {
             return false
         }
         const now = Date.now()
-        const timeout = this.lockTime + this.timeout
-        this.log(`checking is locked: ${this.lockTime} + ${this.timeout} = ${timeout} >? ${now}`)
-        return timeout > now
+        const expire = this.lockTime + this.timeout
+        this.log(`checking is locked: ${this.lockTime} + ${this.timeout} = ${expire} >? ${now}`)
+        if (expire > now) {
+            return true
+        }
+        // Auto-unlock if expired
+        this.unlock()
+        return false
     }
 
 
@@ -43,8 +43,9 @@ export class AaMutex {
         if (this.isLocked()) {
             return false
         }
+        this.log('lock-->')
         this.lockTime = Date.now()
-        this.log(`lock at ${this.lockTime}`)
+        this.log(`lock acquired at ${this.lockTime}`)
         this.setAutoUnlockTimer()
         return true
     }
@@ -53,13 +54,13 @@ export class AaMutex {
         const interval = 200 * Milliseconds
         const startTime = Date.now()
         while (Date.now() - startTime < maxWaitTime) {
-            this.log(`await lock ${this.lockTime}`)
+            this.log(`await lock before (${this.lockTime})`)
             if (this.gainLock()) {
                 return true
             }
             await asleep(interval)
         }
-        log.warn(`#${this.id} dead lock!`)
+        log.warn(`${this.name}(#${this.id}) dead lock!`)
         return false
     }
 
