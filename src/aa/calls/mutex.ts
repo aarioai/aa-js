@@ -7,15 +7,15 @@ export const E_DeadLock = new AError('dead lock').lock()
 
 export class AaMutex {
     private static idIncr: number = 0
-    debug: boolean
+    name: string
+    debug = false
+    timeout = 5 * Second
     private readonly id = AaMutex.atomicId()
-    private readonly timeout: number
     private lockTime: number = 0
     private cleanTimer: number = 0
 
-    constructor(timeout: number = 5 * Second, debug: boolean = false) {
-        this.timeout = timeout
-        this.debug = debug
+    constructor(name: string = '') {
+        this.name = name
     }
 
     static atomicId() {
@@ -23,12 +23,13 @@ export class AaMutex {
     }
 
     destroy(): void {
-        this.log('Destroy lock')
+        this.log('destroy lock')
         this.clearTimer()
     }
 
 
     isLocked(): boolean {
+        this.log(`check is locked: ${this.lockTime} + ${this.timeout}`)
         return this.lockTime > 0 && (this.lockTime + this.timeout > Date.now())
     }
 
@@ -37,20 +38,20 @@ export class AaMutex {
         if (this.isLocked()) {
             return false
         }
-
-        this.log('Lock')
         this.lockTime = Date.now()
+        this.log(`lock at ${this.lockTime}`)
         this.setAutoUnlockTimer()
         return true
     }
 
     async awaitLock(maxWaitTime = 5 * Seconds): Promise<boolean> {
-        const interval = 100 * Milliseconds
+        const interval = 200 * Milliseconds
         const startTime = Date.now()
         while (Date.now() - startTime < maxWaitTime) {
             if (this.gainLock()) {
                 return true
             }
+            this.log('gain lock failed')
             await asleep(interval)
         }
         log.warn(`#${this.id} dead lock!`)
@@ -59,6 +60,7 @@ export class AaMutex {
 
     waitLock(maxWaitTime = 5 * Seconds): Promise<void> {
         return new Promise(async () => {
+            this.log('wait lock')
             const ok = await this.awaitLock(maxWaitTime)
             if (!ok) {
                 throw E_DeadLock
@@ -67,7 +69,7 @@ export class AaMutex {
     }
 
     unlock(): void {
-        this.log('Unlock')
+        this.log('unlock')
         this.clearTimer()
         this.lockTime = 0
     }
@@ -86,7 +88,7 @@ export class AaMutex {
 
     private log(msg: string): void {
         if (this.debug) {
-            log.debug(`#${this.id} ${msg}`)
+            log.debug(`${this.name}(#${this.id}) ${msg}`)
         }
     }
 
@@ -94,7 +96,7 @@ export class AaMutex {
         const timeout = this.timeout
         this.clearTimer()
         this.cleanTimer = window.setTimeout(() => {
-            this.log(`Lock timeout (${timeout}ms)`)
+            this.log(`lock timeout (${timeout}ms)`)
             this.lockTime = 0
         }, timeout)
     }

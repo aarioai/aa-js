@@ -18,7 +18,7 @@ export default class AaVuserMetadata {
     }
     #selectedVuid?: t_uint64b
     #metadata?: NormalizedVuserMetadata
-    private readonly tx = new AaMutex()
+    private readonly tx = new AaMutex('vuser_metadata')
     private readonly auth: AaAuth
     private readonly collection: AaCollection
     private readonly http: HttpImpl

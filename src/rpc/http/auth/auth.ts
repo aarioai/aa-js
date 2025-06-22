@@ -42,7 +42,7 @@ export default class AaAuth {
     enableDebug = false
     unauthorizedHandler?: (e: AError) => boolean
     txTimeout = 5 * Seconds
-    private readonly tx = new AaMutex(5 * Seconds, true)
+    private readonly tx = new AaMutex('auth')
     private userToken: NormalizedUserToken | null = null
     #authTime: t_second = 0
     #validated?: boolean
@@ -170,7 +170,7 @@ export default class AaAuth {
             return false
         }
         const api = userToken.attach['validate_api']!
-        if (!await this.tx.awaitLock(this.txTimeout)) {
+        if (!(await this.tx.awaitLock(this.txTimeout))) {
             return false
         }
         try {
