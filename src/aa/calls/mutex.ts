@@ -24,7 +24,7 @@ export class AaMutex {
 
     destroy(): void {
         this.log('destroy lock')
-        this.clearTimer()
+        clearTimeout(this.cleanTimer)
     }
 
 
@@ -34,7 +34,7 @@ export class AaMutex {
         }
         const now = Date.now()
         const timeout = this.lockTime + this.timeout
-        this.log(`check is locked: ${this.lockTime} + ${this.timeout} = ${timeout} >? ${now}`)
+        this.log(`checking is locked: ${this.lockTime} + ${this.timeout} = ${timeout} >? ${now}`)
         return timeout > now
     }
 
@@ -53,10 +53,10 @@ export class AaMutex {
         const interval = 200 * Milliseconds
         const startTime = Date.now()
         while (Date.now() - startTime < maxWaitTime) {
+            this.log(`await lock ${this.lockTime}`)
             if (this.gainLock()) {
                 return true
             }
-            this.log('gain lock failed')
             await asleep(interval)
         }
         log.warn(`#${this.id} dead lock!`)
@@ -75,7 +75,7 @@ export class AaMutex {
 
     unlock(): void {
         this.log('unlock')
-        this.clearTimer()
+        clearTimeout(this.cleanTimer)
         this.lockTime = 0
     }
 
@@ -88,17 +88,10 @@ export class AaMutex {
 
     private setAutoUnlockTimer() {
         const timeout = this.timeout
-        this.clearTimer()
+        clearTimeout(this.cleanTimer)
         this.cleanTimer = window.setTimeout(() => {
             this.log(`lock timeout (${timeout}ms)`)
             this.lockTime = 0
         }, timeout)
-    }
-
-
-    private clearTimer() {
-        if (this.cleanTimer !== null) {
-            clearTimeout(this.cleanTimer)
-        }
     }
 }
