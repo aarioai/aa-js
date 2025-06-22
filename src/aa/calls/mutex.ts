@@ -12,7 +12,7 @@ export class AaMutex {
     timeout = 5 * Second
     private readonly id = AaMutex.atomicId()
     private lockTime: number = 0
-    private cleanTimer: number = 0
+    private cleanTimer: number | null = null
 
     constructor(name: string = '') {
         this.name = name
@@ -24,7 +24,7 @@ export class AaMutex {
 
     destroy(): void {
         this.log('destroy lock')
-        clearTimeout(this.cleanTimer)
+        this.clearTimer()
     }
 
 
@@ -43,7 +43,7 @@ export class AaMutex {
         if (this.isLocked()) {
             return false
         }
-        // this.lockTime = Date.now()
+        this.lockTime = Date.now()
         this.log(`lock at ${this.lockTime}`)
         this.setAutoUnlockTimer()
         return true
@@ -75,7 +75,7 @@ export class AaMutex {
 
     unlock(): void {
         this.log('unlock')
-        clearTimeout(this.cleanTimer)
+        this.clearTimer()
         this.lockTime = 0
     }
 
@@ -87,11 +87,17 @@ export class AaMutex {
     }
 
     private setAutoUnlockTimer() {
-        const timeout = this.timeout
-        clearTimeout(this.cleanTimer)
+        this.clearTimer()
         this.cleanTimer = window.setTimeout(() => {
-            this.log(`lock timeout (${timeout}ms)`)
-            this.lockTime = 0
-        }, timeout)
+            this.log(`lock auto-released after timeout (${this.timeout}ms)`)
+            this.unlock()
+        }, this.timeout)
+    }
+
+    private clearTimer() {
+        if (this.cleanTimer) {
+            clearTimeout(this.cleanTimer)
+            this.cleanTimer = null
+        }
     }
 }
