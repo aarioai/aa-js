@@ -49,7 +49,7 @@ export function normalizeBasicRequestOptions(apiPattern: t_url_pattern, opts: Ba
         params: opts?.params,
     })
     const options = extractFetchOptions(url.method || 'GET', opts, defaultHeader)
-
+    console.info("normalizeBasicRequestOptions", options)
     return {
         ...options,
         url: url,
