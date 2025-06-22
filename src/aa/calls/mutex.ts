@@ -59,7 +59,7 @@ export class AaMutex {
 
     waitLock(maxWaitTime = 5 * Seconds): Promise<void> {
         return new Promise(async () => {
-            const ok = this.awaitLock(maxWaitTime)
+            const ok = await this.awaitLock(maxWaitTime)
             if (!ok) {
                 throw E_DeadLock
             }
