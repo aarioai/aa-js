@@ -43,7 +43,7 @@ export class AaMutex {
         if (this.isLocked()) {
             return false
         }
-        this.lockTime = Date.now()
+        // this.lockTime = Date.now()
         this.log(`lock at ${this.lockTime}`)
         this.setAutoUnlockTimer()
         return true
