@@ -1,7 +1,8 @@
 import {Milliseconds, Second, Seconds} from "../atype/a_define_units";
 import log from '../alog/log'
 import {AError} from '../aerror/error'
-import {asleep} from '../../basic/promises/fn'
+import {asleep, reject, resolve} from '../../basic/promises/fn'
+
 
 export const E_DeadLock = new AError('dead lock').lock()
 
@@ -60,17 +61,18 @@ export class AaMutex {
             }
             await asleep(interval)
         }
+
         log.warn(`${this.name}(#${this.id}) dead lock!`)
         return false
     }
 
     waitLock(maxWaitTime = 5 * Seconds): Promise<void> {
-        return new Promise(async () => {
-            this.log('wait lock')
-            const ok = await this.awaitLock(maxWaitTime)
+        return this.awaitLock(maxWaitTime).then((ok) => {
+            this.log(`wait lock ${ok}`)
             if (!ok) {
-                throw E_DeadLock
+                return reject(E_DeadLock)
             }
+            return resolve(undefined)
         })
     }
 
