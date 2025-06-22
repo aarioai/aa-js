@@ -29,8 +29,13 @@ export class AaMutex {
 
 
     isLocked(): boolean {
-        this.log(`check is locked: ${this.lockTime} + ${this.timeout}`)
-        return this.lockTime > 0 && (this.lockTime + this.timeout > Date.now())
+        if (!this.lockTime) {
+            return false
+        }
+        const now = Date.now()
+        const timeout = this.lockTime + this.timeout
+        this.log(`check is locked: ${this.lockTime} + ${this.timeout} = ${timeout} >? ${now}`)
+        return timeout > now
     }
 
 
@@ -72,17 +77,6 @@ export class AaMutex {
         this.log('unlock')
         this.clearTimer()
         this.lockTime = 0
-    }
-
-
-    getStatus() {
-        return {
-            id: this.id,
-            isLocked: this.isLocked(),
-            lockAt: this.lockTime,
-            timeout: this.timeout,
-            remainingTime: this.lockTime > 0 ? Math.max(0, this.lockTime + this.timeout - Date.now()) : 0
-        };
     }
 
 
