@@ -39,9 +39,9 @@ export default class AaAuth {
     enableCookie: boolean = true
     defaultCookieOptions?: CookieOptions
     defaultUserTokenOptions?: UserToken
-    enableDebug = false
     unauthorizedHandler?: (e: AError) => boolean
     txTimeout = 5 * Seconds
+    #enableDebug = false
     private readonly tx = new AaMutex('auth')
     private userToken: NormalizedUserToken | null = null
     #authTime: t_second = 0
@@ -52,6 +52,15 @@ export default class AaAuth {
         this.sessionCollection = new AaCollection(this.tableName, new AaDbLike(storageManager.session))
         this.localCollection = new AaCollection(this.tableName, new AaDbLike(storageManager.local))
         this.request = r ?? new AaRequest()
+    }
+
+    get enableDebug(): boolean {
+        return this.#enableDebug
+    }
+
+    set enableDebug(value: boolean) {
+        this.#enableDebug = value
+        this.tx.debug = value
     }
 
     private get validated(): boolean {

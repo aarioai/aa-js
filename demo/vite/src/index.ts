@@ -67,7 +67,8 @@ import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
     }).catch(e => {
         console.log("ERROR", e.toString())
     })
-
+    aa.http.auth.enableDebug = true
+    
 
     aa.http.auth.unauthorizedHandler = (e: AError): boolean => {
         alert("Unauthorized " + e.toString())
