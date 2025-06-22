@@ -43,10 +43,9 @@ export class AaMutex {
         if (this.isLocked()) {
             return false
         }
-        this.log('lock-->')
         this.lockTime = Date.now()
         this.log(`lock acquired at ${this.lockTime}`)
-        //  this.setAutoUnlockTimer()
+        this.setAutoUnlockTimer()
         return true
     }
 
@@ -56,6 +55,7 @@ export class AaMutex {
         while (Date.now() - startTime < maxWaitTime) {
             this.log(`await lock before (${this.lockTime})`)
             if (this.gainLock()) {
+                this.log(`lock gained at ${this.lockTime}`)
                 return true
             }
             await asleep(interval)
