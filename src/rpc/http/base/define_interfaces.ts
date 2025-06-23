@@ -50,6 +50,9 @@ export interface RequestHooks extends BaseRequestHooks {
 }
 
 export interface RequestImpl {
+    defaults: BaseRequestOptions
+    defaultHeader?: HeaderSetting
+
     head(r: BasicRequestStruct, hooks?: BaseRequestHooks): Promise<void>
 
     Head(api: t_url_pattern, options?: FetchOptions, hooks?: BaseRequestHooks): Promise<void>
@@ -68,7 +71,7 @@ export interface RequestImpl {
 export interface HttpImpl {
     readonly auth: AaAuth
     readonly base: RequestImpl
- 
+
 
     handleRedirect(path: string): unknown
 

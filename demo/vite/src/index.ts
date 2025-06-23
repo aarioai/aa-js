@@ -4,7 +4,7 @@ import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
 
 (function () {
     // aa.httpDefaults.baseURL = ''
-    aa.http.baseURL = 'http://192.168.0.222:8080'
+    aa.http.defaults.baseURL = 'http://192.168.0.222:8080'
 
     // Fetch raw string
     aa.http.Fetch("/v1/ping").then(pong => {
@@ -67,7 +67,7 @@ import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
     }).catch(e => {
         console.log("ERROR", e.toString())
     })
- 
+
 
     aa.http.auth.unauthorizedHandler = (e: AError): boolean => {
         console.error("Unauthorized " + e.toString())
