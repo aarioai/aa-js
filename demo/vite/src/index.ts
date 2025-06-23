@@ -3,7 +3,7 @@ import type {AError} from 'aa-ts/src/aa/aerror/error'
 import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
 
 (function () {
-    // aa.httpDefaults.baseURL = ''
+    // aa.requestOptions.httpDefaults.baseURL = ''
     aa.http.base.defaults.baseURL = 'http://192.168.0.222:8080'
 
     // Fetch raw string
