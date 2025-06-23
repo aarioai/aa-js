@@ -114,6 +114,7 @@ aa.http.Request("/v1/users").then(data => {
 })
 
 // 获取用户列表第五页内容
+// 等价于 aa.http.Get("/v1/users/page/{page:uint8}", ...)
 aa.http.Request("/v1/users/page/{page:uint8}", {
     params: {
         page: 5,
@@ -124,6 +125,7 @@ aa.http.Request("/v1/users/page/{page:uint8}", {
 
 
 // 通过性别查询用户列表接口，并返回第二页内容
+// 等价于 aa.http.Get("/v1/users", ...)
 aa.http.Request("/v1/users", {
     params: {
         page: 2,
@@ -134,6 +136,7 @@ aa.http.Request("/v1/users", {
 })
 
 // 使用Restful URL 标准方式，通过 Path parameter 查询
+// 等价于 aa.http.Get("/v1/users/sex/{sex:uint8}/page/{page:uint8}", ...)
 aa.http.Request("/v1/users/sex/{sex:uint8}/page/{page:uint8}", {
     params: {
         page: 5,
@@ -144,6 +147,7 @@ aa.http.Request("/v1/users/sex/{sex:uint8}/page/{page:uint8}", {
 })
 
 // 通过uid查询匹配的用户列表
+// 等价于 aa.http.Get("/v1/users/{uid:uint64}", ...)
 aa.http.Request("/v1/users/{uid:uint64}", {
     params: {
         uid: 3,
@@ -190,6 +194,7 @@ aa.http.auth.unauthorizedHandler = (e: AError): boolean => {
 
 ```ts 
 // 密码登录接口，`ResponseBody.data` 返回 UserToken
+// 等价于 aa.http.Post("/v1/login", ...)
 aa.http.Request("POST /v1/login", {
     data: {
         account: "12345",
@@ -212,11 +217,12 @@ aa.http.Request("POST /v1/login", {
 ```ts 
 import {Millisecond} from './a_define_units'
 
-aa.httpDefaults.baseURL = ''  // 全局默认 base URL
-aa.httpDefaults.debounceInterval = 400 * Milliseconds  // 全局默认防抖时间间隔
-aa.httpDefaults.headers = {}  //  全局默认 header 默认配置
-aa.httpDefaults.cookieOptions = {}  // 全局 auth cookie 默认配置
-aa.httpDefaults.userTokenOptions = {}  // 全局默认 user token 默认配置
+aa.httpDefaults.requestOptions = {} // BaseRequestOptions   默认全局配置
+aa.httpDefaults.headers = {}  //  HeaderSetting 全局默认 header 默认配置
+aa.httpDefaults.cookieOptions = {}  // CookieOptions 全局 auth cookie 默认配置
+aa.httpDefaults.userTokenOptions = {}  // UserToken 全局默认 user token 默认配置
+aa.httpDefaults.unauthorizedHandler = undefined  // ?: (e: AError) => boolean
+aa.httpDefaults.requestErrorHook = undefined // ?: (e: AError) => AError
 ```
 
 #### 默认 HTTP 配置
@@ -224,11 +230,12 @@ aa.httpDefaults.userTokenOptions = {}  // 全局默认 user token 默认配置
 aa.http 是默认的一个 HttpImpl 实例，也可以使用自定义的实例。
 
 ```ts
-aa.http.baseURL = '' // 默认http实例 base URL
-aa.http.debounceInterval = 400 * Milliseconds  // 默认http实例防抖时间间隔
-aa.http.defaultHeader = {} // 默认http实例防抖时间间隔
-aa.http.auth.defaultCookieOptions = {}// 默认http实例 auth cookie 配置
-aa.http.auth.defaultUserTokenOptions = {}// 默认http实例 user token 配置
+aa.http.auth.defaultCookieOptions = {}// 默认http  auth cookie 实例配置
+aa.http.auth.defaultUserTokenOptions = {}// 默认http user token 实例配置
+
+aa.http.base.defaults = {} // BaseRequestOptions 默认http 实例配置
+aa.http.base.defaultHeader = {} // HeaderSetting 默认http 实例header
+
 ```
 
 可以重置aa.http，改为自定义的实例，当然也可以设置多个http实例，分别为不同实例设置不同的默认实例配置。
