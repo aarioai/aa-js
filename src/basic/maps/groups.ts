@@ -199,12 +199,12 @@ export function refillIn<T extends KV = KV>(defaults: T, source: KV | undefined)
  * Deeply unions two objects recursively
  *
  * @example
- *  union({a:100, b:200}, {b:1, c:2})                       // {a:100, b:1, c:2}
- *  union({a:{aa:{aaa:1}}}, {a:{aa:{bbb:2}, ab:2}})         // {a:{aa:{aaa:1, bbb:2}, ab:2}}
- *  union({a:[100]}, {a:[200]})                             // {a:[100, 200]}
- *  union({a:[100]}, {a:[200]}, false)                      // {a:[200]}
+ *  unsafeUnion({a:100, b:200}, {b:1, c:2})                       // {a:100, b:1, c:2}
+ *  unsafeUnion({a:{aa:{aaa:1}}}, {a:{aa:{bbb:2}, ab:2}})         // {a:{aa:{aaa:1, bbb:2}, ab:2}}
+ *  unsafeUnion({a:[100]}, {a:[200]})                             // {a:[100, 200]}
+ *  unsafeUnion({a:[100]}, {a:[200]}, false)                      // {a:[200]}
  */
-export function union<V = unknown, K extends DictKey = DictKey, T extends KV<V, K> = KV<V, K>>(base: T, partial: T, unionArrays: boolean = true): T {
+export function unsafeUnion<V = unknown, K extends DictKey = DictKey, T extends KV<V, K> = KV<V, K>>(base: T, partial: T, unionArrays: boolean = true): T {
     if (!base || len(base) === 0) {
         return partial
     }
@@ -232,7 +232,7 @@ export function union<V = unknown, K extends DictKey = DictKey, T extends KV<V, 
                 setKV<V, K>(base, key, newValue as any)
             }
         } else {
-            const newValue = union<V, K>(baseValue as T, value as T)
+            const newValue = unsafeUnion<V, K>(baseValue as T, value as T)
             setKV<V, K>(base, key, newValue as any)
         }
     })

@@ -1,5 +1,5 @@
 import {describe, expect, test} from '@jest/globals'
-import {assignDict, union} from './groups'
+import {assignDict, unsafeUnion} from './groups'
 import {Dict} from '../../aa/atype/a_define_interfaces.ts'
 
 describe('map objects merging functions', () => {
@@ -12,9 +12,9 @@ describe('map objects merging functions', () => {
 
 describe('union', () => {
     test('union', () => {
-        expect(union({a: 100, b: 200}, {b: 1, c: 2})).toEqual({a: 100, b: 1, c: 2})
-        expect(union({a: {aa: {aaa: 1}}}, {a: {aa: {bbb: 2}, ab: 2}})).toEqual({a: {aa: {aaa: 1, bbb: 2}, ab: 2}})
-        expect(union({a: [100]}, {a: [200]}, false)).toEqual({a: [200]})
+        expect(unsafeUnion({a: 100, b: 200}, {b: 1, c: 2})).toEqual({a: 100, b: 1, c: 2})
+        expect(unsafeUnion({a: {aa: {aaa: 1}}}, {a: {aa: {bbb: 2}, ab: 2}})).toEqual({a: {aa: {aaa: 1, bbb: 2}, ab: 2}})
+        expect(unsafeUnion({a: [100]}, {a: [200]}, false)).toEqual({a: [200]})
     })
 
     test('union header', () => {
@@ -26,7 +26,7 @@ describe('union', () => {
         headerB.set('X-B', 'B')
         headerB.set('X-D', 'D')
 
-        const result = union({a: {aa: headerA}}, {a: {aa: headerB, ab: 2}}) as Dict
+        const result = unsafeUnion({a: {aa: headerA}}, {a: {aa: headerB, ab: 2}}) as Dict
         const a = result.a as Dict
         const aa = a.aa as Headers
         expect(a.ab).toBe(2)

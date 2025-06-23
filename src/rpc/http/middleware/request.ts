@@ -7,7 +7,7 @@ import {
 } from '../base/define_interfaces'
 import type {t_url_pattern} from '../../../aa/atype/a_define'
 import {normalizeBasicRequestOptions} from '../base/fn'
-import {union} from '../../../basic/maps/groups'
+import {unsafeUnion} from '../../../basic/maps/groups'
 import AaMiddleware from './middleware'
 import {reject} from '../../../basic/promises/fn'
 import type {FetchOptions} from '../base/define_fetch'
@@ -21,6 +21,7 @@ import {E_ParseResponseBodyFailed} from '../base/errors.ts'
 import {aerror, isOK} from '../../../aa/aerror/fn.ts'
 import defaults from '../base/defaults.ts'
 import log from '../../../aa/alog/log.ts'
+import {cloneDict} from '../../../aa/atype/clone.ts'
 
 export class AaRequest implements RequestImpl {
     defaults: BaseRequestOptions
@@ -125,7 +126,8 @@ export class AaRequest implements RequestImpl {
 
     normalizeOptions<T extends BaseRequestOptions = BaseRequestOptions>(options?: T, method?: t_httpmethod): T {
         log.debug("=------=>", options, method, this.defaults)
-        options = options ? union(this.defaults as Dict, options as Dict) as T : this.defaults as T
+        const defaults = cloneDict(this.defaults as Dict)
+        options = options ? unsafeUnion(defaults, options as Dict) as T : defaults as T
         if (method && options.method !== method) {
             options.method = method
         }

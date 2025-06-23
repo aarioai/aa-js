@@ -2,7 +2,7 @@ import {HttpImpl, RequestHooks, RequestImpl, RequestOptions, RequestStruct} from
 import AaAuth from '../auth/auth'
 import type {ResponseBodyData} from '../../../aa/atype/a_server_dto'
 import {normalizeBasicRequestOptions, normalizeRequestOptions} from '../base/fn'
-import {union} from '../../../basic/maps/groups'
+import {unsafeUnion} from '../../../basic/maps/groups'
 import type {Dict} from '../../../aa/atype/a_define_interfaces'
 import {aerror} from '../../../aa/aerror/fn'
 import {E_OK, E_Unauthorized} from '../../../aa/aerror/errors'
@@ -116,7 +116,7 @@ export default class AaFetch implements HttpImpl {
         if (!options.disableAuth) {
             try {
                 const auth = await this.auth.getAuthorizationOptions()
-                options = union(options as Dict, auth as Dict)
+                options = unsafeUnion(options as Dict, auth as Dict)
             } catch (e) {
                 if (options.mustAuth) {
                     throw E_Unauthorized

@@ -1,4 +1,4 @@
-import type {Builder, Dict} from './a_define_interfaces'
+import type {Builder, Dict, DictKey} from './a_define_interfaces'
 import {isIterable} from './type_check'
 import json from './json'
 
@@ -103,23 +103,23 @@ export function cloneMap<K = unknown, V = unknown, T extends Map<K, V> = Map<K, 
     return target
 }
 
-export function cloneDict(source: Dict): Dict {
+export function cloneDict<T extends Dict = Dict>(source: T): T {
     if (!source) {
-        return {}
+        return {} as T
     }
     const {clone, ok} = structuredCloneUnsafe(source)
     if (ok) {
         return clone
     }
 
-    const target: Record<string | number | symbol, unknown> = {}
+    const target: Record<DictKey, unknown> = {}
     for (const key in source) {
         if (Object.prototype.hasOwnProperty.call(source, key)) {
             const value = source[key]
             target[key] = (value && typeof value === 'object') ? json.Unmarshal(json.Marshal(value)) : value
         }
     }
-    return target
+    return target as T
 }
 
 export function cloneSet<V = unknown, T extends Set<V> = Set<V>>(source: T): T {
