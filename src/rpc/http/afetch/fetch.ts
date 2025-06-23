@@ -8,6 +8,7 @@ import {aerror} from '../../../aa/aerror/fn'
 import {E_OK, E_Unauthorized} from '../../../aa/aerror/errors'
 import type {t_httpmethod} from '../../../aa/atype/enums/http_method'
 import type {t_url_pattern} from '../../../aa/atype/a_define'
+import log from '../../../aa/alog/log.ts'
 
 export default class AaFetch implements HttpImpl {
     readonly auth: AaAuth
@@ -108,8 +109,9 @@ export default class AaFetch implements HttpImpl {
     }
 
     private async normalizeOptions(api: t_url_pattern, options?: RequestOptions, method?: t_httpmethod): Promise<RequestStruct> {
+        log.debug("==>", method, api)
         options = this.base.normalizeOptions(options, method)
-
+        log.debug("==>", options)
         // Merge auth options
         if (!options.disableAuth) {
             try {

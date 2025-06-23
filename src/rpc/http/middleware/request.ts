@@ -124,11 +124,12 @@ export class AaRequest implements RequestImpl {
 
 
     normalizeOptions<T extends BaseRequestOptions = BaseRequestOptions>(options?: T, method?: t_httpmethod): T {
+        log.debug("=------=>", options, method)
         options = options ? union(this.defaults as Dict, options as Dict) as T : this.defaults as T
         if (method && options.method !== method) {
             options.method = method
         }
-        log.debug("base: normalize options: ", options)
+        log.debug("base: normalize options: ", method, options)
         return options as T
     }
 
