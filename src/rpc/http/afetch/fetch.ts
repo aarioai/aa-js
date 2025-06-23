@@ -1,35 +1,22 @@
-import {
-    HeaderSetting,
-    HttpImpl,
-    RequestHooks,
-    RequestImpl,
-    RequestOptions,
-    RequestStruct
-} from '../base/define_interfaces'
+import {HttpImpl, RequestHooks, RequestImpl, RequestOptions, RequestStruct} from '../base/define_interfaces'
 import AaAuth from '../auth/auth'
 import type {ResponseBodyData} from '../../../aa/atype/a_server_dto'
 import {normalizeBasicRequestOptions, normalizeRequestOptions} from '../base/fn'
-import {fillDict, union} from '../../../basic/maps/groups'
+import {union} from '../../../basic/maps/groups'
 import type {Dict} from '../../../aa/atype/a_define_interfaces'
 import {aerror} from '../../../aa/aerror/fn'
 import {E_OK, E_Unauthorized} from '../../../aa/aerror/errors'
 import type {t_httpmethod} from '../../../aa/atype/enums/http_method'
-import type {t_millisecond, t_url_pattern} from '../../../aa/atype/a_define'
-import {Millisecond} from '../../../aa/atype/a_define_units.ts'
+import type {t_url_pattern} from '../../../aa/atype/a_define'
 
 export default class AaFetch implements HttpImpl {
     readonly auth: AaAuth
-    readonly baseRequest: RequestImpl
-    defaultOptions: RequestOptions | null
+    readonly base: RequestImpl
 
-    baseURL: string = ''
-    debounceInterval: t_millisecond = 400 * Millisecond
-    defaultHeader?: HeaderSetting
 
-    constructor(auth: AaAuth, defaultOptions: RequestOptions | null = null) {
+    constructor(auth: AaAuth) {
         this.auth = auth
-        this.baseRequest = auth.request
-        this.defaultOptions = defaultOptions
+        this.base = auth.request
     }
 
     handleRedirect(path: string): unknown {
@@ -38,7 +25,7 @@ export default class AaFetch implements HttpImpl {
     }
 
     fetch(r: RequestStruct, hooks?: RequestHooks): Promise<string> {
-        return this.baseRequest.Fetch(r.url.href, normalizeBasicRequestOptions(r.url.href, r, this.defaultHeader), hooks)
+        return this.base.Fetch(r.url.href, normalizeBasicRequestOptions(r.url.href, r), hooks)
     }
 
     Fetch(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<string> {
@@ -47,7 +34,7 @@ export default class AaFetch implements HttpImpl {
     }
 
     request<T = ResponseBodyData>(r: RequestStruct, hooks?: RequestHooks): Promise<T> {
-        return this.baseRequest.request<T>(r, hooks).catch(e => {
+        return this.base.request<T>(r, hooks).catch(e => {
             e = aerror(e)
             if (e.isFailedAndSeeOther()) {
                 this.handleRedirect(e.message)  // special redirect
@@ -68,7 +55,7 @@ export default class AaFetch implements HttpImpl {
 
     head(r: RequestStruct, hooks?: RequestHooks): Promise<void> {
         r.method = 'HEAD'
-        return this.baseRequest.head(r, hooks)
+        return this.base.head(r, hooks)
     }
 
     Head(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<void> {
@@ -122,13 +109,7 @@ export default class AaFetch implements HttpImpl {
 
     private async normalizeOptions(api: t_url_pattern, options?: RequestOptions, method?: t_httpmethod): Promise<RequestStruct> {
         options = options ?? {}
-        if (this.baseURL) {
-            options.baseURL = this.baseURL
-        }
-        options.debounceInterval = this.debounceInterval
-        if (this.defaultOptions) {
-            options = fillDict(options, this.defaultOptions as Dict)
-        }
+
         if (method && options.method !== method) {
             options.method = method
         }
@@ -149,6 +130,6 @@ export default class AaFetch implements HttpImpl {
             }
 
         }
-        return normalizeRequestOptions(api, options, this.defaultHeader)
+        return normalizeRequestOptions(api, options)
     }
 }

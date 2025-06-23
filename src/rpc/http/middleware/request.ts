@@ -1,5 +1,11 @@
-import type {BaseRequestHooks, BaseRequestOptions, BasicRequestStruct, RequestImpl} from '../base/define_interfaces'
-import type {t_url_pattern} from '../../../aa/atype/a_define'
+import {
+    BaseRequestHooks,
+    BaseRequestOptions,
+    BasicRequestStruct,
+    HeaderSetting,
+    RequestImpl
+} from '../base/define_interfaces'
+import type {t_millisecond, t_url_pattern} from '../../../aa/atype/a_define'
 import {normalizeBasicRequestOptions} from '../base/fn'
 import {fillDict} from '../../../basic/maps/groups'
 import AaMiddleware from './middleware'
@@ -14,11 +20,15 @@ import json from '../../../aa/atype/json.ts'
 import {E_ParseResponseBodyFailed} from '../base/errors.ts'
 import {aerror, isOK} from '../../../aa/aerror/fn.ts'
 import defaults from '../base/defaults.ts'
+import {Millisecond} from '../../../aa/atype/a_define_units.ts'
 
 export class AaRequest implements RequestImpl {
     defaultOptions?: BaseRequestOptions
     readonly middleware: AaMiddleware
     requestErrorHook?: (e: AError) => AError
+    baseURL: string = ''
+    debounceInterval: t_millisecond = 400 * Millisecond
+    defaultHeader?: HeaderSetting
 
     constructor(defaults?: BaseRequestOptions, middleware: AaMiddleware = new AaMiddleware()) {
         this.defaultOptions = defaults
@@ -131,12 +141,17 @@ export class AaRequest implements RequestImpl {
     }
 
     private normalizeOptions(api: t_url_pattern, options?: BaseRequestOptions, method?: t_httpmethod): BasicRequestStruct {
+        options = options ?? {}
+        if (this.baseURL) {
+            options.baseURL = this.baseURL
+        }
+        options.debounceInterval = this.debounceInterval
         if (this.defaultOptions) {
             options = fillDict(options, this.defaultOptions as Dict)
         }
         if (method && options!.method !== method) {
             options!.method = method
         }
-        return normalizeBasicRequestOptions(api, options!)
+        return normalizeBasicRequestOptions(api, options!, this.defaultHeader)
     }
 }
