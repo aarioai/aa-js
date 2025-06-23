@@ -25,5 +25,3 @@ export function reject(err: string | Error | AError): Promise<never> {
     }
     return Promise.reject(reason)
 }
-
-

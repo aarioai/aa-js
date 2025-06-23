@@ -19,6 +19,7 @@ import {CODE_UNAUTHORIZED} from '../../../aa/aerror/code'
 import {aerror} from '../../../aa/aerror/fn'
 import {TRUE} from '../../../aa/atype/a_server_consts'
 import {NIF} from '../../../aa/atype/a_define_funcs.ts'
+import {reject, resolve} from '../../../basic/promises/fn.ts'
 
 export const E_MissingUserToken = new AError(CODE_UNAUTHORIZED, 'missing user token').lock()
 export const E_InvalidUserToken = new AError(CODE_UNAUTHORIZED, 'invalid user token').lock()
@@ -41,8 +42,8 @@ export default class AaAuth {
     defaultUserTokenOptions?: UserToken
     unauthorizedHandler?: (e: AError) => boolean
     txTimeout = 5 * Seconds
-    #enableDebug = false
-    private readonly tx = new AaMutex('auth')
+    readonly tx = new AaMutex('auth')
+    enableDebug = false
     private userToken: NormalizedUserToken | null = null
     #authTime: t_second = 0
     #validated?: boolean
@@ -52,15 +53,6 @@ export default class AaAuth {
         this.sessionCollection = new AaCollection(this.tableName, new AaDbLike(storageManager.session))
         this.localCollection = new AaCollection(this.tableName, new AaDbLike(storageManager.local))
         this.request = r ?? new AaRequest()
-    }
-
-    get enableDebug(): boolean {
-        return this.#enableDebug
-    }
-
-    set enableDebug(value: boolean) {
-        this.#enableDebug = value
-        this.tx.debug = value
     }
 
     private get validated(): boolean {
@@ -115,25 +107,18 @@ export default class AaAuth {
         })
     }
 
-    async getOrRefreshUserToken(): Promise<NormalizedUserToken | null> {
+    getOrRefreshUserToken(): Promise<NormalizedUserToken> {
         const [userToken, status] = this.loadUserToken()
         if (status === UserTokenStatus.OK) {
-            return userToken
+            return resolve(userToken!)
         }
         if (status === UserTokenStatus.Missing) {
-            return null
+            return reject(E_MissingUserToken)
         }
 
-        if (!userToken!['refresh_token'] || !userToken!.attach?.['refresh_api']) {
-            return null
-        }
-        const refreshToken = userToken!['refresh_token']
-        const api = userToken!.attach['refresh_api']
-        try {
-            return await this.refresh(refreshToken, api)
-        } catch (e: any) {
-            return null
-        }
+        const refreshToken = userToken!['refresh_token']!
+        const api = userToken!.attach!['refresh_api']!
+        return this.refresh(refreshToken, api)
     }
 
     packAuthorization(token: NormalizedUserToken): BaseRequestOptions | null {
@@ -155,14 +140,11 @@ export default class AaAuth {
         }
     }
 
-    async getAuthorizationOptions(): Promise<BaseRequestOptions | null> {
+    async getAuthorizationOptions(): Promise<BaseRequestOptions> {
         const userToken = await this.getOrRefreshUserToken()
-        if (!userToken) {
-            return null
-        }
         const options = this.packAuthorization(userToken!)
         if (!options) {
-            return null
+            throw new Error('pack authorization failed')
         }
         return options
     }
