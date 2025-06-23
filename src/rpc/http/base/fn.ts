@@ -42,14 +42,14 @@ export function extractFetchOptions(method: t_httpmethod, source: BaseOptions, d
 }
 
 export function normalizeBasicRequestOptions(apiPattern: t_url_pattern, opts: BaseRequestOptions, defaultHeader?: HeaderSetting): BasicRequestStruct {
-    log.debug("normalizeBasicRequestOptions options: ", opts)
+    log.debug("normalizeBasicRequestOptions <==", opts)
     const url = new AaURL(apiPattern, {
         method: opts?.method,
         baseURL: getBaseURL(opts),
         params: opts?.params,
     })
     const options = extractFetchOptions(url.method || 'GET', opts, defaultHeader)
-    console.info("normalizeBasicRequestOptions", options)
+    console.info("normalizeBasicRequestOptions ==>", options)
     return {
         ...options,
         url: url,

@@ -143,7 +143,7 @@ export class AaRequest implements RequestImpl {
         if (method && options?.method !== method) {
             options!.method = method
         }
-        log.debug("normalize options: ", options)
+        log.debug("base: normalize options: ", options)
         return normalizeBasicRequestOptions(api, options!, this.defaultHeader)
     }
 }
