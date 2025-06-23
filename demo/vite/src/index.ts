@@ -9,19 +9,19 @@ import aa from 'aa-ts/src/aa.ts'
         console.log(pong)
     })
 
-    aa.http.Request("HEAD /v1/restful").then()
-
-    aa.http.Request("/v1/restful").then(data => {
-        console.log(data)
-    })
-
-    aa.http.Request("POST /v1/restful", {
-        data: {
-            say: "POST -> Hello, World!"
-        }
-    }).then(data => {
-        console.log(data)
-    })
+    // aa.http.Request("HEAD /v1/restful").then()
+    //
+    // aa.http.Request("/v1/restful").then(data => {
+    //     console.log(data)
+    // })
+    //
+    // aa.http.Request("POST /v1/restful", {
+    //     data: {
+    //         say: "POST -> Hello, World!"
+    //     }
+    // }).then(data => {
+    //     console.log(data)
+    // })
 
     aa.http.Request("PUT /v1/restful", {
         data: {
@@ -30,21 +30,21 @@ import aa from 'aa-ts/src/aa.ts'
     }).then(data => {
         console.log(data)
     })
-    aa.http.Request("PATCH /v1/restful", {
-        data: {
-            num: 2
-        }
-    }).then(data => {
-        console.log(data)
-    })
-
-    aa.http.Request("DELETE /v1/restful").then(data => {
-        console.log(data)
-    })
-
-    aa.http.Request("/v1/users").then(data => {
-        console.log(data)
-    })
+    // aa.http.Request("PATCH /v1/restful", {
+    //     data: {
+    //         num: 2
+    //     }
+    // }).then(data => {
+    //     console.log(data)
+    // })
+    //
+    // aa.http.Request("DELETE /v1/restful").then(data => {
+    //     console.log(data)
+    // })
+    //
+    // aa.http.Request("/v1/users").then(data => {
+    //     console.log(data)
+    // })
     //
     // aa.http.Request("/v1/users/page/{page:uint8}", {
     //     params: {
