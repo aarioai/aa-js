@@ -1,6 +1,6 @@
-import {HoursInSecond, Milliseconds, NO_EXPIRES} from '../../../aa/atype/a_define_units'
+import {HoursInSecond, NO_EXPIRES} from '../../../aa/atype/a_define_units'
 import type {UserToken} from '../../../aa/atype/a_server_dto'
-import {HeaderSetting} from './define_interfaces.ts'
+import {BaseRequestOptions, HeaderSetting} from './define_interfaces.ts'
 import type {CookieOptions} from '../../../basic/storage/define_types.ts'
 import {AError} from '../../../aa/aerror/error.ts'
 
@@ -23,8 +23,7 @@ const defaultHeaderSetting: HeaderSetting = {
 
 
 class DefaultSettings {
-    baseURL = ''   // global default baseURL
-    debounceInterval = 400 * Milliseconds
+    requestOptions: BaseRequestOptions = {}
     readonly headers: HeaderSetting = defaultHeaderSetting
     readonly cookieOptions: CookieOptions = {
         path: '/',

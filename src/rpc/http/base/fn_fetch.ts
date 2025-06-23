@@ -9,7 +9,7 @@ import {HeaderSetting} from './define_interfaces.ts'
 
 export function normalizeHeaders(method: t_httpmethod, headers?: Headers | Dict, defaultHeader?: HeaderSetting): Headers {
     if (!defaultHeader) {
-        defaultHeader = defaults.headers
+        defaultHeader = defaults.headers || {}
     }
 
     const h = defaultHeader?.[method as keyof typeof defaultHeader] || {}

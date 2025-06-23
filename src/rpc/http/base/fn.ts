@@ -1,4 +1,4 @@
-import type {t_url_pattern} from '../../../aa/atype/a_define'
+import type {t_millisecond, t_url_pattern} from '../../../aa/atype/a_define'
 import {BaseRequestOptions, BasicRequestStruct, HeaderSetting, RequestOptions, RequestStruct} from './define_interfaces'
 import AaURL from '../../../basic/urls/url'
 import type {BaseOptions, FetchBaseOptions} from './define_fetch'
@@ -10,19 +10,16 @@ import json from '../../../aa/atype/json'
 import {E_MissingResponseBody, E_ParseResponseBodyFailed} from './errors'
 import type {Dict} from '../../../aa/atype/a_define_interfaces.ts'
 import defaults from './defaults.ts'
+import {Seconds} from '../../../aa/atype/a_define_units.ts'
 
 
 // Determines the base URL for API requests based on priority: options > defaults > location.origin
-export function getBaseURL(opts: BaseRequestOptions): string {
-    if (opts?.baseURL) {
-        return opts.baseURL
-    }
+export function getBaseURL(opts?: BaseRequestOptions): string {
+    return opts?.baseURL || defaults.requestOptions.baseURL || location.origin
+}
 
-    if (defaults.baseURL) {
-        return defaults.baseURL
-    }
-
-    return location.origin
+export function getDebounceInterval(opts?: BaseRequestOptions): t_millisecond {
+    return opts?.debounceInterval || defaults.requestOptions.debounceInterval || 400 * Seconds
 }
 
 export function extractFetchOptions(method: t_httpmethod, source: BaseOptions, defaultHeader?: HeaderSetting): FetchBaseOptions {
@@ -54,7 +51,7 @@ export function normalizeBasicRequestOptions(apiPattern: t_url_pattern, opts: Ba
         ...options,
         url: url,
         timeout: opts?.timeout ?? 0,
-        debounceInterval: opts?.debounceInterval || defaults.debounceInterval || 0,
+        debounceInterval: getDebounceInterval(opts),
         interceptError: opts?.interceptError || false
     }
 }
@@ -71,7 +68,7 @@ export function normalizeRequestOptions(apiPattern: t_url_pattern, opts: Request
         ...options,
         url: url,
         timeout: opts?.timeout || 0,
-        debounceInterval: opts.debounceInterval || defaults.debounceInterval || 0,
+        debounceInterval: getDebounceInterval(opts),
         interceptError: opts?.interceptError || false,
         disableAuth: opts?.disableAuth ?? false,
         disableAuthRefresh: opts?.disableAuthRefresh ?? false,

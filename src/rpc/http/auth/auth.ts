@@ -20,6 +20,7 @@ import {aerror} from '../../../aa/aerror/fn'
 import {TRUE} from '../../../aa/atype/a_server_consts'
 import {NIF} from '../../../aa/atype/a_define_funcs.ts'
 import {reject, resolve} from '../../../basic/promises/fn.ts'
+import {getBaseURL} from '../base/fn.ts'
 
 export const E_MissingUserToken = new AError(CODE_UNAUTHORIZED, 'missing user token').lock()
 export const E_InvalidUserToken = new AError(CODE_UNAUTHORIZED, 'invalid user token').lock()
@@ -80,7 +81,7 @@ export default class AaAuth {
     }
 
     refresh(refreshToken: string, refreshAPI: string): Promise<NormalizedUserToken> {
-        this.debug(`refresh token: ${refreshToken}, refreshAPI: ${refreshAPI}, baseURL: ${defaults.baseURL}`)
+        this.debug(`refresh token: ${refreshToken}, refreshAPI: ${refreshAPI}, baseURL: ${getBaseURL()}`)
 
         return this.tx.waitLock(this.txTimeout).then(() => {
             return this.request.Request<UserToken>(refreshAPI, {

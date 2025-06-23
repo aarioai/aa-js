@@ -7,7 +7,7 @@ import {
 } from '../base/define_interfaces'
 import type {t_url_pattern} from '../../../aa/atype/a_define'
 import {normalizeBasicRequestOptions} from '../base/fn'
-import {fillDict} from '../../../basic/maps/groups'
+import {union} from '../../../basic/maps/groups'
 import AaMiddleware from './middleware'
 import {reject} from '../../../basic/promises/fn'
 import type {FetchOptions} from '../base/define_fetch'
@@ -138,7 +138,7 @@ export class AaRequest implements RequestImpl {
     }
 
     private normalizeOptions(api: t_url_pattern, options?: BaseRequestOptions, method?: t_httpmethod): BasicRequestStruct {
-        options = fillDict(options, this.defaults as Dict)
+        options = union(this.defaults as Dict, options as Dict)
         if (method && options!.method !== method) {
             options!.method = method
         }
