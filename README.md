@@ -125,9 +125,10 @@ export type UserToken = {
 注册全局未登录方法，若服务端返回HTTP状态码或`ResponseBody.code`错误码 401，则会调用该注册的方法
 
 ```ts 
-aa.registry.register(UNAUTHORIZED_HANDLER, () => {
-    // goto_login_page()
-})
+aa.http.auth.unauthorizedHandler = (e: AError): boolean => {
+    go_to_login_page()   // 一般设置为跳转至登录页
+    return true
+}
 ```
 
 ```ts 
