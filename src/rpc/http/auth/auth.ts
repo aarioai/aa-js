@@ -80,7 +80,7 @@ export default class AaAuth {
     }
 
     refresh(refreshToken: string, refreshAPI: string): Promise<NormalizedUserToken> {
-        this.debug(`refresh token: ${refreshToken}, refreshAPI: ${refreshAPI}`)
+        this.debug(`refresh token: ${refreshToken}, refreshAPI: ${refreshAPI}, baseURL: ${defaults.baseURL}`)
 
         return this.tx.waitLock(this.txTimeout).then(() => {
             return this.request.Request<UserToken>(refreshAPI, {
