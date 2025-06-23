@@ -60,13 +60,14 @@ export function normalizeBasicRequestOptions(apiPattern: t_url_pattern, opts: Ba
 }
 
 export function normalizeRequestOptions(apiPattern: t_url_pattern, opts: RequestOptions, defaultHeader?: HeaderSetting): RequestStruct {
+    log.debug("--> normalizeRequestOptions <==", opts)
     const url = new AaURL(apiPattern, {
         method: opts?.method,
         baseURL: getBaseURL(opts),
         params: opts?.params,
     })
     const options = extractFetchOptions(url.method || 'GET', opts, defaultHeader)
-
+    console.info("--> normalizeRequestOptions ==>", options)
     return {
         ...options,
         url: url,
