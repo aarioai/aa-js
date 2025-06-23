@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "aa-ts": "^0.0.44"
+    "aa-ts": "^0.0.45"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

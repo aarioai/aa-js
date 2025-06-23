@@ -16,7 +16,6 @@ import log from '../../../aa/alog/log.ts'
 
 // Determines the base URL for API requests based on priority: options > defaults > location.origin
 export function getBaseURL(opts?: BaseRequestOptions): string {
-    log.debug(`getBaseURL() ${opts?.baseURL}, ${defaults.requestOptions.baseURL}, ${location.origin}, ${opts?.baseURL || defaults.requestOptions.baseURL || location.origin}`, opts)
     return opts?.baseURL || defaults.requestOptions.baseURL || location.origin
 }
 
