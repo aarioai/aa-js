@@ -53,6 +53,9 @@ export interface RequestImpl {
     defaults: BaseRequestOptions
     defaultHeader?: HeaderSetting
 
+    normalizeOptions<T extends BaseRequestOptions = BaseRequestOptions>(options?: T, method?: t_httpmethod): T
+
+
     head(r: BasicRequestStruct, hooks?: BaseRequestHooks): Promise<void>
 
     Head(api: t_url_pattern, options?: FetchOptions, hooks?: BaseRequestHooks): Promise<void>

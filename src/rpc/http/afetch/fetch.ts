@@ -108,11 +108,8 @@ export default class AaFetch implements HttpImpl {
     }
 
     private async normalizeOptions(api: t_url_pattern, options?: RequestOptions, method?: t_httpmethod): Promise<RequestStruct> {
-        options = options ?? {}
-
-        if (method && options.method !== method) {
-            options.method = method
-        }
+        options = this.base.normalizeOptions(options, method)
+        
         console.log("===>", options, !options.disableAuth)
         // Merge auth options
         if (!options.disableAuth) {

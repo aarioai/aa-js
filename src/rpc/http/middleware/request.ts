@@ -55,7 +55,7 @@ export class AaRequest implements RequestImpl {
         }
         options.method = 'HEAD'
 
-        let r = this.normalizeOptions(api, options)
+        let r = this.packRequestStruct(api, options)
         return this.head(r, hooks)
     }
 
@@ -86,7 +86,7 @@ export class AaRequest implements RequestImpl {
     }
 
     Fetch(api: t_url_pattern, options?: BaseRequestOptions, hooks?: BaseRequestHooks): Promise<string> {
-        let r = this.normalizeOptions(api, options)
+        let r = this.packRequestStruct(api, options)
         if (hooks?.beforeFetch) {
             r = hooks.beforeFetch(r)
         }
@@ -119,7 +119,22 @@ export class AaRequest implements RequestImpl {
     }
 
     Request<T = ResponseBodyData>(api: t_url_pattern, options?: BaseRequestOptions, hooks?: BaseRequestHooks): Promise<T> {
-        return this.request(this.normalizeOptions(api, options), hooks)
+        return this.request(this.packRequestStruct(api, options), hooks)
+    }
+
+
+    normalizeOptions<T extends BaseRequestOptions = BaseRequestOptions>(options?: T, method?: t_httpmethod): T {
+        options = options ? union(this.defaults as Dict, options as Dict) as T : this.defaults as T
+        if (method && options.method !== method) {
+            options.method = method
+        }
+        log.debug("base: normalize options: ", options)
+        return options as T
+    }
+
+    private packRequestStruct(api: t_url_pattern, options?: BaseRequestOptions, method?: t_httpmethod): BasicRequestStruct {
+        options = this.normalizeOptions(options, method)
+        return normalizeBasicRequestOptions(api, options, this.defaultHeader)
     }
 
     private fetchRaw(url: string, options?: FetchOptions, returnVoid?: boolean): Promise<string | void> {
@@ -136,14 +151,5 @@ export class AaRequest implements RequestImpl {
             const handler = this.requestErrorHook || defaults.requestErrorHook
             throw (handler ? handler(e) : e)
         })
-    }
-
-    private normalizeOptions(api: t_url_pattern, options?: BaseRequestOptions, method?: t_httpmethod): BasicRequestStruct {
-        options = options ? union(this.defaults as Dict, options as Dict) : this.defaults
-        if (method && options?.method !== method) {
-            options!.method = method
-        }
-        log.debug("base: normalize options: ", options)
-        return normalizeBasicRequestOptions(api, options!, this.defaultHeader)
     }
 }
