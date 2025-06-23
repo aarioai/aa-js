@@ -11,10 +11,12 @@ import {E_MissingResponseBody, E_ParseResponseBodyFailed} from './errors'
 import type {Dict} from '../../../aa/atype/a_define_interfaces.ts'
 import defaults from './defaults.ts'
 import {Seconds} from '../../../aa/atype/a_define_units.ts'
+import log from '../../../aa/alog/log.ts'
 
 
 // Determines the base URL for API requests based on priority: options > defaults > location.origin
 export function getBaseURL(opts?: BaseRequestOptions): string {
+    log.debug(`getBaseURL() ${opts?.baseURL}, ${defaults.requestOptions.baseURL}, ${location.origin}, ${opts?.baseURL || defaults.requestOptions.baseURL || location.origin}`, opts)
     return opts?.baseURL || defaults.requestOptions.baseURL || location.origin
 }
 
