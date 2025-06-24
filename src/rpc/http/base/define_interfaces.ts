@@ -55,7 +55,6 @@ export interface RequestImpl {
 
     normalizeOptions<T extends BaseRequestOptions = BaseRequestOptions>(options?: T, method?: t_httpmethod): T
 
-
     head(r: BasicRequestStruct, hooks?: BaseRequestHooks): Promise<void>
 
     Head(api: t_url_pattern, options?: FetchOptions, hooks?: BaseRequestHooks): Promise<void>
@@ -74,7 +73,6 @@ export interface RequestImpl {
 export interface HttpImpl {
     readonly auth: AaAuth
     readonly base: RequestImpl
-
 
     handleRedirect(path: string): unknown
 

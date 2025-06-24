@@ -11,7 +11,6 @@ import {E_MissingResponseBody, E_ParseResponseBodyFailed} from './errors'
 import type {Dict} from '../../../aa/atype/a_define_interfaces.ts'
 import defaults from './defaults.ts'
 import {Seconds} from '../../../aa/atype/a_define_units.ts'
-import log from '../../../aa/alog/log.ts'
 
 
 // Determines the base URL for API requests based on priority: options > defaults > location.origin
@@ -41,14 +40,12 @@ export function extractFetchOptions(method: t_httpmethod, source: BaseOptions, d
 }
 
 export function normalizeBasicRequestOptions(apiPattern: t_url_pattern, opts: BaseRequestOptions, defaultHeader?: HeaderSetting): BasicRequestStruct {
-    log.debug("normalizeBasicRequestOptions <==", opts)
     const url = new AaURL(apiPattern, {
         method: opts?.method,
         baseURL: getBaseURL(opts),
         params: opts?.params,
     })
     const options = extractFetchOptions(url.method || 'GET', opts, defaultHeader)
-    console.info("normalizeBasicRequestOptions ==>", options)
     return {
         ...options,
         url: url,
@@ -59,14 +56,12 @@ export function normalizeBasicRequestOptions(apiPattern: t_url_pattern, opts: Ba
 }
 
 export function normalizeRequestOptions(apiPattern: t_url_pattern, opts: RequestOptions, defaultHeader?: HeaderSetting): RequestStruct {
-    log.debug("--> normalizeRequestOptions <==", opts)
     const url = new AaURL(apiPattern, {
         method: opts?.method,
         baseURL: getBaseURL(opts),
         params: opts?.params,
     })
     const options = extractFetchOptions(url.method || 'GET', opts, defaultHeader)
-    console.info("--> normalizeRequestOptions ==>", options)
     return {
         ...options,
         url: url,

@@ -20,7 +20,6 @@ import json from '../../../aa/atype/json.ts'
 import {E_ParseResponseBodyFailed} from '../base/errors.ts'
 import {aerror, isOK} from '../../../aa/aerror/fn.ts'
 import defaults from '../base/defaults.ts'
-import log from '../../../aa/alog/log.ts'
 import {cloneDict} from '../../../aa/atype/clone.ts'
 
 export class AaRequest implements RequestImpl {
@@ -125,13 +124,11 @@ export class AaRequest implements RequestImpl {
 
 
     normalizeOptions<T extends BaseRequestOptions = BaseRequestOptions>(options?: T, method?: t_httpmethod): T {
-        log.debug("=------=>", options, method, this.defaults)
         const defaults = cloneDict(this.defaults as Dict)
         options = options ? unsafeUnion(defaults, options as Dict) as T : defaults as T
         if (method && options.method !== method) {
             options.method = method
         }
-        log.debug("base: normalize options: ", method, options)
         return options as T
     }
 

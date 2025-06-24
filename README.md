@@ -7,18 +7,22 @@ AaTS 一个优雅调用 Restful API 的库，包括路由自动填充、鉴权�
 
 ## HTTP 请求
 
-### 原生数据（string）请求
+> **baseURL 优先级**：URL 里面的 > option.baseURL > aa.http.baseURL > aa.httpDefaults.baseURL
+
+### 原生HTTP API请求
 
 原生数据请求，指直接按原始服务器返回的字符串返回，不进行任何处理。
+
+参考：demo/vite/src/raw/main.ts
 
 ```ts
 import aa from 'aa-ts/src/aa.ts'
 
 // 设置全局默认 base URL
-aa.httpDefaults.baseURL = 'http://localhost:8080'
+aa.httpDefaults.baseURL = 'http://localhost'
 
 // 设置默认 http 实例的 base URL
-//aa.http.baseURL = 'http://localhost:8080'
+//aa.http.baseURL = 'http://localhost'
 
 // 请求并异步返回原生string数据
 aa.http.Fetch("/v1/ping").then(pong => {
@@ -31,9 +35,7 @@ aa.http.Fetch("http://xxx.com/v1/ping").then(pong => {
 })
 ```
 
-> **baseURL 优先级**：URL 里面的 > option.baseURL > aa.http.baseURL > aa.httpDefaults.baseURL
-
-### 基本 Restful API 请求
+### 简化Restful API请求
 
 为了规范Restful API返回结果，aa-ts 按照 ResponseBody
 结构体自动解析。错误码（code）规范，可以根据服务端自行定义，如果使用[Airis 错误码规范](https://github.com/aarioai/rules/blob/main/api_doc/%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E9%94%99%E8%AF%AF%E7%A0%81%E8%AF%B4%E6%98%8E.md)
@@ -51,10 +53,12 @@ export type ResponseBody = {
 aa-ts 会自动解析HTTP状态码，以及 `ResponseBody.code` 错误码，如果成功，则以异步 `Promise<ResponseBodyData>` 方式返回
 `ResponseBody.data`。若HTTP状态码或 `ResponseBody.code` 错误码，任何一个错误，则会抛出 `AError` 异常。
 
+参考：demo/vite/src/restful-simple/main.ts
+
 ```ts 
 import aa from 'aa-ts/src/aa.ts'
 
-aa.http.baseURL = 'http://localhost:8080'
+aa.http.baseURL = 'http://localhost'
 
 // HEAD 请求，等价于 aa.http.Head('/v1/restful').then()
 aa.http.Request("HEAD /v1/restful").then()
@@ -98,14 +102,14 @@ aa.http.Request("DELETE /v1/restful").then(data => {
 })
 ```
 
-#### 标准Restful API请求（带Path Parameter）
+#### 无状态API请求（标准Restful API，带Path Parameter）
 
 ```ts
 import aa from 'aa-ts/src/aa.ts'
 
 // 设置全局默认 base URL
-aa.httpDefaults.baseURL = 'http://localhost:8080'
-//aa.http.baseURL = 'http://localhost:8080'
+aa.httpDefaults.baseURL = 'http://localhost'
+//aa.http.baseURL = 'http://localhost'
 
 // 获取用户列表接口，返回第一页内容
 // 等价于 aa.http.Get("/v1/users")
@@ -157,6 +161,8 @@ aa.http.Request("/v1/users/{uid:uint64}", {
 })
 
 ```
+
+## 有状态Restful API请求
 
 **进行HTTP Auth的接口请求**
 
