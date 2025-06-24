@@ -20,7 +20,7 @@ export interface BaseOptions {
     browsingTopics?: boolean
     cache?: RequestCache
     credentials?: RequestCredentials // `omit` no send cookie; `same-origin` only send cookie with same-origin; `include` send cookie
-    headers?: Headers | Dict
+    headers?: Headers | Dict<string>
     integrity?: string
     keepalive?: boolean
     method?: t_httpmethod
