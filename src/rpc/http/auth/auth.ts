@@ -211,7 +211,10 @@ export default class AaAuth {
         this.cookie.removeItem(P_Logout)
         this.#authTime = Date.now()
         const userToken = this.normalizeUserToken(data)
-        this.userTokenStatus(userToken)
+        const status = this.userTokenStatus(userToken)
+        if (status !== UserTokenStatus.OK) {
+            console.error(`auth handle authed invalid user token status: ${status}`)
+        }
 
         this.#authTime = Date.now() / Second
         this.validated = true
@@ -356,7 +359,6 @@ export default class AaAuth {
             return UserTokenStatus.OK
         }
         this.debug(`check user token expires_in=${expiresIn}`)
-
         return refreshable ? UserTokenStatus.Expired : UserTokenStatus.Missing
     }
 
