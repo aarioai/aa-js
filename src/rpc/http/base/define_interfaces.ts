@@ -73,6 +73,7 @@ export interface RequestImpl {
 export interface HttpImpl {
     readonly auth: AaAuth
     readonly base: RequestImpl
+    enableDebug: boolean
 
     handleRedirect(path: string): unknown
 

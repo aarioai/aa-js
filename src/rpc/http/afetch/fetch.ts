@@ -8,11 +8,12 @@ import {aerror} from '../../../aa/aerror/fn'
 import {E_OK, E_Unauthorized} from '../../../aa/aerror/errors'
 import type {t_httpmethod} from '../../../aa/atype/enums/http_method'
 import type {t_url_pattern} from '../../../aa/atype/a_define'
+import log from '../../../aa/alog/log.ts'
 
 export default class AaFetch implements HttpImpl {
     readonly auth: AaAuth
     readonly base: RequestImpl
-
+    enableDebug = false
 
     constructor(auth: AaAuth) {
         this.auth = auth
@@ -107,13 +108,22 @@ export default class AaFetch implements HttpImpl {
         return this.normalizeOptions(api, options, 'PATCH').then(r => this.patch<T>(r, hooks))
     }
 
+    private debug(...msgs: unknown[]) {
+        if (!this.enableDebug) {
+            return
+        }
+        log.debug('AaFetch', ...msgs)
+    }
+
     private async normalizeOptions(api: t_url_pattern, options?: RequestOptions, method?: t_httpmethod): Promise<RequestStruct> {
         options = this.base.normalizeOptions(options, method)
         // Merge auth options
         if (!options.disableAuth) {
             try {
                 const auth = await this.auth.getAuthorizationOptions()
+                this.debug("auth data", auth)
                 options = unsafeUnion(options as Dict, auth as Dict)
+                this.debug("merge auth data into options", options)
             } catch (e) {
                 if (options.mustAuth) {
                     throw E_Unauthorized
