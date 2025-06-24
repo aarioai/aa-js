@@ -7,9 +7,11 @@ import {unsafeExtractDomain} from '../urls/fn'
 import {NO_EXPIRES, Seconds} from '../../aa/atype/a_define_units'
 import {matchAny, normalizeArrayArguments} from '../arrays/fn'
 import type {t_expires} from '../../aa/atype/a_define'
+import log from '../../aa/alog/log.ts'
 
 export default class AaCookie implements StorageImpl {
     readonly name = 'AaCookie'
+    enableDebug = false
     domainExtractor: (hostname: string) => string = unsafeExtractDomain
     private cachedCookie: string = ''  // no need share
     private cached: StringMap = new Map()
@@ -79,6 +81,7 @@ export default class AaCookie implements StorageImpl {
     }
 
     removeItem(key: string, options?: CookieOptions): void {
+        this.debug(`remove cookie ${key}`)
         this.setItem(key, '', {
             ...options,
             expiresIn: new Date(0), // 1970-01-01
@@ -103,11 +106,11 @@ export default class AaCookie implements StorageImpl {
             if (typeof exp === 'string') {
                 expires = exp
             } else {
-                let expiresDate: Date | null = null
+                let expiresDate: Date | null
                 if (typeof exp === 'number') {
                     expiresDate = new Date()
                     expiresDate.setTime(expiresDate.getTime() + exp * Seconds)
-                } else if (exp instanceof Date) {
+                } else {
                     expiresDate = exp
                 }
                 if (expiresDate) {
@@ -154,7 +157,15 @@ export default class AaCookie implements StorageImpl {
     setItem(key: string, value: unknown, options?: CookieOptions): void {
         let cookie = `${encodeURIComponent(key)}=${encodeURIComponent(a_string(value))}`
         cookie += this.stringifyOptions(this.normalizeOptions(options))
+        this.debug(`set cookie: ${cookie}`)
         document.cookie = cookie
+    }
+
+    private debug(...msgs: unknown[]) {
+        if (!this.enableDebug) {
+            return
+        }
+        log.debug('AaCookie', ...msgs)
     }
 
     private syncCache(): StringMap {

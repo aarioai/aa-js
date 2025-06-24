@@ -6,9 +6,11 @@ import {floatToInt} from '../../aa/atype/t_basic'
 import type {t_expires, t_second} from '../../aa/atype/a_define'
 import {matchAny, normalizeArrayArguments} from '../arrays/fn'
 import type {Dict} from '../../aa/atype/a_define_interfaces'
+import log from '../../aa/alog/log.ts'
 
 export default class AaStorageEngine implements StorageImpl {
     readonly name = 'AaStorageEngine'
+    enableDebug = false
     readonly unclearable: Set<string>
     readonly storage: Storage
     readonly startTimeKey = 'aa:storage:start_time'
@@ -112,6 +114,7 @@ export default class AaStorageEngine implements StorageImpl {
     }
 
     removeItem(key: string): void {
+        this.debug(`remove ${key}`)
         this.storage.removeItem(key)
     }
 
@@ -132,10 +135,19 @@ export default class AaStorageEngine implements StorageImpl {
             timeDiff: this.timeDiff(),
         })
         if (encodedValue === null) {
+            this.debug(`remove ${key}`)
             this.removeItem(key)  // remove expired
             return
         }
+        this.debug(`set ${key}=${encodedValue}`)
         this.storage.setItem(key, encodedValue)
+    }
+
+    private debug(...msgs: unknown[]) {
+        if (!this.enableDebug) {
+            return
+        }
+        log.debug('AaStorageEngine', ...msgs)
     }
 
     private timeDiff(): t_second {

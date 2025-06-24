@@ -14,7 +14,7 @@ import {a_second} from '../../aa/atype/t_basic_server'
 
 function normalizeStorageExpires(expires: t_storage_expires | undefined | null, timeDiff: t_second | undefined | null): t_expires {
     if (expires === undefined || expires === null) {
-        return 3 * DaysInSecond // default expires, 3 days
+        return 7 * DaysInSecond // default expires, 7 days
     }
     if (!expires) {
         return 0   // expired
@@ -49,7 +49,9 @@ function encodeStorageOptions(options: NormalizedStorageOptions): string {
 }
 
 export function encodeStorageValue(value: unknown, options: StorageOptions): string | null {
+    console.log(options)
     const normalizedOptions = normalizeStorageOptions(options)
+    console.log(normalizedOptions)
     if (!normalizedOptions.expiresIn) {
         return null  // expired
     }

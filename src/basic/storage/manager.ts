@@ -15,6 +15,18 @@ export default class AaStorageManager {
         this.session = new AaStorageEngine(sessionStorage ? sessionStorage : window.sessionStorage)
     }
 
+    enableDebug() {
+        this.cookie.enableDebug = true
+        this.local.enableDebug = true
+        this.session.enableDebug = false
+    }
+
+    disableDebug() {
+        this.cookie.enableDebug = false
+        this.local.enableDebug = false
+        this.session.enableDebug = false
+    }
+
     clearAll(): void {
         this.cookie.clear()
         this.local.clear()

@@ -5,6 +5,7 @@ export const STORAGE_SEPARATOR = '  |'
 
 export interface StorageImpl {
     readonly length: number
+    enableDebug: boolean
 
     key(index: number): string | null
 

@@ -17,6 +17,7 @@ export class Aa {
     #http: HttpImpl
 
     constructor() {
+        
         const baseRequest = new AaRequest()
         const auth = new AaAuth(this.#storageManager, baseRequest)
         this.#http = new AaFetch(auth)
