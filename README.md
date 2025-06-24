@@ -13,7 +13,7 @@ AaTS 一个优雅调用 Restful API 的库，包括路由自动填充、鉴权�
 
 原生数据请求，指直接按原始服务器返回的字符串返回，不进行任何处理。
 
-参考：demo/vite/src/raw/main.ts
+参考：[demo/vite/src/raw/main.ts](https://github.com/aarioai/aa-ts/blob/main/demo/vite/src/raw/main.ts)
 
 ```ts
 import aa from 'aa-ts/src/aa.ts'
@@ -53,7 +53,7 @@ export type ResponseBody = {
 aa-ts 会自动解析HTTP状态码，以及 `ResponseBody.code` 错误码，如果成功，则以异步 `Promise<ResponseBodyData>` 方式返回
 `ResponseBody.data`。若HTTP状态码或 `ResponseBody.code` 错误码，任何一个错误，则会抛出 `AError` 异常。
 
-参考：demo/vite/src/restful-simple/main.ts
+参考：[demo/vite/src/restful-simple/main.ts](https://github.com/aarioai/aa-ts/blob/main/demo/vite/src/restful-simple/main.ts)
 
 ```ts 
 import aa from 'aa-ts/src/aa.ts'
@@ -112,6 +112,8 @@ aa.http.Request("DELETE /v1/restful").then(data => {
 ```
 
 #### 无状态API请求（标准Restful API，带Path Parameter）
+
+参考：[demo/vite/src/restful/main.ts](https://github.com/aarioai/aa-ts/blob/main/demo/vite/src/restful/main.ts)
 
 ```ts
 import aa from 'aa-ts/src/aa.ts'
@@ -173,7 +175,7 @@ aa.http.Request("/v1/users/{uid:uint64}", {
 
 ## 有状态Restful API请求
 
-**进行HTTP Auth的接口请求**
+参考：[demo/vite/src/auth/main.ts](https://github.com/aarioai/aa-ts/blob/main/demo/vite/src/auth/main.ts)
 
 HTTP auth 目前支持对后端 `ResponseBody.data` 返回 `UserToken` 结构的数据：
 
@@ -207,22 +209,48 @@ aa.http.auth.unauthorizedHandler = (e: AError): boolean => {
 }
 ```
 
-```ts 
-// 密码登录接口，`ResponseBody.data` 返回 UserToken
-// 等价于 aa.http.Post("/v1/login", ...)
-aa.http.Request("POST /v1/login", {
-    data: {
-        account: "12345",
-        password: "hello",
-        state: "aa-js",
+密码登录接口，`ResponseBody.data` 返回 UserToken
+
+```ts
+// aa.storageManager.enableDebug()
+// aa.http.enableDebug = true
+// aa.http.auth.enableDebug = true
+
+// 开启Cookie
+// 注意：若开启 Cookie，应注意防护CSRF，要求类似微信小程序一样，任何“写”操作，必须用户进入页面点击后才能进行，不可以直接进入某个页面自动进行
+aa.http.auth.enableCookie = true
+
+aa.http.auth.unauthorizedHandler = (e: AError): boolean => {
+    console.error("Unauthorized " + e.toString())
+    return true
+}
+
+// aa.httpDefaults.requestOptions.baseURL = ''
+aa.http.base.defaults.baseURL = 'http://localhost'
+if (!(await aa.http.auth.isAuthed())) {
+    // 等价于 aa.http.Post("/v1/login", ...)
+    aa.http.Request("POST /v1/login", {
+        data: {
+            account: "12345",
+            password: "hello",
+            state: "aa-js",
+        }
+    }).then(data => {
+        // 登录成功，自动存储 user token 信息
+        aa.http.auth.handleAuthed(data as UserToken)
+    }).catch(e => {
+        console.log("ERROR", e.toString())
+    })
+}
+
+// 等价于 aa.http.Get("/v1/authed/users2/uid/{uid:string}", ...)
+aa.http.Request("/v1/authed/users2/uid/{uid:string}", {
+    params: {
+        uid: [1, 3, 5],
     }
 }).then(data => {
-    // 登录成功后，将UserToken自动存储起来
-    aa.http.auth.handleAuthed(data as UserToken)
+    console.log(data)
 })
-
-
-
 ```
 
 ### HTTP 配置
@@ -245,6 +273,8 @@ aa.httpDefaults.requestErrorHook = undefined // ?: (e: AError) => AError
 aa.http 是默认的一个 HttpImpl 实例，也可以使用自定义的实例。
 
 ```ts
+aa.http.enableDebug = false  // 是否开启debug日志
+aa.http.authenableDebug = false // 是否开启 auth debug 日志
 aa.http.auth.defaultCookieOptions = {}// 默认http  auth cookie 实例配置
 aa.http.auth.defaultUserTokenOptions = {}// 默认http user token 实例配置
 
