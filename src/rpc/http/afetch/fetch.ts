@@ -131,6 +131,8 @@ export default class AaFetch implements HttpImpl {
             }
 
         }
-        return normalizeRequestOptions(api, options)
+        const result = normalizeRequestOptions(api, options)
+        this.debug("normalize request options", result)
+        return result
     }
 }

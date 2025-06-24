@@ -49,9 +49,7 @@ function encodeStorageOptions(options: NormalizedStorageOptions): string {
 }
 
 export function encodeStorageValue(value: unknown, options: StorageOptions): string | null {
-    console.log(options)
     const normalizedOptions = normalizeStorageOptions(options)
-    console.log(normalizedOptions)
     if (!normalizedOptions.expiresIn) {
         return null  // expired
     }

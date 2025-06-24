@@ -4,12 +4,13 @@ import type {AError} from 'aa-ts/src/aa/aerror/error.ts'
 
 (function () {
     // aa.storageManager.enableDebug()
+    aa.http.enableDebug = true
+    //aa.http.auth.enableDebug = true
 
+    
     // aa.httpDefaults.requestOptions.baseURL = ''
     aa.http.base.defaults.baseURL = 'http://localhost'
 
-
-    aa.http.auth.enableDebug = true
 
     aa.http.Request("POST /v1/login", {
         data: {
