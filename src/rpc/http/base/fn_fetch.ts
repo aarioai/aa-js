@@ -7,14 +7,18 @@ import type {FetchBaseOptions, FetchOptions, t_fetchbody} from './define_fetch'
 import {HeaderSetting} from './define_interfaces.ts'
 import {cloneDict} from '../../../aa/atype/clone.ts'
 import {forEach} from '../../../basic/maps/iterates.ts'
+import defaults from './defaults.ts'
 
 export function normalizeHeaders(method: t_httpmethod, headers?: Headers | Dict<string>, defaultHeader?: HeaderSetting): Headers {
-    const h = defaultHeader?.[method as keyof typeof defaultHeader] || {}
-    let defaultHeaders = defaultHeader?.ANY ? cloneDict(defaultHeader.ANY) : {}
-    console.log("--->", defaultHeaders, h)
-    defaultHeaders = unsafeUnion(defaultHeaders, h)
-    console.log("===>", defaultHeaders, h)
-    const newHeaders = new Headers(defaultHeaders)
+    if (!defaultHeader) {
+        defaultHeader = defaults.headers
+    }
+    const h = defaultHeader[method as keyof typeof defaultHeader] || {}
+    let common = defaultHeader.ANY ? cloneDict(defaultHeader.ANY) : {}
+    console.log("--->", common, h)
+    common = unsafeUnion(common, h)
+    console.log("===>", common, h)
+    const newHeaders = new Headers(common)
 
     if (headers) {
         forEach(headers, (value, key) => {

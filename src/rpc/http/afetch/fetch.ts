@@ -26,7 +26,7 @@ export default class AaFetch implements HttpImpl {
     }
 
     fetch(r: RequestStruct, hooks?: RequestHooks): Promise<string> {
-        return this.base.Fetch(r.url.href, normalizeBasicRequestOptions(r.url.href, r), hooks)
+        return this.base.Fetch(r.url.href, normalizeBasicRequestOptions(r.url.href, r, this.base.defaultHeader), hooks)
     }
 
     Fetch(api: t_url_pattern, options?: RequestOptions, hooks?: RequestHooks): Promise<string> {
