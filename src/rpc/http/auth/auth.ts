@@ -230,6 +230,14 @@ export default class AaAuth {
         }
     }
 
+    async isAuthed(): Promise<boolean> {
+        const [userToken, status] = this.loadUserToken()
+        if (status === UserTokenStatus.Expired) {
+            await this.refresh(userToken!['refresh_token']!, userToken!.attach!['refresh_api']!)
+        }
+        return status === UserTokenStatus.OK
+    }
+
     logout() {
         this.cookie.clear(this.cookieOptions())
         this.userToken = null
