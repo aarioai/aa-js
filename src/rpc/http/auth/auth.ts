@@ -216,7 +216,6 @@ export default class AaAuth {
             console.error(`auth handle authed invalid user token status: ${status}`)
         }
 
-        this.#authTime = Date.now() / Second
         this.validated = true
         this.saveUserToken(userToken)
         return userToken
@@ -352,13 +351,16 @@ export default class AaAuth {
             return UserTokenStatus.Missing
         }
         if (!accessToken) {
+            this.debug("check user token status: missing access_token")
             return UserTokenStatus.Expired
         }
         const expiresIn = userToken['expires_in']
-        if (expiresIn === undefined || expiresIn === null || (expiresIn + this.authTime() > Date.now())) {
+        const authTime = this.authTime()
+        const remain = Date.now() - authTime
+        if (expiresIn === undefined || expiresIn === null || (expiresIn > remain)) {
             return UserTokenStatus.OK
         }
-        this.debug(`check user token expires_in=${expiresIn}`)
+        this.debug(`check user token expires_in=${remain}, auth time=${authTime}`)
         return refreshable ? UserTokenStatus.Expired : UserTokenStatus.Missing
     }
 

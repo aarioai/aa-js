@@ -5,7 +5,7 @@ import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
 (async function () {
     // aa.storageManager.enableDebug()
     aa.http.enableDebug = true
-    //aa.http.auth.enableDebug = true
+    aa.http.auth.enableDebug = true
     aa.http.auth.unauthorizedHandler = (e: AError): boolean => {
         console.error("Unauthorized " + e.toString())
         return true
