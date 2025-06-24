@@ -6,7 +6,7 @@ import {translate} from "../translate/dictionary";
 import {LF} from "../atype/a_define_consts";
 import type {t_numeric} from '../atype/a_define';
 import {a_number, a_string} from '../atype/t_basic'
-import {NotFoundCodes} from './base'
+import {NotFoundCodes, Separator} from './base'
 import {isOK} from './fn'
 
 export class AError extends Error {
@@ -147,10 +147,10 @@ export class AError extends Error {
         let heading = ''
         let detail = ''
         if (this.#headings.length) {
-            heading = AError.decorateHeadings(this.#headings, (text: string) => translate(text, dict))
+            heading = AError.decorateHeadings(this.#headings, (text: string) => translate(text, dict)) + Separator
         }
         if (this.#details.length) {
-            detail = AError.decorateHeadings(this.#details, (text: string) => translate(text, dict))
+            detail = Separator + AError.decorateHeadings(this.#details, (text: string) => translate(text, dict))
         }
         return heading + msg + detail
     }

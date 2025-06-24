@@ -13,7 +13,6 @@ import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
 
     // aa.httpDefaults.requestOptions.baseURL = ''
     aa.http.base.defaults.baseURL = 'http://localhost'
-    console.log("=====>", (await aa.http.auth.isAuthed()))
     if (!(await aa.http.auth.isAuthed())) {
         aa.http.Request("POST /v1/login", {
             data: {
@@ -27,14 +26,14 @@ import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
             console.log("ERROR", e.toString())
         })
     }
-
-
-    aa.http.Request("/v1/authed/users2/uid/{uid:string}", {
-        params: {
-            uid: [1, 3, 5],
-        }
-    }).then(data => {
-        console.log(data)
-    })
+    const a = await aa.http.auth.getAuthorizationOptions()
+    console.log(a)
+    // aa.http.Request("/v1/authed/users2/uid/{uid:string}", {
+    //     params: {
+    //         uid: [1, 3, 5],
+    //     }
+    // }).then(data => {
+    //     console.log(data)
+    // })
 
 })()
