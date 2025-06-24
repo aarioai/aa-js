@@ -10,8 +10,12 @@ import {forEach} from '../../../basic/maps/iterates.ts'
 
 export function normalizeHeaders(method: t_httpmethod, headers?: Headers | Dict<string>, defaultHeader?: HeaderSetting): Headers {
     const h = defaultHeader?.[method as keyof typeof defaultHeader] || {}
-    let defaultHeaders = cloneDict(defaultHeader?.common || {})
-    defaultHeaders = unsafeUnion(defaultHeaders, h)
+    let defaultHeaders = defaultHeader?.ANY ? cloneDict(defaultHeader.ANY) : {}
+    if (Object.keys(h).length > 0) {
+        console.info(defaultHeaders, h)
+        defaultHeaders = unsafeUnion(defaultHeaders, h)
+        console.info(defaultHeaders)
+    }
     const newHeaders = new Headers(defaultHeaders)
 
     if (headers) {

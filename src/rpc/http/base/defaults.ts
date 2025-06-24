@@ -6,7 +6,7 @@ import {AError} from '../../../aa/aerror/error.ts'
 
 
 const defaultHeaderSetting: HeaderSetting = {
-    common: {
+    ANY: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
     },

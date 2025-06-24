@@ -26,7 +26,7 @@ export interface BasicRequestStruct extends FetchBaseOptions {
 export type HeaderSetting = {
     [key in t_httpmethod]: Dict<string>
 } & {
-    common: Dict<string>
+    ANY: Dict<string>
 }
 
 export interface RequestOptions extends BaseRequestOptions {
