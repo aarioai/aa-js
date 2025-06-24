@@ -15,7 +15,7 @@ import type {AError} from 'aa-ts/src/aa/aerror/error.ts'
     // 获取用户列表接口，返回第一页内容
     // 等价于 aa.http.Get("/v1/users")
     aa.http.Request("/v1/users").then(data => {
-        console.log(data)
+        console.log("/v1/users", "==>", data)
     })
 
     // 获取用户列表第五页内容
@@ -25,7 +25,7 @@ import type {AError} from 'aa-ts/src/aa/aerror/error.ts'
             page: 5,
         }
     }).then(data => {
-        console.log(data)
+        console.log("/v1/users/page/{page:uint8}", "==>", data)
     })
 
     // 通过性别查询用户列表接口，并返回第二页内容
@@ -36,7 +36,7 @@ import type {AError} from 'aa-ts/src/aa/aerror/error.ts'
             sex: 2,
         }
     }).then(data => {
-        console.log(data)
+        console.log("/v1/users", "==>", data)
     })
 
     // 使用Restful URL 标准方式，通过 Path parameter 查询
@@ -47,7 +47,7 @@ import type {AError} from 'aa-ts/src/aa/aerror/error.ts'
             sex: 1,
         }
     }).then(data => {
-        console.log(data)
+        console.log("/v1/users/sex/{sex:uint8}/page/{page:uint8}", "==>", data)
     })
 
     // 通过uid查询匹配的用户列表
@@ -57,7 +57,7 @@ import type {AError} from 'aa-ts/src/aa/aerror/error.ts'
             uid: 3,
         }
     }).then(data => {
-        console.log(data)
+        console.log("/v1/users/{uid:uint64}", "==>", data)
     })
 
 

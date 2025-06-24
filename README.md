@@ -63,10 +63,16 @@ aa.http.baseURL = 'http://localhost'
 // HEAD 请求，等价于 aa.http.Head('/v1/restful').then()
 aa.http.Request("HEAD /v1/restful").then()
 
-// GET 请求，等价于 aa.http.Get('/v1/restful').then(data=>{})
-aa.http.Request("/v1/restful").then(data => {
-    console.log(data)
+// GET 请求，等价于 aa.http.Get('/v1/restful/{response:string}').then(data=>{})
+aa.http.Request("/v1/restful/{response:string}", {
+    params: {
+        response: "Success",
+        hello: "world",
+    }
+}).then(data => {
+    console.log("GET /v1/restful/{response:string}", "==>", data)
 })
+
 
 // POST 请求，等价于 aa.http.Post('/v1/restful', {}).then(data=>{})
 aa.http.Request("POST /v1/restful", {
@@ -77,13 +83,16 @@ aa.http.Request("POST /v1/restful", {
     console.log(data)
 })
 
-// PUT 请求，等价于 aa.http.Put('/v1/restful', {}).then(data=>{})
-aa.http.Request("PUT /v1/restful", {
+// PUT 请求，等价于 aa.http.Put('/v1/restful/{id:int}', {}).then(data=>{})
+aa.http.Request("PUT /v1/restful/{id:int}", {
+    params: {
+        id: 110,
+    },
     data: {
         say: "PUT -> Hello, World!"
     }
 }).then(data => {
-    console.log(data)
+    console.log("PUT /v1/restful/{id:int}", "==>", data)
 })
 
 

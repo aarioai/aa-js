@@ -6,11 +6,6 @@ import type {AError} from 'aa-ts/src/aa/aerror/error.ts'
     // aa.httpDefaults.requestOptions.baseURL = ''
     aa.http.base.defaults.baseURL = 'http://localhost'
 
-    // Fetch raw string
-    aa.http.Fetch("/v1/ping").then(pong => {
-        console.log(pong)
-    })
-
 
     aa.http.auth.enableDebug = true
 

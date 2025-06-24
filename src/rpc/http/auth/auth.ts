@@ -198,7 +198,7 @@ export default class AaAuth {
     }
 
     handleAuthed(data: UserToken): NormalizedUserToken | null {
-        this.debug(`handle authed remove cookie ${P_Logout}`)
+        this.debug(`handle authed remove cookie '${P_Logout}'`)
         this.cookie.removeItem(P_Logout)
         this.#authTime = Date.now()
         const userToken = this.normalizeUserToken(data)
