@@ -38,7 +38,7 @@ export default class AaAuth {
     readonly cookie: StorageImpl
     readonly request: RequestImpl
     customPackAuthorization?: (token: NormalizedUserToken) => BaseRequestOptions | null
-    enableCookie: boolean = true
+    enableCookie: boolean = false
     defaultCookieOptions?: CookieOptions
     defaultUserTokenOptions?: UserToken
     unauthorizedHandler?: (e: AError) => boolean
@@ -73,8 +73,8 @@ export default class AaAuth {
         this.#validated = validated
     }
 
-    clear() {
-        this.debug('clear')
+    clear(...msg: string[]) {
+        this.debug('clear', ...msg)
         this.cookie.clear()
         this.sessionCollection.drop()
         this.localCollection.drop()
@@ -98,7 +98,7 @@ export default class AaAuth {
             }).catch(err => {
                 const e = aerror(err as any)
                 if (!e.isServerError()) {
-                    this.clear()
+                    this.clear(e.toString())
                 }
                 log.test(e)
                 throw e
@@ -173,7 +173,7 @@ export default class AaAuth {
         } catch (err) {
             const e = aerror(err as any)
             if (!e.isServerError()) {
-                this.clear()
+                this.clear(e.toString())
             }
             log.warn(`validate user token failed: ${e}`)
         } finally {
@@ -211,7 +211,7 @@ export default class AaAuth {
     }
 
     handleUnauthorized(e: AError): boolean {
-        this.clear()
+
         const handler = this.unauthorizedHandler || defaults.unauthorizedHandler
 
         if (!handler) {

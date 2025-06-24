@@ -133,7 +133,7 @@ export default class AaCookie implements StorageImpl {
             return ''
         }
         let s = ''
-        if (options.domain) {
+        if (options.domain && options.domain !== 'localhost' && options.domain !== '127.0.0.1') {
             s += `; domain='${options.domain}'`
         }
         if (options.expiresIn) {

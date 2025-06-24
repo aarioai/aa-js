@@ -3,6 +3,8 @@ import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
 import type {AError} from 'aa-ts/src/aa/aerror/error.ts'
 
 (function () {
+    // aa.storageManager.enableDebug()
+
     // aa.httpDefaults.requestOptions.baseURL = ''
     aa.http.base.defaults.baseURL = 'http://localhost'
 
