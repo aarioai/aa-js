@@ -11,11 +11,9 @@ import {forEach} from '../../../basic/maps/iterates.ts'
 export function normalizeHeaders(method: t_httpmethod, headers?: Headers | Dict<string>, defaultHeader?: HeaderSetting): Headers {
     const h = defaultHeader?.[method as keyof typeof defaultHeader] || {}
     let defaultHeaders = defaultHeader?.ANY ? cloneDict(defaultHeader.ANY) : {}
-    if (Object.keys(h).length > 0) {
-        console.info(defaultHeaders, h)
-        defaultHeaders = unsafeUnion(defaultHeaders, h)
-        console.info(defaultHeaders)
-    }
+    console.log("--->", defaultHeaders, h)
+    defaultHeaders = unsafeUnion(defaultHeaders, h)
+    console.log("===>", defaultHeaders, h)
     const newHeaders = new Headers(defaultHeaders)
 
     if (headers) {
@@ -25,8 +23,10 @@ export function normalizeHeaders(method: t_httpmethod, headers?: Headers | Dict<
     }
     const contentType = newHeaders.get('Content-Type')
     // multipart/form-data needs boundary
-    if (contentType === 'multipart/form-data' || contentType === '') {
+    if (contentType === 'multipart/form-data') {
         newHeaders.delete('Content-Type')
+    } else if (!contentType) {
+        newHeaders.set('Content-Type', 'application/json')
     }
     return newHeaders
 }
