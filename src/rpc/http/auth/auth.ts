@@ -150,6 +150,15 @@ export default class AaAuth {
         return options
     }
 
+    async isAuthed(): Promise<boolean> {
+        try {
+            await this.getOrRefreshUserToken()
+            return true
+        } catch (error) {
+            return false
+        }
+    }
+
     async validateUserToken(userToken: NormalizedUserToken): Promise<boolean> {
         if (this.validated) {
             return true
@@ -230,13 +239,6 @@ export default class AaAuth {
         }
     }
 
-    async isAuthed(): Promise<boolean> {
-        const [userToken, status] = this.loadUserToken()
-        if (status === UserTokenStatus.Expired) {
-            await this.refresh(userToken!['refresh_token']!, userToken!.attach!['refresh_api']!)
-        }
-        return status === UserTokenStatus.OK
-    }
 
     logout() {
         this.cookie.clear(this.cookieOptions())

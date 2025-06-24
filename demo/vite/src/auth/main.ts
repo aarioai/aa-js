@@ -1,19 +1,20 @@
 import aa from 'aa-ts/src/aa.ts'
-import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
 import type {AError} from 'aa-ts/src/aa/aerror/error.ts'
-import {NIF} from 'aa-ts/src/aa/atype/a_define_funcs.ts'
+import type {UserToken} from 'aa-ts/src/aa/atype/a_server_dto.ts'
 
-(function () {
+(async function () {
     // aa.storageManager.enableDebug()
     aa.http.enableDebug = true
     //aa.http.auth.enableDebug = true
-
+    aa.http.auth.unauthorizedHandler = (e: AError): boolean => {
+        console.error("Unauthorized " + e.toString())
+        return true
+    }
 
     // aa.httpDefaults.requestOptions.baseURL = ''
     aa.http.base.defaults.baseURL = 'http://localhost'
-
-
-    aa.http.auth.getOrRefreshUserToken().then(NIF, () => {
+    console.log("=====>", (await aa.http.auth.isAuthed()))
+    if (!(await aa.http.auth.isAuthed())) {
         aa.http.Request("POST /v1/login", {
             data: {
                 account: "12345",
@@ -25,12 +26,6 @@ import {NIF} from 'aa-ts/src/aa/atype/a_define_funcs.ts'
         }).catch(e => {
             console.log("ERROR", e.toString())
         })
-    })
-
-
-    aa.http.auth.unauthorizedHandler = (e: AError): boolean => {
-        console.error("Unauthorized " + e.toString())
-        return true
     }
 
 

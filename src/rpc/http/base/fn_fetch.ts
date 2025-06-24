@@ -15,9 +15,7 @@ export function normalizeHeaders(method: t_httpmethod, headers?: Headers | Dict<
     }
     const h = defaultHeader[method as keyof typeof defaultHeader] || {}
     let common = defaultHeader.ANY ? cloneDict(defaultHeader.ANY) : {}
-    console.log("--->", common, h)
     common = unsafeUnion(common, h)
-    console.log("===>", common, h)
     const newHeaders = new Headers(common)
 
     if (headers) {
