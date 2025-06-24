@@ -389,10 +389,12 @@ export default class AaAuth {
             token_type: this.loadStorage('token_type'),
             attach: this.loadStorage<UserTokenAttach>('attach') ?? {},
         }
+
         const status = this.userTokenStatus(userToken)
         if (status === UserTokenStatus.OK) {
             this.userToken = userToken
         }
+        this.debug("load user token", userToken, status)
         return [userToken, status]
     }
 
