@@ -2,6 +2,10 @@
 
 AaJS 一个优雅调用 Restful API 的库，包括路由自动填充、鉴权、防抖、限流、自动重试、token过期自动更新等功能。
 
+> Restful API 是目前适用于“资源型API”最佳的实践方案，因此这里错误码仅适用于资源型API错误码规范。如SSE、Websocket、MQTT等其他业务场景，不属于资源操作的场景，应该使用其他错误码规范。
+
+以下文档尚未完成，
+
 * aa
     * atype
         * aerror - AError 类相关类和处理方法

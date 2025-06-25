@@ -2,6 +2,11 @@
 
 AaTS 一个优雅调用 Restful API 的库，包括路由自动填充、鉴权、防抖、限流、自动重试、token过期自动更新等功能。
 
+> Restful
+> API是目前适用于“资源型API”最佳的实践方案，因此这里错误码仅适用于[资源型API错误码规范](https://github.com/aarioai/rules/blob/main/api_doc/%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E9%94%99%E8%AF%AF%E7%A0%81%E8%AF%B4%E6%98%8E.md)。
+>
+> 如SSE、Websocket、MQTT等其他业务场景，不属于资源操作的场景，应该使用其他错误码规范。
+
 这里案例使用的后端接口，可以参考 [Airis Simple Demo](https://github.com/aarioai/airis/blob/main/demo/project/simple/README_%E8%AF%B4%E6%98%8E.md)
 启动后端服务。
 
