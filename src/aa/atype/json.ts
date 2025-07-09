@@ -34,7 +34,7 @@ export default class json {
      * Safely parses a JSON string or returns the input if already an object
      *
      * @example
-     *  Unmarshal('{"a":1000000000000000000}') // {a: 1000000000000000000n}
+     *  Unmarshal('{"a":123456789101112131415161718}') // {a: 123456789101112131415161718n}
      *  Unmarshal({"a":1})      // {a: 1}
      *  Unmarshal(null)         // null
      *  Unmarshal('invalid')    // null
@@ -49,7 +49,7 @@ export default class json {
         input = input.trim()
 
         // null is the most common case
-        if (input === 'null' || input.toUpperCase() === 'NULL') {
+        if (input === 'null' || input.toLowerCase() === 'null') {
             return null
         }
         try {

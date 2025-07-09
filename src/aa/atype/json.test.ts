@@ -1,7 +1,7 @@
 import {describe, expect, test} from '@jest/globals';
 import json from "./json";
 
-describe('json.Marshal', () => {
+describe('json.Marshal (require node 21+)', () => {
     const bigNumber = 123456789101112131415161718n
     test('json.Marshal empty objects', () => {
         expect(json.Marshal(null)).toBe(null)
@@ -41,7 +41,7 @@ describe('json.Marshal', () => {
 })
 
 
-describe('json.Unmarshal', () => {
+describe('json.Unmarshal (require node 21+)', () => {
     const bigNumber = 123456789101112131415161718n
     test('json.Unmarshal empty objects', () => {
         expect(json.Unmarshal(null)).toBe(null)
@@ -53,10 +53,14 @@ describe('json.Unmarshal', () => {
     })
 
     test('json.Unmarshal simple', () => {
-        expect(json.Unmarshal('[1,"2",123456789101112131415161718]')).toEqual([1, "2", bigNumber])
-        expect(json.Unmarshal('{"a":100, "b":[1,"2",123456789101112131415161718]}')).toEqual({
-            a: 100,
-            b: [1, "2", bigNumber]
+        expect(json.Unmarshal('[123456789101112131415161718, 1, "2"]')).toEqual([bigNumber, 1, "2"])
+
+        expect(json.Unmarshal('{"a":123456789101112131415161718}')).toEqual({a: bigNumber})
+
+        expect(json.Unmarshal('{"a":123456789101112131415161718, "b":[123456789101112131415161718, 1,"2"]}')).toEqual({
+            a: bigNumber,
+            b: [bigNumber, 1, "2"]
         })
     })
+
 })

@@ -9,13 +9,18 @@ export interface JsonReviverCtx {
 
 /**
  * @example
- *  JSON.parse('{"a":123456789101112131415161718, "b":[1,2,3]}', (key, value)=>{console.log(key, '=>', value);return value})
- *    a => 1.2345678910111214e+26
- *    '0' => 1
- *    '1' => 2
- *    '2' => 3
- *    'b' => [1 ,2, 3]
+ *  JSON.parse(
+ *      '{"a":123456789101112131415161718, "b":[123456789101112131415161718, 1, 2]}',
+ *      (key, value, ctx)=>{console.log(key, '=>', value, '=>', ctx);return value}
+ *  )
+ *
+ *    'a' => 1.2345678910111214e+26
+ *    '0' => 1.2345678910111214e+26
+ *    '1' => 1
+ *    '2' => 2
+ *    'b' => [1 ,2, 1.2345678910111214e+26]
  *    '' => {a: 1.2345678910111214e+26, b: [1 ,2, 3]}
+ *
  */
 export const unmarshalReviver = (key: string, value: unknown, ctx?: JsonReviverCtx): any => {
     if (!ctx || !key) {
